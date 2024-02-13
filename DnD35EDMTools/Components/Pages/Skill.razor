@@ -1,0 +1,17 @@
+﻿<div class="@RowHeaderClass()"></div>
+<div class="@RowContentClass()"></div>
+<div class="@RowContentClass()"></div>
+
+@code {
+    [Parameter] public int Row { get; set; } = 0;
+
+    private string RowHeaderClass()
+    {
+        return Row % 2 != 0 ? "skills-list-row-header-alt" : "skills-list-row-header";
+    }
+    
+    private string RowContentClass()
+    {
+        return Row % 2 != 0 ? "skills-list-row-content-alt" : "skills-list-row-content";
+    }
+}

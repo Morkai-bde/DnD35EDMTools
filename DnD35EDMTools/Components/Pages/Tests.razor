@@ -1,0 +1,103 @@
+﻿@page "/Tests"
+@using DnD35EDMTools.Helpers
+<h3>Dice Roll Results</h3>
+
+<div>
+    <button class="btn btn-primary" id="Button1" type="button" @onclick="RollDice">1d6+1</button>
+    <br/>
+
+    @if (diceRollerResult != null)
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Result:</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr># @diceRollerResult</tr>
+            </tbody>
+        </table>
+    }
+</div>
+
+<br/>
+
+<div>
+    <button class="btn btn-primary" id="Button2" type="button" @onclick="RollThreeDSix">3d6</button>
+    <br/>
+
+    @if (threeDSixResult != null)
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Roll #</th>
+                <th>Result</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < threeDSixResult.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@threeDSixResult[i]</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+<br/>
+
+<div>
+    <button class="btn btn-primary" id="Button3" type="button" @onclick="RollFourDSix">4d6DL</button>
+    <br/>
+    @if (fourDSixResults != null)
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Roll #</th>
+                <th>Result</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < fourDSixResults.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@fourDSixResults[i]</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
+@code {
+
+    private int diceRollerResult;
+
+    private void RollDice()
+    {
+        diceRollerResult = DiceHelper.DiceRoller.RollDice(1, 6, 1);
+    }
+
+    private List<int> threeDSixResult;
+
+    private void RollThreeDSix()
+    {
+        threeDSixResult = DiceHelper.RollStats.ThreeDSix();
+    }
+
+    private List<int> fourDSixResults;
+
+    private void RollFourDSix()
+    {
+        fourDSixResults = DiceHelper.RollStats.FourDSixDropLowest();
+    }
+
+
+}

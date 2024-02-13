@@ -1,0 +1,133 @@
+{
+  "Files": [
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\obj\\Debug\\net8.0\\scopedcss\\projectbundle\\DnD35EDMTools.bundle.scp.css",
+      "PackagePath": "staticwebassets\\DnD35EDMTools.bundle.scp.css"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\app.css",
+      "PackagePath": "staticwebassets\\app.css"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\bootstrap\\bootstrap.min.css",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\bootstrap\\bootstrap.min.css.map",
+      "PackagePath": "staticwebassets\\bootstrap\\bootstrap.min.css.map"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\favicon.png",
+      "PackagePath": "staticwebassets\\favicon.png"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\fonts\\Black Chancery.ttf",
+      "PackagePath": "staticwebassets\\fonts\\Black Chancery.ttf"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\fonts\\Copperplate Gothic Regular.otf",
+      "PackagePath": "staticwebassets\\fonts\\Copperplate Gothic Regular.otf"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\00_header.png",
+      "PackagePath": "staticwebassets\\images\\00_header.png"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\00_header0.png",
+      "PackagePath": "staticwebassets\\images\\00_header0.png"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\19_footer.png",
+      "PackagePath": "staticwebassets\\images\\19_footer.png"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\Portrait_Blank.jpg",
+      "PackagePath": "staticwebassets\\images\\Portrait_Blank.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\bg1-wood.jpg",
+      "PackagePath": "staticwebassets\\images\\bg1-wood.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\bg2-wood.jpg",
+      "PackagePath": "staticwebassets\\images\\bg2-wood.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\bg3-stonewall.jpg",
+      "PackagePath": "staticwebassets\\images\\bg3-stonewall.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\bg4-homeworld.jpg",
+      "PackagePath": "staticwebassets\\images\\bg4-homeworld.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\bg5-fallwoodlands.jpg",
+      "PackagePath": "staticwebassets\\images\\bg5-fallwoodlands.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\bg6-lakesidetropics.jpg",
+      "PackagePath": "staticwebassets\\images\\bg6-lakesidetropics.jpg"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\oldws-bot.gif",
+      "PackagePath": "staticwebassets\\images\\oldws-bot.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\oldws-mid.gif",
+      "PackagePath": "staticwebassets\\images\\oldws-mid.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\oldws-top.gif",
+      "PackagePath": "staticwebassets\\images\\oldws-top.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\s-bot.gif",
+      "PackagePath": "staticwebassets\\images\\s-bot.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\s-mid.gif",
+      "PackagePath": "staticwebassets\\images\\s-mid.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\s-top.gif",
+      "PackagePath": "staticwebassets\\images\\s-top.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\ws-bot.gif",
+      "PackagePath": "staticwebassets\\images\\ws-bot.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\ws-mid.gif",
+      "PackagePath": "staticwebassets\\images\\ws-mid.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\images\\ws-top.gif",
+      "PackagePath": "staticwebassets\\images\\ws-top.gif"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\print.css",
+      "PackagePath": "staticwebassets\\print.css"
+    },
+    {
+      "Id": "C:\\OneDrive\\Applications\\vs2022\\repos\\DnD35EDMTools\\DnD35EDMTools\\DnD35EDMTools\\wwwroot\\styles.css",
+      "PackagePath": "staticwebassets\\styles.css"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.DnD35EDMTools.Microsoft.AspNetCore.StaticWebAssets.props",
+      "PackagePath": "build\\Microsoft.AspNetCore.StaticWebAssets.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.build.DnD35EDMTools.props",
+      "PackagePath": "build\\DnD35EDMTools.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildMultiTargeting.DnD35EDMTools.props",
+      "PackagePath": "buildMultiTargeting\\DnD35EDMTools.props"
+    },
+    {
+      "Id": "obj\\Debug\\net8.0\\staticwebassets\\msbuild.buildTransitive.DnD35EDMTools.props",
+      "PackagePath": "buildTransitive\\DnD35EDMTools.props"
+    }
+  ],
+  "ElementsToRemove": []
+}

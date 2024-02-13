@@ -1,0 +1,200 @@
+﻿@page "/CharacterCreation"
+
+@using DnD35EDMTools.Data
+@using Microsoft.EntityFrameworkCore
+@using System.Collections
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<h3>Character Creation</h3>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Character Creation</title>
+    <link rel="stylesheet" href="./styles.css"/>
+</head>
+
+<div class="dnd-character-creation-container">
+    <div class="dnd-character-main-content">
+        <div class="dnd-character-creation-sheet">
+            <div class="dnd-cc-top-section">
+                <div class="dnd-cc-top__left">
+                    <div>
+                        <label for="name">Character Name:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input-select" type="text" id="name" @bind="characterName"/>
+                    </div>
+
+                    <div>
+                        <label for="race">Race:</label>
+                    </div>
+                    <div style="width: 150px">
+                        <select class="cc-input-select" id="race" @bind="selectedRaceId">
+                            @foreach (var race in races)
+                            {
+                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="subrace">Sub-Race:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="subrace" @bind="selectedRaceId">
+                            @foreach (var race in races)
+                            {
+                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="placeholder1">Gender:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="placeholder1" @bind="selectedRaceId">
+                            @foreach (var race in races)
+                            {
+                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="placeholder2">Region:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="placeholder2" @bind="selectedRaceId">
+                            @foreach (var race in races)
+                            {
+                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="placeholder3">Template:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="placeholder3" @bind="selectedRaceId">
+                            @foreach (var race in races)
+                            {
+                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="dnd-cc-top__right">
+                    <div>
+                        <label for="hair">Hair:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="hair" @bind="characterHair">
+                            @foreach (var colour in GetRaceHairColours())
+                            {
+                                <option value="@colour.Id">@colour.Colour</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="eyes">Eyes:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="eyes" @bind="characterEyes">
+                            @foreach (var colour in GetRaceEyeColours())
+                            {
+                                <option value="@colour.Id">@colour.Colour</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="skin">Skin:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="skin" @bind="characterSkin">
+                            @foreach (var colour in GetRaceSkinColours())
+                            {
+                                <option value="@colour.Id">@colour.Colour</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="age">Age:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input-select" type="text" id="age" @bind="characterAge"/>
+                    </div>
+                    <div>
+                        <label for="height">Height:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input-select" type="text" id="height" @bind="characterHeight"/>
+                    </div>
+                    <div>
+                        <label for="weight">Weight:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input-select" type="text" id="weight" value="@($"{characterWeight}.lbs")"/>
+                        @* <input type="text" id="weight" @bind="characterWeight"/> *@
+                        @* <span> .lbs</span> *@
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<button @onclick="CreateNewCharacter">Create</button>
+
+@code {
+
+    private List<RaceData> races = new List<RaceData>();
+    private List<ColourData> colours = new List<ColourData>();
+
+    private string characterName, characterRace, characterSubRace, characterHair, characterEyes, characterSkin, characterAge, characterHeight, characterWeight;
+
+    private int selectedRaceId = 0;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var db = DbContext;
+        races = await db.Races.Include(r => r.HairColours).ThenInclude(h => h.RaceHairColours)
+            .Include(r => r.EyeColours).ThenInclude(e => e.RaceEyeColours)
+            .Include(r => r.SkinColours).ThenInclude(s => s.RaceSkinColours)
+            .ToListAsync();
+    }
+
+    private List<ColourData> GetRaceHairColours()
+    {
+        if (selectedRaceId == 0)
+            return new List<ColourData>();
+        return races.Single(r => r.Id == selectedRaceId).HairColours.ToList();
+    }
+
+    private List<ColourData> GetRaceEyeColours()
+    {
+        if (selectedRaceId == 0)
+            return new List<ColourData>();
+        return races.Single(r => r.Id == selectedRaceId).EyeColours.ToList();
+    }
+
+    private List<ColourData> GetRaceSkinColours()
+    {
+        if (selectedRaceId == 0)
+            return new List<ColourData>();
+        return races.Single(r => r.Id == selectedRaceId).SkinColours.ToList();
+    }
+
+    private void CreateNewCharacter()
+    {
+        Console.WriteLine($"Name saved: {characterName}");
+        Console.WriteLine($"Race saved: {characterRace}");
+        Console.WriteLine($"Race saved: {characterSubRace}");
+        Console.WriteLine($"Hair saved: {characterHair}");
+        Console.WriteLine($"Hair saved: {characterEyes}");
+        Console.WriteLine($"Hair saved: {characterSkin}");
+        Console.WriteLine($"Hair saved: {characterAge}");
+        Console.WriteLine($"Hair saved: {characterHeight}");
+        Console.WriteLine($"Hair saved: {characterWeight}");
+    }
+
+}

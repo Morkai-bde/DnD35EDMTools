@@ -1,0 +1,493 @@
+:root {
+    --cellheight: 20px;
+    --cellbordercolour: #808080;
+    --cellheadercolor: #000000;
+    --celldefaultcolor: #CCCCCC;
+    --cellaltcolor: #E0E0E0;
+}
+
+*,
+*::after,
+*::before {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.dnd-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    width: 80vw;
+}
+
+.dnd-main-content  {
+    height: 100%;
+    width: 100%;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+/*Character Sheet Styles*/
+
+.dnd-character-sheet {
+    height: auto;
+    width: 698px;
+    border: 2px solid;
+}
+
+.dnd-cs-top-section {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    height: 100%;
+}
+
+.dnd-cs-top__left {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: 1fr 160px 220px 160px 80px 60px 80px 1fr;
+}
+
+.dnd-cs-image-container img {
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+    height: calc(14 * var(--cellheight));
+}
+
+.dnd-cs-top__right{
+    display: grid;
+    grid-template-rows: 1060px 1fr; /*680*/
+}
+
+.dnd-cs-top__right > div:not(:last-child) {
+    border-right: 1px solid;
+}
+
+/*Attributes Styles*/
+
+.attributes-row {
+    display: grid;
+    grid-template-rows: repeat(15, var(--cellheight));
+    /*grid-template-rows: var(--cellheight) 280px;*/
+}
+
+.attributes-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.attributes-row-content {
+    display: grid;
+    grid-template-columns: 240px calc(100% - 240px);
+}
+
+.attributes-content {
+    display: grid;
+    grid-template-rows: repeat(14, var(--cellheight));
+}
+
+.attribute-list {
+    display: grid;
+    grid-template-columns: 2fr 3fr;
+}
+
+.attribute-list-row-header {
+    text-align: start;
+    background-color: #000;
+    color: #fff;
+    padding-left: 2px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.attribute-list__content {
+    text-align: start;
+    background-color: #CCC;
+    color: #000;
+    padding-left: 2px;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/*Skills styles*/
+
+.skills-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+    grid-template-rows: repeat(15, var(--cellheight));
+}
+.skills-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.skills-row-content {
+    display: grid;
+    grid-template-rows: repeat(1, var(--cellheight));
+}
+
+.skills-content {
+    display: grid;
+    /*grid-template-rows: repeat(14, var(--cellheight));*/
+}
+
+.skills-list {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr;
+}
+
+.skills-list-row-header {
+    text-align: start;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.skills-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.skills-list-row-header-alt {
+    text-align: start;
+    background-color: #E0E0E0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.skills-list-row-content-alt {
+    text-align: center;
+    background-color: #E0E0E0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Languages Styles */
+
+.languages-row {
+    display: grid;
+    grid-template-rows: repeat(8, var(--cellheight));
+}
+
+.languages-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.languages-row-content {
+    display: grid;
+    grid-template-rows: repeat(1, var(--cellheight));
+}
+
+.languages-content {
+    display: grid;
+}
+
+.languages-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.languages-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Wealth Styles */
+
+.wealth-row {
+    display: grid;
+    grid-template-rows: repeat(11, var(--cellheight));
+}
+
+.wealth-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.wealth-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr 1fr 1fr;
+}
+
+.wealth-list-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.wealth-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Load-Speed Styles*/
+
+.load-speed-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+}
+
+.load-speed-list-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.load-speed-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+ }
+
+/* Abilities Styles */
+
+.abilities-row {
+    display: grid;
+    grid-template-rows: repeat(8, var(--cellheight));
+}
+
+.abilities-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.abilities-list {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 2fr 1fr;
+}
+
+.abilities-list-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.abilities-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Damage Reduction and Immunities Styles */
+
+.dr-immunities-row {
+    display: grid;
+    grid-template-rows: repeat(4, var(--cellheight));
+}
+
+.dr-immunities-list-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.dr-immunities-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Worn Armour Styles */
+
+.worn-armour-list {
+    display: grid;
+    grid-template-columns: 5fr .8fr 1fr 1fr 1.2fr;
+}
+
+.worn-armour-row {
+    display: grid;
+    grid-template-rows: repeat(3, var(--cellheight));
+}
+
+.worn-armour-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.worn-armour-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Armour Styles */
+
+.armour-list {
+    display: grid;
+    grid-template-columns: 4.6fr 1fr .5fr 1fr .9fr 1fr 1fr 1fr;
+}
+
+.armour-row {
+    display: grid;
+    grid-template-rows: repeat(4, var(--cellheight));
+}
+
+.armour-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.armour-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/* Weapon Styles */
+
+.weapon-list-left {
+    display: grid;
+    grid-template-columns: 2.1fr 1.6fr 1.3fr;
+}
+
+.weapon-list-right {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+}
+
+.weapon-row {
+    display: grid;
+    grid-template-rows: repeat(7, var(--cellheight));
+}
+
+.weapon-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.weapon-list-row-content {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+/*Character Creation Styles*/
+
+.dnd-character-creation-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 80vw;
+}
+
+.dnd-character-main-content {
+    height: 100%;
+    width: 100%;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-character-creation-sheet {
+    height : auto;
+    width: 698px;
+    border: 2px solid;
+}
+
+.dnd-cc-top-section {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    height: 100%;
+}
+
+.dnd-cc-top__left {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: .2fr .2fr;
+    grid-template-columns: .5fr 1.5fr;
+}
+
+.dnd-cc-top__right {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-columns: .2fr 1.8fr;
+}
+
+
+.cc-input-select {
+    width: 120px;
+    height: 20px;
+}
+
+@media only screen and (max-width: 1050px) {
+    .top-section {
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 60% 40%;
+        height: 100%;
+    }
+}
