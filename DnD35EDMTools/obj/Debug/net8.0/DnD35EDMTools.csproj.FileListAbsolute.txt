@@ -1,7 +1,6 @@
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\appsettings.Development.json
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\appsettings.json
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\DnD35EDMTools.staticwebassets.runtime.json
-C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\Data\app.db
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\DnD35EDMTools.exe
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\DnD35EDMTools.deps.json
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\bin\Debug\net8.0\DnD35EDMTools.runtimeconfig.json

@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("DnD35EDMTools")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+62aaf02eae4832cbb925fe9ed641b6b9ec0f8555")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7f91aae1692a46552245e485bc436a469a150d86")]
 [assembly: System.Reflection.AssemblyProductAttribute("DnD35EDMTools")]
 [assembly: System.Reflection.AssemblyTitleAttribute("DnD35EDMTools")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
