@@ -1,83 +1,87 @@
-﻿namespace DnD35EDMTools.Data;
+﻿using System.ComponentModel.DataAnnotations;
 
-public partial class RaceData
+namespace DnD35EDMTools.Data;
+
+public class RaceData
 {
     public int Id { get; set; }
+    [MaxLength(30)]
     public string Race { get; set; }
+    [MaxLength(10)]
     public string Size { get; set; }
     public int BaseSpeed { get; set; }
     
     // Racial Ability Bonuses
-    public int StrengthBonus { get; set; } = 0;
-    public int DexterityBonus { get; set; } = 0;
-    public int ConstitutionBonus { get; set; } = 0;
-    public int IntelligenceBonus { get; set; } = 0;
-    public int WisdomBonus { get; set; } = 0;
-    public int CharismaBonus { get; set; } = 0;
+    public int StrengthBonus { get; set; }
+    public int DexterityBonus { get; set; }
+    public int ConstitutionBonus { get; set; }
+    public int IntelligenceBonus { get; set; }
+    public int WisdomBonus { get; set; }
+    public int CharismaBonus { get; set; }
     
     // Racial Skill Bonuses
-    public int AppraiseBonus { get; set; } = 0;
-    public int AutohypnosisBonus { get; set; } = 0;
-    public int BalanceBonus { get; set; } = 0;
-    public int BluffBonus { get; set; } = 0;
-    public int ClimbBonus { get; set; } = 0;
-    public int ControlShapeBonus { get; set; } = 0;
-    public int ConcentrationBonus { get; set; } = 0;
-    public int CraftAlchemyBonus { get; set; } = 0;
-    public int DecipherScriptBonus { get; set; } = 0;
-    public int DiplomacyBonus { get; set; } = 0;
-    public int DisableDeviceBonus { get; set; } = 0;
-    public int DisguiseBonus { get; set; } = 0;
-    public int EscapeArtistBonus { get; set; } = 0;
-    public int ForgeryBonus { get; set; } = 0;
-    public int GatherInformationBonus { get; set; } = 0;
-    public int HandleAnimalBonus { get; set; } = 0;
-    public int HealBonus { get; set; } = 0;
-    public int HideBonus { get; set; } = 0;
-    public int HypnosisBonus { get; set; } = 0;
-    public int IntimidateBonus { get; set; } = 0;
-    public int JumpBonus { get; set; } = 0;
-    public int KnowledgearcanaBonus { get; set; } = 0;
-    public int KnowledgearchandengBonus { get; set; } = 0;
-    public int KnowledgedungeoneeringBonus { get; set; } = 0;
-    public int KnowledgegeographyBonus { get; set; } = 0;
-    public int KnowledgehistoryBonus { get; set; } = 0;
-    public int KnowledgelocalBonus { get; set; } = 0;
-    public int KnowledgemonsterloreBonus { get; set; } = 0;
-    public int KnowledgenatureBonus { get; set; } = 0;
-    public int KnowledgenobilityBonus { get; set; } = 0;
-    public int KnowledgepsionicsBonus { get; set; } = 0;
-    public int KnowledgeravenloftBonus { get; set; } = 0;
-    public int KnowledgereligionBonus { get; set; } = 0;
-    public int KnowledgetheplanesBonus { get; set; } = 0;
-    public int ListenBonus { get; set; } = 0;
-    public int MartialLoreBonus { get; set; } = 0;
-    public int MoveSilentlyBonus { get; set; } = 0;
-    public int OpenLockBonus { get; set; } = 0;
-    public int PsicraftBonus { get; set; } = 0;
-    public int RideBonus { get; set; } = 0;
-    public int SearchBonus { get; set; } = 0;
-    public int SenseMotiveBonus { get; set; } = 0;
-    public int SkillTricksBonus { get; set; } = 0;
-    public int SleightofHandBonus { get; set; } = 0;
-    public int SpeakLanguageBonus { get; set; } = 0;
-    public int SpellcraftBonus { get; set; } = 0;
-    public int SpotBonus { get; set; } = 0;
-    public int SurvivalBonus { get; set; } = 0;
-    public int SwimBonus { get; set; } = 0;
-    public int TumbleBonus { get; set; } = 0;
-    public int UseMagicDeviceBonus { get; set; } = 0;
-    public int UsePsionicDeviceBonus { get; set; } = 0;
-    public int UseRopeBonus { get; set; } = 0;
+    public int AppraiseBonus { get; set; }
+    public int AutohypnosisBonus { get; set; }
+    public int BalanceBonus { get; set; }
+    public int BluffBonus { get; set; }
+    public int ClimbBonus { get; set; }
+    public int ControlShapeBonus { get; set; }
+    public int ConcentrationBonus { get; set; }
+    public int CraftAlchemyBonus { get; set; }
+    public int DecipherScriptBonus { get; set; }
+    public int DiplomacyBonus { get; set; }
+    public int DisableDeviceBonus { get; set; }
+    public int DisguiseBonus { get; set; }
+    public int EscapeArtistBonus { get; set; }
+    public int ForgeryBonus { get; set; }
+    public int GatherInformationBonus { get; set; }
+    public int HandleAnimalBonus { get; set; }
+    public int HealBonus { get; set; }
+    public int HideBonus { get; set; }
+    public int HypnosisBonus { get; set; }
+    public int IntimidateBonus { get; set; }
+    public int JumpBonus { get; set; }
+    public int KnowledgeArcanaBonus { get; set; }
+    public int KnowledgeArchAndEngBonus { get; set; }
+    public int KnowledgeDungeoneeringBonus { get; set; }
+    public int KnowledgeGeographyBonus { get; set; }
+    public int KnowledgeHistoryBonus { get; set; }
+    public int KnowledgeLocalBonus { get; set; }
+    public int KnowledgeMonsterLoreBonus { get; set; }
+    public int KnowledgeNatureBonus { get; set; }
+    public int KnowledgeNobilityBonus { get; set; }
+    public int KnowledgePsionicsBonus { get; set; }
+    public int KnowledgeRavenloftBonus { get; set; }
+    public int KnowledgeReligionBonus { get; set; }
+    public int KnowledgeThePlanesBonus { get; set; }
+    public int ListenBonus { get; set; }
+    public int MartialLoreBonus { get; set; }
+    public int MoveSilentlyBonus { get; set; }
+    public int OpenLockBonus { get; set; }
+    public int PsicraftBonus { get; set; }
+    public int RideBonus { get; set; }
+    public int SearchBonus { get; set; }
+    public int SenseMotiveBonus { get; set; }
+    public int SkillTricksBonus { get; set; }
+    public int SleightofHandBonus { get; set; }
+    public int SpeakLanguageBonus { get; set; }
+    public int SpellcraftBonus { get; set; }
+    public int SpotBonus { get; set; }
+    public int SurvivalBonus { get; set; }
+    public int SwimBonus { get; set; }
+    public int TumbleBonus { get; set; }
+    public int UseMagicDeviceBonus { get; set; }
+    public int UsePsionicDeviceBonus { get; set; }
+    public int UseRopeBonus { get; set; }
     
     // Save bonuses
-    public int FortitudeBonus { get; set; } = 0;
-    public int ReflexBonus { get; set; } = 0;
-    public int WillBonus { get; set; } = 0;
+    public int FortitudeBonus { get; set; }
+    public int ReflexBonus { get; set; }
+    public int WillBonus { get; set; }
     
     // Human bonuses
-    public int SkillPointBonus { get; set; } = 0;
-    public int FeatBonus { get; set; } = 0;
+    public int SkillPointBonus { get; set; }
+    public int FeatBonus { get; set; }
     
     // Spell and Spell Like Ability bonuses
     public List<SpellsSLAData> SpellLikeAbilities { get; set; }
@@ -87,19 +91,22 @@ public partial class RaceData
     public List<ColourData> EyeColours { get; } = [];
     public List<ColourData> HairColours { get; } = [];
     public List<ColourData> SkinColours { get; } = [];
-    public int AdulthoodAge { get; set; } = 0;
-    public int MiddleAge { get; set; } = 0;
-    public int VenerableAge { get; set; } = 0;
-    public int YoungAgeDice { get; set; } = 0;
-    public int MiddleAgeDice { get; set; } = 0;
-    public int OldAgeDice { get; set; } = 0;
-    public int FemaleHight { get; set; } = 0;
-    public int MaleHeight { get; set; } = 0;
-    public string HeightDice { get; set; } = null;
-    public int FemaleWeight { get; set; } = 0;
-    public int MaleWeight { get; set; } = 0;
-    public string WeightDice { get; set; } = null;
-    public string Description { get; set; } = null;
-    public string Source { get; set; } = null;
-    public int Page { get; set; } = 0;
+    public int AdulthoodAge { get; set; }
+    public int MiddleAge { get; set; }
+    public int VenerableAge { get; set; }
+    public int YoungAgeDice { get; set; }
+    public int MiddleAgeDice { get; set; }
+    public int OldAgeDice { get; set; }
+    public int FemaleHeight { get; set; }
+    public int MaleHeight { get; set; }
+    [MaxLength(5)]
+    public string HeightDice { get; set; }
+    public int FemaleWeight { get; set; }
+    public int MaleWeight { get; set; }
+    [MaxLength(5)]
+    public string WeightDice { get; set; }
+    public string? Description { get; set; }
+    [MaxLength(64)]
+    public string Source { get; set; }
+    public int Page { get; set; }
 }
