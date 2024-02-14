@@ -132,3 +132,4 @@ C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\obj\Debug\net8.0\DnD35EDMTools.pdb
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\obj\Debug\net8.0\DnD35EDMTools.genruntimeconfig.cache
 C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\obj\Debug\net8.0\ref\DnD35EDMTools.dll
+C:\OneDrive\Applications\vs2022\repos\DnD35EDMTools\DnD35EDMTools\DnD35EDMTools\obj\Debug\net8.0\DnD35EDMTools.sourcelink.json

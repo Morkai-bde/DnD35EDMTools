@@ -41,7 +41,7 @@
                         <label for="subrace">Sub-Race:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="subrace" @bind="selectedRaceId">
+                        <select class="cc-input-select" id="subrace" @bind="selectedSubRaceId">
                             @foreach (var race in races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -49,10 +49,10 @@
                         </select>
                     </div>
                     <div>
-                        <label for="placeholder1">Gender:</label>
+                        <label for="gender">Gender:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="placeholder1" @bind="selectedRaceId">
+                        <select class="cc-input-select" id="gender" @bind="selectedGenderId">
                             @foreach (var race in races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -60,10 +60,10 @@
                         </select>
                     </div>
                     <div>
-                        <label for="placeholder2">Region:</label>
+                        <label for="placeholder1">Region:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="placeholder2" @bind="selectedRaceId">
+                        <select class="cc-input-select" id="placeholder1" @bind="placeholder1">
                             @foreach (var race in races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -71,10 +71,10 @@
                         </select>
                     </div>
                     <div>
-                        <label for="placeholder3">Template:</label>
+                        <label for="placeholder2">Template:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="placeholder3" @bind="selectedRaceId">
+                        <select class="cc-input-select" id="placeholder2" @bind="placeholder2">
                             @foreach (var race in races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -153,11 +153,16 @@
     private string characterName, characterRace, characterSubRace, characterHair, characterEyes, characterSkin, characterAge, characterHeight, characterWeight;
 
     private int selectedRaceId = 0;
+    private int selectedSubRaceId = 0;
+    private int selectedGenderId = 0;
+    private int placeholder1 = 0;
+    private int placeholder2 = 0;
+    
 
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
-        races = await db.Races.Include(r => r.HairColours).ThenInclude(h => h.RaceHairColours)
+        races = await db.Races.Include(r => r.HairColours).ThenInclude( h => h.RaceHairColours)
             .Include(r => r.EyeColours).ThenInclude(e => e.RaceEyeColours)
             .Include(r => r.SkinColours).ThenInclude(s => s.RaceSkinColours)
             .ToListAsync();

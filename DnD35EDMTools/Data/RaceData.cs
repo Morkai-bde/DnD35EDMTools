@@ -1,6 +1,6 @@
 ﻿namespace DnD35EDMTools.Data;
 
-public class RaceData
+public partial class RaceData
 {
     public int Id { get; set; }
     public string Race { get; set; }
@@ -84,9 +84,7 @@ public class RaceData
     public List<FeatsTraitsData> RacialFeatureList { get; set; }
     
     // Race Description and information
-    public List<ColourData> EyeColours { get; } = [];
-    public List<ColourData> HairColours { get; } = [];
-    public List<ColourData> SkinColours { get; } = [];
+    
     public int AdulthoodAge { get; set; } = 0;
     public int MiddleAge { get; set; } = 0;
     public int VenerableAge { get; set; } = 0;
