@@ -195,7 +195,7 @@ namespace DnD35EDMTools.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Characters");
+                    b.ToTable("Characters", (string)null);
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.ColourData", b =>
@@ -214,7 +214,7 @@ namespace DnD35EDMTools.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colours");
+                    b.ToTable("Colours", (string)null);
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.FeatsTraitsData", b =>
@@ -280,7 +280,7 @@ namespace DnD35EDMTools.Migrations
 
                     b.HasIndex("RaceDataId");
 
-                    b.ToTable("FeatsTraits");
+                    b.ToTable("FeatsTraits", (string)null);
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.RaceData", b =>
@@ -543,7 +543,7 @@ namespace DnD35EDMTools.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Races");
+                    b.ToTable("Races", (string)null);
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.SpellsSLAData", b =>
@@ -847,7 +847,7 @@ namespace DnD35EDMTools.Migrations
 
                     b.HasIndex("RaceDataId");
 
-                    b.ToTable("SpellsSla");
+                    b.ToTable("SpellsSla", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

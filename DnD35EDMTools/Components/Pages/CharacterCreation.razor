@@ -162,9 +162,9 @@
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
-        races = await db.Races.Include(r => r.HairColours).ThenInclude( h => h.RaceHairColours)
-            .Include(r => r.EyeColours).ThenInclude(e => e.RaceEyeColours)
-            .Include(r => r.SkinColours).ThenInclude(s => s.RaceSkinColours)
+        races = await db.Races.Include(r => r.HairColours)/*.ThenInclude( h => h.RaceHairColours)*/
+            .Include(r => r.EyeColours)/*.ThenInclude(e => e.RaceEyeColours)*/
+            .Include(r => r.SkinColours)/*.ThenInclude(s => s.RaceSkinColours)*/
             .ToListAsync();
     }
 
