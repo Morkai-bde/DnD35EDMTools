@@ -11,9 +11,9 @@ public class ColourData
     public List<RaceData> RaceSkinColours { get; } = [];
 }
 
-public partial class RaceData
-{
-    public List<ColourData> EyeColours { get; } = [];
-    public List<ColourData> HairColours { get; } = [];
-    public List<ColourData> SkinColours { get; } = [];
-}
+// public partial class RaceData
+// {
+//     public List<ColourData> EyeColours { get; } = [];
+//     public List<ColourData> HairColours { get; } = [];
+//     public List<ColourData> SkinColours { get; } = [];
+// }
