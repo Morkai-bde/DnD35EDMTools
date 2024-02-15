@@ -95,9 +95,12 @@ public class RaceData
     public int AdulthoodAge { get; set; }
     public int MiddleAge { get; set; }
     public int VenerableAge { get; set; }
-    public int YoungAgeDice { get; set; }
-    public int MiddleAgeDice { get; set; }
-    public int OldAgeDice { get; set; }
+    [MaxLength(5)]
+    public string YoungAgeDice { get; set; }
+    [MaxLength(5)]
+    public string MiddleAgeDice { get; set; }
+    [MaxLength(5)]
+    public string OldAgeDice { get; set; }
     public int FemaleHeight { get; set; }
     public int MaleHeight { get; set; }
     [MaxLength(5)]
