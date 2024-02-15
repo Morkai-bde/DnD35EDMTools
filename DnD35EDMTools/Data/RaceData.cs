@@ -81,6 +81,7 @@ public class RaceData
     
     // Human bonuses
     public int SkillPointBonus { get; set; }
+    public int SkillPointsPerLevelBonus { get; set; }
     public int FeatBonus { get; set; }
     
     // Spell and Spell Like Ability bonuses
