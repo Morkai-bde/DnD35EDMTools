@@ -483,6 +483,59 @@
     height: 20px;
 }
 
+/*New Race Styles*/
+
+.dnd-new-race-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 80vw;
+}
+
+.dnd-new-race-content {
+    height: 100%;
+    width: 100%;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-new-race-sheet {
+    height : auto;
+    width: auto;
+    border: 2px solid;
+}
+
+.dnd-nr-top-section {
+    display: grid;
+    grid-template-columns: 33% 33% 34%;
+    height: 100%;
+}
+
+.dnd-nr-top__left {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr 
+    .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr 
+    .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr  .2fr;
+    grid-template-columns: .9fr 1fr;
+}
+
+.dnd-nr-top__right {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr 
+    .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr 
+    .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr  .2fr;
+    grid-template-columns: .9fr 1fr;
+}
+
+
+.nr-input-select {
+    width: 150px;
+    height: 20px;
+}
+
 @media only screen and (max-width: 1050px) {
     .top-section {
         display: grid;
