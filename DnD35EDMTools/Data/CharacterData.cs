@@ -17,7 +17,7 @@ public class CharacterData
     public string Hair { get; set; }
     public string Skin { get; set; }
     public int Weight { get; set; }
-    public string Height { get; set; }
+    public int Height { get; set; }
     public string PlayerName { get; set; }
     // public List<string> Languages { get; set; }
     // public int PlatinumPieces { get; set; }
