@@ -1,7 +1,6 @@
 ﻿@page "/CharacterTemplate"
 @using DnD35EDMTools.Data
 @using DnD35EDMTools.Helpers
-@using Microsoft.EntityFrameworkCore.Infrastructure
 
 <head>
     <meta charset="UTF-8"/>
@@ -442,7 +441,7 @@ else
             Name = "New Character Template",
             Class = "Sor 1 / Wiz 1",
             Race = raceModel.Race,
-            Experience = "1000/3000",
+            Experience = 0,
             HitPoints = 12,
             Alignment = "Neutral Good",
             Diety = "Mystra (FRCS)",

@@ -6,11 +6,11 @@ public class CharacterData
     public string Name { get; set; }
     public string Class { get; set; }
     public string Race { get; set; }
-    public string SubRace { get; set; }
-    public string Experience { get; set; }
+    public string? SubRace { get; set; }
+    public int Experience { get; set; }
     public int HitPoints { get; set; }
     public string Alignment { get; set; }
-    public string Diety { get; set; }
+    public string? Diety { get; set; }
     public int Age { get; set; }
     public string Gender { get; set; }
     public string Eyes { get; set; }
