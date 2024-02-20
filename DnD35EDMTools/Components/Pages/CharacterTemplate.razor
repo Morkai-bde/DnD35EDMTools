@@ -1,5 +1,7 @@
 ﻿@page "/CharacterTemplate"
 @using DnD35EDMTools.Data
+@using DnD35EDMTools.Helpers
+@using Microsoft.EntityFrameworkCore.Infrastructure
 
 <head>
     <meta charset="UTF-8"/>
@@ -73,7 +75,8 @@
                 </div>
                 <div class="attribute-list">
                     <div class="attribute-list-row-header">Height</div>
-                    <div class="attribute-list__content"> @model.Height</div>
+                    @* <div class="attribute-list__content"> @model.Height</div> *@
+                    <div class="attribute-list__content"> @ConversionHelper.ConvertInchesToFeet(model.Height)</div>
                 </div>
                 <div class="attribute-list">
                     <div class="attribute-list-row-header">Player</div>
@@ -419,13 +422,14 @@ else
 @code {
     CharacterData model;
     RaceData raceModel;
-    
+
     [Parameter] public int Row { get; set; } = 0;
 //[Parameter] public List<string> Skills { get; set; } = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        await base.OnInitializedAsync();
+        await base.OnInitializedAsync(
+            );
         raceModel = new RaceData
         {
             Race = "Half-Elf",
@@ -448,7 +452,7 @@ else
             Hair = "White",
             Skin = "Pale White",
             Weight = 32,
-            Height = "5'6",
+            Height = 66,
             PlayerName = ""
         };
     }

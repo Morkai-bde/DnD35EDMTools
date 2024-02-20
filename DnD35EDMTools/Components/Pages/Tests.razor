@@ -82,21 +82,21 @@
 
     private void RollDice()
     {
-        diceRollerResult = DiceHelper.DiceRoller.RollDice(1, 6, 1);
+        diceRollerResult = DiceRoller.RollDice(1, 6, 1);
     }
 
     private List<int> threeDSixResult;
 
     private void RollThreeDSix()
     {
-        threeDSixResult = DiceHelper.RollStats.ThreeDSix();
+        threeDSixResult = RollStats.ThreeDSix();
     }
 
     private List<int> fourDSixResults;
 
     private void RollFourDSix()
     {
-        fourDSixResults = DiceHelper.RollStats.FourDSixDropLowest();
+        fourDSixResults = RollStats.FourDSixDropLowest();
     }
 
 

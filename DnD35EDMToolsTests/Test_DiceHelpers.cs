@@ -10,7 +10,7 @@ public class DiceHelperTests
         // Arrange
 
         // Act
-        var result = DiceHelper.DiceRoller.RollDice(1, 6, 10);
+        var result = DiceRoller.RollDice(1, 6, 10);
         
         // Assert
         Assert.NotNull(result);
@@ -24,7 +24,7 @@ public class DiceHelperTests
 
         // Act
 
-        var resultList = DiceHelper.RollStats.ThreeDSix();
+        var resultList = RollStats.ThreeDSix();
 
         // Assert
         Assert.NotNull(resultList);
@@ -39,7 +39,7 @@ public class DiceHelperTests
 
         // Act
 
-        var resultList = DiceHelper.RollStats.FourDSixDropLowest();
+        var resultList = RollStats.FourDSixDropLowest();
 
         // Assert
         Assert.NotNull(resultList);
