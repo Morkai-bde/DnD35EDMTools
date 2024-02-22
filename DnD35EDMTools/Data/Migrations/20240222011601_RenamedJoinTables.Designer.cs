@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240222011601_RenamedJoinTables")]
+    partial class RenamedJoinTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -281,10 +284,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -887,7 +886,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceGendersId");
 
-                    b.ToTable("JoinTableRaceGenders", (string)null);
+                    b.ToTable("JoinTableRaceGendersSkinColour", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

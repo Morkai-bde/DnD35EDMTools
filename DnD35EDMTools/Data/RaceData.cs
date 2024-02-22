@@ -11,6 +11,8 @@ public class RaceData
     public string Size { get; set; }
     public int BaseSpeed { get; set; }
     
+    public List<GenderData> Genders { get; } = [];
+    
     // Racial Ability Bonuses
     public int StrengthBonus { get; set; }
     public int DexterityBonus { get; set; }

@@ -16,6 +16,7 @@ namespace DnD35EDMTools.Data
         public DbSet<ColourData> Colours { get; set; }
         public DbSet<FeatsTraitsData> FeatsTraits { get; set; }
         public DbSet<SpellsSLAData> SpellsSla { get; set; }
+        public DbSet<GenderData> Genders { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
@@ -25,7 +26,7 @@ namespace DnD35EDMTools.Data
                     .WithMany(c => c.RaceEyeColours)
                     .UsingEntity(joinEntity =>
                 {
-                    joinEntity.ToTable("RaceEyeColourJoinTable");
+                    joinEntity.ToTable("JoinTableRaceEyeColour");
                 });
                 
                 modelBuilder.Entity<RaceData>()
@@ -33,7 +34,7 @@ namespace DnD35EDMTools.Data
                     .WithMany(c => c.RaceHairColours)
                     .UsingEntity(joinEntity =>
                     {
-                        joinEntity.ToTable("RaceHairColourJoinTable");
+                        joinEntity.ToTable("JoinTableRaceHairColour");
                     });
                 
                 modelBuilder.Entity<RaceData>()
@@ -41,8 +42,17 @@ namespace DnD35EDMTools.Data
                     .WithMany(c => c.RaceSkinColours)
                     .UsingEntity(joinEntity =>
                     {
-                        joinEntity.ToTable("RaceSkinColourJoinTable");
+                        joinEntity.ToTable("JoinTableRaceSkinColour");
                     });
+                
+                modelBuilder.Entity<RaceData>()
+                    .HasMany(c => c.Genders)
+                    .WithMany(c => c.RaceGenders)
+                    .UsingEntity(joinEntity =>
+                    {
+                        joinEntity.ToTable("JoinTableRaceGenders");
+                    });
+                
             }
     }
 }

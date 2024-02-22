@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240222011024_AddedGenders")]
+    partial class AddedGenders
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -29,7 +32,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceEyeColoursId");
 
-                    b.ToTable("JoinTableRaceEyeColour", (string)null);
+                    b.ToTable("RaceEyeColourJoinTable", (string)null);
                 });
 
             modelBuilder.Entity("ColourDataRaceData1", b =>
@@ -44,7 +47,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceHairColoursId");
 
-                    b.ToTable("JoinTableRaceHairColour", (string)null);
+                    b.ToTable("RaceHairColourJoinTable", (string)null);
                 });
 
             modelBuilder.Entity("ColourDataRaceData2", b =>
@@ -59,7 +62,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("SkinColoursId");
 
-                    b.ToTable("JoinTableRaceSkinColour", (string)null);
+                    b.ToTable("RaceSkinColourJoinTable", (string)null);
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.ApplicationUser", b =>
@@ -281,10 +284,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
-
-                    b.Property<string>("Description")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
 
                     b.Property<string>("Gender")
                         .IsRequired()
@@ -887,7 +886,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceGendersId");
 
-                    b.ToTable("JoinTableRaceGenders", (string)null);
+                    b.ToTable("RacGendersSkinColourJoinTable", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

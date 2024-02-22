@@ -53,9 +53,9 @@
                     </div>
                     <div>
                         <select class="cc-input-select" id="gender" @bind="selectedGenderId" >
-                            @foreach (var race in _races)
+                            @foreach (var gender in GetRaceGenders())
                             {
-                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                                <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
                             }
                         </select>
                     </div>
@@ -182,6 +182,7 @@
         _races = await db.Races.Include(r => r.HairColours)/*.ThenInclude( h => h.RaceHairColours)*/
             .Include(r => r.EyeColours)/*.ThenInclude(e => e.RaceEyeColours)*/
             .Include(r => r.SkinColours)/*.ThenInclude(s => s.RaceSkinColours)*/
+            .Include(r => r.Genders)
             .ToListAsync();
     }
     
@@ -211,6 +212,13 @@
         return _races.Single(r => r.Id == selectedRaceId).SkinColours.ToList();
     }
     
+    private List<GenderData> GetRaceGenders()
+    {
+        if (selectedRaceId == 0)
+            return new List<GenderData>();
+        return _races.Single(r => r.Id == selectedRaceId).Genders.ToList();
+    }
+    
     private void CreateNewCharacter()
     {
         var newCharacter = new CharacterData();
@@ -222,7 +230,7 @@
         newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
         newCharacter.Alignment = "Chaotic Evil"; // To be Implemented (split in two and derive from both)
         newCharacter.Diety = "None"; // To be Implemented (Add Entity and Data)
-        newCharacter.Gender = "Male"; // To Be Implemented (Add Entity and Date)
+        newCharacter.Gender = selectedGenderId;
         newCharacter.Hair = characterHair;
         newCharacter.Eyes = characterEyes;
         newCharacter.Skin = characterSkin;

@@ -12,7 +12,7 @@ public class CharacterData
     public string Alignment { get; set; }
     public string? Diety { get; set; }
     public int Age { get; set; }
-    public string Gender { get; set; }
+    public int Gender { get; set; }
     public int Eyes { get; set; }
     public int Hair { get; set; }
     public int Skin { get; set; }
