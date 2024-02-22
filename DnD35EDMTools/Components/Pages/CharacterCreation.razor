@@ -2,6 +2,7 @@
 
 @using DnD35EDMTools.Data
 @using Microsoft.EntityFrameworkCore
+@using DnD35EDMTools.Helpers
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
 
 <h3>Character Creation</h3>
@@ -30,7 +31,7 @@
                     </div>
                     <div style="width: 150px">
                         <select class="cc-input-select" id="race" @bind="selectedRaceId">
-                            @foreach (var race in races)
+                            @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
                             }
@@ -41,7 +42,7 @@
                     </div>
                     <div>
                         <select class="cc-input-select" id="subrace" @bind="selectedSubRaceId">
-                            @foreach (var race in races)
+                            @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
                             }
@@ -51,8 +52,8 @@
                         <label for="gender">Gender:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="gender" @bind="selectedGenderId">
-                            @foreach (var race in races)
+                        <select class="cc-input-select" id="gender" @bind="selectedGenderId" >
+                            @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
                             }
@@ -63,7 +64,7 @@
                     </div>
                     <div>
                         <select class="cc-input-select" id="placeholder1" @bind="placeholder1">
-                            @foreach (var race in races)
+                            @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
                             }
@@ -74,7 +75,7 @@
                     </div>
                     <div>
                         <select class="cc-input-select" id="placeholder2" @bind="placeholder2">
-                            @foreach (var race in races)
+                            @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
                             }
@@ -93,6 +94,9 @@
                             }
                         </select>
                     </div>
+                        <div class="cc-colourbox" style="background-color: @(GetColourById(characterHair, GetRaceHairColours())?.ColourHexCode ?? "")">
+                            &nbsp;
+                        </div>
                     <div>
                         <label for="eyes">Eyes:</label>
                     </div>
@@ -104,6 +108,9 @@
                             }
                         </select>
                     </div>
+                        <div class="cc-colourbox" style="background-color: @(GetColourById(characterEyes, GetRaceEyeColours())?.ColourHexCode ?? "")">
+                            &nbsp;
+                        </div>
                     <div>
                         <label for="skin">Skin:</label>
                     </div>
@@ -115,26 +122,36 @@
                             }
                         </select>
                     </div>
+                        <div class="cc-colourbox" style="background-color: @(GetColourById(characterSkin, GetRaceSkinColours())?.ColourHexCode ?? "")">
+                            &nbsp;
+                        </div>
                     <div>
                         <label for="age">Age:</label>
                     </div>
                     <div>
                         <input class="cc-input-select" type="text" id="age" @bind="characterAge"/>
                     </div>
+                        <div>
+                            <button class="cc-randomize-button">Random</button>
+                        </div>
                     <div>
                         <label for="height">Height:</label>
                     </div>
                     <div>
                         <input class="cc-input-select" type="text" id="height" @bind="characterHeight"/>
                     </div>
+                        <div>
+                            <button class="cc-randomize-button">Random</button>
+                        </div>
                     <div>
                         <label for="weight">Weight:</label>
                     </div>
                     <div>
-                        <input class="cc-input-select" type="text" id="weight" value="@($"{characterWeight}.lbs")"/>
-                        @* <input type="text" id="weight" @bind="characterWeight"/> *@
-                        @* <span> .lbs</span> *@
+                        <input class="cc-input-select" type="text" id="weight" @bind="characterWeight"/>
                     </div>
+                        <div>
+                            <button class="cc-randomize-button">Random</button>
+                        </div>
                 </div>
             </div>
         </div>
@@ -146,51 +163,80 @@
 
 @code {
 
-    private List<RaceData> races = new List<RaceData>();
-    private List<ColourData> colours = new List<ColourData>();
+    private List<RaceData> _races = new List<RaceData>();
+    // private List<ColourData> colours = new List<ColourData>();
 
-    private string characterName, characterRace, characterSubRace, characterHair, characterEyes, characterSkin, characterAge, characterHeight, characterWeight;
-
+    private string characterName, characterRace, characterSubRace,  characterAge, characterHeight, characterWeight;
+    
+    private int characterHair, characterEyes, characterSkin;
+    
     private int selectedRaceId = 0;
     private int selectedSubRaceId = 0;
     private int selectedGenderId = 0;
     private int placeholder1 = 0;
     private int placeholder2 = 0;
     
-
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
-        races = await db.Races.Include(r => r.HairColours)/*.ThenInclude( h => h.RaceHairColours)*/
+        _races = await db.Races.Include(r => r.HairColours)/*.ThenInclude( h => h.RaceHairColours)*/
             .Include(r => r.EyeColours)/*.ThenInclude(e => e.RaceEyeColours)*/
             .Include(r => r.SkinColours)/*.ThenInclude(s => s.RaceSkinColours)*/
             .ToListAsync();
     }
-
+    
+    private ColourData GetColourById(int colourId, List<ColourData> colours)
+    {
+        return colours.FirstOrDefault(c => c.Id == colourId);
+    }
+    
     private List<ColourData> GetRaceHairColours()
     {
         if (selectedRaceId == 0)
             return new List<ColourData>();
-        return races.Single(r => r.Id == selectedRaceId).HairColours.ToList();
+        return _races.Single(r => r.Id == selectedRaceId).HairColours.ToList();
     }
 
     private List<ColourData> GetRaceEyeColours()
     {
         if (selectedRaceId == 0)
             return new List<ColourData>();
-        return races.Single(r => r.Id == selectedRaceId).EyeColours.ToList();
+        return _races.Single(r => r.Id == selectedRaceId).EyeColours.ToList();
     }
 
     private List<ColourData> GetRaceSkinColours()
     {
         if (selectedRaceId == 0)
             return new List<ColourData>();
-        return races.Single(r => r.Id == selectedRaceId).SkinColours.ToList();
+        return _races.Single(r => r.Id == selectedRaceId).SkinColours.ToList();
     }
-
+    
     private void CreateNewCharacter()
     {
-        Console.WriteLine("Database Saving Not Implemented");
+        var newCharacter = new CharacterData();
+        newCharacter.Name = characterName;
+        newCharacter.Class = "Barbarian"; // To be Implemented (Add Entity and Data)
+        newCharacter.Race = _races.Single(r => r.Id == selectedRaceId).Race.ToString(); // Temporary fix to get the race name, it should be changed to an int with a foreign key
+        newCharacter.SubRace = "Calashite"; // characterSubRace;
+        newCharacter.Experience = 0;
+        newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
+        newCharacter.Alignment = "Chaotic Evil"; // To be Implemented (split in two and derive from both)
+        newCharacter.Diety = "None"; // To be Implemented (Add Entity and Data)
+        newCharacter.Gender = "Male"; // To Be Implemented (Add Entity and Date)
+        newCharacter.Hair = characterHair;
+        newCharacter.Eyes = characterEyes;
+        newCharacter.Skin = characterSkin;
+        newCharacter.Age = Int32.Parse(characterAge);
+        newCharacter.Height = ConversionHelper.ConvertFeetAndInchesToInches(characterHeight);
+        newCharacter.Weight = Int32.Parse(characterWeight);
+        newCharacter.PlayerName = "Shaun"; // To Be Implemented (get from active account creating the character)
+        
+        using var db = DbContext;
+
+        db.Characters.Add(newCharacter);
+
+        db.SaveChanges();
+        
     }
 
 }

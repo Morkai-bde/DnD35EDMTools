@@ -474,15 +474,30 @@
     border-color: var(--cellbordercolour);
     display: grid;
     grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr;
-    grid-template-columns: .2fr 1.8fr;
+    grid-template-columns: .2fr .8fr 1fr;
 }
 
 
 .cc-input-select {
     width: 120px;
     height: 20px;
+    border-width: thin;
+    border-radius: 3px;
 }
 
+.cc-colourbox {
+    width: 20px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
+
+.cc-randomize-button {
+    width: 100px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
 /*New Race Styles*/
 
 .dnd-new-race-container {
