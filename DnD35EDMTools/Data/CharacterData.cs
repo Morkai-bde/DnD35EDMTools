@@ -10,7 +10,10 @@ public class CharacterData
     public int Experience { get; set; }
     public int HitPoints { get; set; }
     public string Alignment { get; set; }
-    public string? Diety { get; set; }
+    
+    public int Order { get; set; }
+    public int Morality { get; set; }
+    public int? Deity { get; set; }
     public int Age { get; set; }
     public int Gender { get; set; }
     public int Eyes { get; set; }

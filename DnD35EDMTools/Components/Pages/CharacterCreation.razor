@@ -30,7 +30,7 @@
                         <label for="race">Race:</label>
                     </div>
                     <div style="width: 150px">
-                        <select class="cc-input-select" id="race" @bind="selectedRaceId">
+                        <select class="cc-input-select" id="race" @bind="_selectedRaceId">
                             @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -41,7 +41,7 @@
                         <label for="subrace">Sub-Race:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="subrace" @bind="selectedSubRaceId">
+                        <select class="cc-input-select" id="subrace" @bind="_selectedSubRaceId">
                             @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -52,7 +52,7 @@
                         <label for="gender">Gender:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="gender" @bind="selectedGenderId" >
+                        <select class="cc-input-select" id="gender" @bind="_selectedGenderId" >
                             @foreach (var gender in GetRaceGenders())
                             {
                                 <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
@@ -60,24 +60,24 @@
                         </select>
                     </div>
                     <div>
-                        <label for="placeholder1">Region:</label>
+                        <label for="order">Order:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="placeholder1" @bind="placeholder1">
-                            @foreach (var race in _races)
+                        <select class="cc-input-select" id="order" @bind="_selectedOrderId">
+                            @foreach (var order in _orders)
                             {
-                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                                <option value=@order.Id title=@order.Description>@order.Order</option>
                             }
                         </select>
                     </div>
                     <div>
-                        <label for="placeholder2">Template:</label>
+                        <label for="morality">Morality:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="placeholder2" @bind="placeholder2">
-                            @foreach (var race in _races)
+                        <select class="cc-input-select" id="morality" @bind="_selectedMoralityId">
+                            @foreach (var morality in _moralities)
                             {
-                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                                <option value=@morality.Id title=@morality.Description>@morality.Morality</option>
                             }
                         </select>
                     </div>
@@ -157,24 +157,29 @@
         </div>
     </div>
 </div>
-
+<div>
+    &nbsp;
+</div>
 
 <button @onclick="CreateNewCharacter">Create</button>
-
+&nbsp;
+<input type="checkbox" @bind="dryRun" />
 @code {
-
+    private bool dryRun = true;
     private List<RaceData> _races = new List<RaceData>();
-    // private List<ColourData> colours = new List<ColourData>();
-
+    // private List<AlignmentData> _alignments = new List<AlignmentData>();
+    private List<OrderData> _orders = new List<OrderData>();
+    private List<MoralityData> _moralities = new List<MoralityData>();
+    
     private string characterName, characterRace, characterSubRace,  characterAge, characterHeight, characterWeight;
     
     private int characterHair, characterEyes, characterSkin;
     
-    private int selectedRaceId = 0;
-    private int selectedSubRaceId = 0;
-    private int selectedGenderId = 0;
-    private int placeholder1 = 0;
-    private int placeholder2 = 0;
+    private int _selectedRaceId = 0;
+    private int _selectedSubRaceId = 0;
+    private int _selectedGenderId = 0;
+    private int _selectedMoralityId = 0;
+    private int _selectedOrderId = 0;
     
     protected override async Task OnInitializedAsync()
     {
@@ -184,6 +189,9 @@
             .Include(r => r.SkinColours)/*.ThenInclude(s => s.RaceSkinColours)*/
             .Include(r => r.Genders)
             .ToListAsync();
+        _orders = await db.Orders.ToListAsync();
+        _moralities = await db.Moralities.ToListAsync();
+        
     }
     
     private ColourData GetColourById(int colourId, List<ColourData> colours)
@@ -193,30 +201,30 @@
     
     private List<ColourData> GetRaceHairColours()
     {
-        if (selectedRaceId == 0)
+        if (_selectedRaceId == 0)
             return new List<ColourData>();
-        return _races.Single(r => r.Id == selectedRaceId).HairColours.ToList();
+        return _races.Single(r => r.Id == _selectedRaceId).HairColours.ToList();
     }
 
     private List<ColourData> GetRaceEyeColours()
     {
-        if (selectedRaceId == 0)
+        if (_selectedRaceId == 0)
             return new List<ColourData>();
-        return _races.Single(r => r.Id == selectedRaceId).EyeColours.ToList();
+        return _races.Single(r => r.Id == _selectedRaceId).EyeColours.ToList();
     }
 
     private List<ColourData> GetRaceSkinColours()
     {
-        if (selectedRaceId == 0)
+        if (_selectedRaceId == 0)
             return new List<ColourData>();
-        return _races.Single(r => r.Id == selectedRaceId).SkinColours.ToList();
+        return _races.Single(r => r.Id == _selectedRaceId).SkinColours.ToList();
     }
     
     private List<GenderData> GetRaceGenders()
     {
-        if (selectedRaceId == 0)
+        if (_selectedRaceId == 0)
             return new List<GenderData>();
-        return _races.Single(r => r.Id == selectedRaceId).Genders.ToList();
+        return _races.Single(r => r.Id == _selectedRaceId).Genders.ToList();
     }
     
     private void CreateNewCharacter()
@@ -224,13 +232,15 @@
         var newCharacter = new CharacterData();
         newCharacter.Name = characterName;
         newCharacter.Class = "Barbarian"; // To be Implemented (Add Entity and Data)
-        newCharacter.Race = _races.Single(r => r.Id == selectedRaceId).Race.ToString(); // Temporary fix to get the race name, it should be changed to an int with a foreign key
+        newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Race.ToString(); // Temporary fix to get the race name, it should be changed to an int with a foreign key
         newCharacter.SubRace = "Calashite"; // characterSubRace;
         newCharacter.Experience = 0;
         newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
         newCharacter.Alignment = "Chaotic Evil"; // To be Implemented (split in two and derive from both)
-        newCharacter.Diety = "None"; // To be Implemented (Add Entity and Data)
-        newCharacter.Gender = selectedGenderId;
+        newCharacter.Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint;
+        newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;
+        // newCharacter.Deity = 0; // To be Implemented (Add Entity and Data)
+        newCharacter.Gender = _selectedGenderId;
         newCharacter.Hair = characterHair;
         newCharacter.Eyes = characterEyes;
         newCharacter.Skin = characterSkin;
@@ -242,9 +252,15 @@
         using var db = DbContext;
 
         db.Characters.Add(newCharacter);
-
-        db.SaveChanges();
         
+        if (!dryRun)
+            db.SaveChanges();
+        
+        foreach (var property in newCharacter.GetType().GetProperties())
+        {
+            Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
+        }
+    
     }
 
 }

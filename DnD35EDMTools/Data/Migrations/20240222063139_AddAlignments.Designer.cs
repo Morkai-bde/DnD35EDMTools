@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240222063139_AddAlignments")]
+    partial class AddAlignments
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -325,6 +328,9 @@ namespace DnD35EDMTools.Data.Migrations
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<int?>("AlignmentDataId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -344,6 +350,8 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("AlignmentDataId");
+
                     b.ToTable("Moralities");
                 });
 
@@ -351,6 +359,9 @@ namespace DnD35EDMTools.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int?>("AlignmentDataId")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
@@ -371,6 +382,8 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AlignmentDataId");
 
                     b.ToTable("Orders");
                 });
@@ -1154,6 +1167,20 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasForeignKey("RaceDataId");
                 });
 
+            modelBuilder.Entity("DnD35EDMTools.Data.MoralityData", b =>
+                {
+                    b.HasOne("DnD35EDMTools.Data.AlignmentData", null)
+                        .WithMany("Moralities")
+                        .HasForeignKey("AlignmentDataId");
+                });
+
+            modelBuilder.Entity("DnD35EDMTools.Data.OrderData", b =>
+                {
+                    b.HasOne("DnD35EDMTools.Data.AlignmentData", null)
+                        .WithMany("Orders")
+                        .HasForeignKey("AlignmentDataId");
+                });
+
             modelBuilder.Entity("DnD35EDMTools.Data.SpellsSLAData", b =>
                 {
                     b.HasOne("DnD35EDMTools.Data.RaceData", null)
@@ -1225,6 +1252,13 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DnD35EDMTools.Data.AlignmentData", b =>
+                {
+                    b.Navigation("Moralities");
+
+                    b.Navigation("Orders");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.FeatsTraitsData", b =>

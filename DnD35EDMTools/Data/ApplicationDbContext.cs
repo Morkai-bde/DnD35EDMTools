@@ -1,3 +1,4 @@
+using DnD35EDMTools.Migrations;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -17,6 +18,9 @@ namespace DnD35EDMTools.Data
         public DbSet<FeatsTraitsData> FeatsTraits { get; set; }
         public DbSet<SpellsSLAData> SpellsSla { get; set; }
         public DbSet<GenderData> Genders { get; set; }
+        public DbSet<AlignmentData> Alignments { get; set; }
+        public DbSet<OrderData> Orders { get; set; }
+        public DbSet<MoralityData> Moralities { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
