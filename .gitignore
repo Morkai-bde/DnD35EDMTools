@@ -365,3 +365,6 @@ FodyWeavers.xsd
 # Rider 
 .idea/
 global.json
+DnD35EDMTools/Data/app.db-shm
+DnD35EDMTools/Data/app.db-wal
+DnD35EDMTools.sln.DotSettings.user
