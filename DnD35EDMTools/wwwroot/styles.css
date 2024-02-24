@@ -478,14 +478,22 @@
 }
 
 
-.cc-input-select {
+.cc-select {
     width: 120px;
     height: 20px;
     border-width: thin;
     border-radius: 3px;
 }
 
-.cc-colourbox {
+.cc-input {
+    width: 120px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+
+.cc-colour-box {
     width: 20px;
     height: 20px;
     border-width: thin;

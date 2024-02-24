@@ -23,14 +23,14 @@
                         <label for="name">Character Name:</label>
                     </div>
                     <div>
-                        <input class="cc-input-select" type="text" id="name" @bind="characterName"/>
+                        <input class="cc-input" type="text" id="name" @bind="characterName"/>
                     </div>
 
                     <div>
                         <label for="race">Race:</label>
                     </div>
                     <div style="width: 150px">
-                        <select class="cc-input-select" id="race" @bind="_selectedRaceId">
+                        <select class="cc-select" id="race" @bind="_selectedRaceId">
                             @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -41,7 +41,7 @@
                         <label for="gender">Gender:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="gender" @bind="_selectedGenderId" >
+                        <select class="cc-select" id="gender" @bind="_selectedGenderId" >
                             @foreach (var gender in GetRaceGenders())
                             {
                                 <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
@@ -52,7 +52,7 @@
                         <label for="order">Order:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="order" @bind="_selectedOrderId">
+                        <select class="cc-select" id="order" @bind="_selectedOrderId">
                             @foreach (var order in _orders)
                             {
                                 <option value=@order.Id title=@order.Description>@order.Order</option>
@@ -63,7 +63,7 @@
                         <label for="morality">Morality:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="morality" @bind="_selectedMoralityId">
+                        <select class="cc-select" id="morality" @bind="_selectedMoralityId">
                             @foreach (var morality in _moralities)
                             {
                                 <option value=@morality.Id title=@morality.Description>@morality.Morality</option>
@@ -74,7 +74,7 @@
                         <label for="morality">Class:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="class" @bind="_selectedClassId">
+                        <select class="cc-select" id="class" @bind="_selectedClassId">
                             @foreach (var name in _classes)
                             {
                                 <option value=@name.Id title=@name.Description>@name.Name</option>
@@ -87,49 +87,49 @@
                         <label for="hair">Hair:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="hair" @bind="characterHair">
+                        <select class="cc-select" id="hair" @bind="characterHair">
                             @foreach (var colour in GetRaceHairColours())
                             {
                                 <option value="@colour.Id">@colour.Colour</option>
                             }
                         </select>
                     </div>
-                        <div class="cc-colourbox" style="background-color: @(GetColourById(characterHair, GetRaceHairColours())?.ColourHexCode ?? "")">
+                        <div class="cc-colour-box" style="background-color: @(GetColourById(characterHair, GetRaceHairColours())?.ColourHexCode ?? "")">
                             &nbsp;
                         </div>
                     <div>
                         <label for="eyes">Eyes:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="eyes" @bind="characterEyes">
+                        <select class="cc-select" id="eyes" @bind="characterEyes">
                             @foreach (var colour in GetRaceEyeColours())
                             {
                                 <option value="@colour.Id">@colour.Colour</option>
                             }
                         </select>
                     </div>
-                        <div class="cc-colourbox" style="background-color: @(GetColourById(characterEyes, GetRaceEyeColours())?.ColourHexCode ?? "")">
+                        <div class="cc-colour-box" style="background-color: @(GetColourById(characterEyes, GetRaceEyeColours())?.ColourHexCode ?? "")">
                             &nbsp;
                         </div>
                     <div>
                         <label for="skin">Skin:</label>
                     </div>
                     <div>
-                        <select class="cc-input-select" id="skin" @bind="characterSkin">
+                        <select class="cc-select" id="skin" @bind="characterSkin">
                             @foreach (var colour in GetRaceSkinColours())
                             {
                                 <option value="@colour.Id">@colour.Colour</option>
                             }
                         </select>
                     </div>
-                        <div class="cc-colourbox" style="background-color: @(GetColourById(characterSkin, GetRaceSkinColours())?.ColourHexCode ?? "")">
+                        <div class="cc-colour-box" style="background-color: @(GetColourById(characterSkin, GetRaceSkinColours())?.ColourHexCode ?? "")">
                             &nbsp;
                         </div>
                     <div>
                         <label for="age">Age:</label>
                     </div>
                     <div>
-                        <input class="cc-input-select" type="text" id="age" @bind="characterAge"/>
+                        <input class="cc-input" type="text" id="age" @bind="characterAge"/>
                     </div>
                         <div>
                             <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
@@ -138,19 +138,19 @@
                         <label for="height">Height:</label>
                     </div>
                     <div>
-                        <input class="cc-input-select" type="text" id="height" @bind="characterHeight"/>
+                        <input class="cc-input" type="text" id="height" @bind="characterHeight"/>
                     </div>
                         <div>
-                            <button class="cc-randomize-button">Random</button>
+                            <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
                         </div>
                     <div>
                         <label for="weight">Weight:</label>
                     </div>
                     <div>
-                        <input class="cc-input-select" type="text" id="weight" @bind="characterWeight"/>
+                        <input class="cc-input" type="text" id="weight" @bind="characterWeight"/>
                     </div>
                         <div>
-                            <button class="cc-randomize-button">Random</button>
+                            <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
                         </div>
                 </div>
             </div>
@@ -174,10 +174,11 @@
     private List<OrderData> _orders = new List<OrderData>();
     private List<MoralityData> _moralities = new List<MoralityData>();
     private List<ClassData> _classes = new List<ClassData>();
+    private List<GenderData> _genders = new List<GenderData>();
     
-    private string characterName, characterRace, characterSubRace,  characterAge, characterHeight, characterWeight;
+    private string characterName, characterRace, characterSubRace,  characterAge, characterHeight;
     
-    private int characterHair, characterEyes, characterSkin;
+    private int characterHair, characterEyes, characterSkin, characterWeight;
     
     private int _selectedRaceId = 0;
     private int _selectedGenderId = 0;
@@ -196,6 +197,7 @@
         _orders = await db.Orders.ToListAsync();
         _moralities = await db.Moralities.ToListAsync();
         _classes = await db.Classes.ToListAsync();
+        _genders = await db.Genders.ToListAsync();
         
     }
     
@@ -243,10 +245,32 @@
 
         int result = startingAge + DiceRoller.RollDice(ageTypeDice);
 
-        Console.WriteLine(result);
         characterAge = result.ToString();
     }
 
+    private void RandomizeHeight()
+    {
+        int baseHeight = 0;
+        string randomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
+        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
+        if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedClassId).FemaleHeight;
+         //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Heights
+        
+         characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + DiceRoller.RollDice(randomHeight));
+    }
+
+    private void RandomizeWeight()
+    {
+        int baseWeight = 0;
+        string randomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
+        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
+        if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedClassId).FemaleWeight;
+        //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Weights
+
+        characterWeight = baseWeight + DiceRoller.RollDice(randomWeight);
+    }
 
     private void CreateNewCharacter()
     {
@@ -266,7 +290,7 @@
         newCharacter.Skin = characterSkin;
         newCharacter.Age = Int32.Parse(characterAge);
         newCharacter.Height = ConversionHelper.ConvertFeetAndInchesToInches(characterHeight);
-        newCharacter.Weight = Int32.Parse(characterWeight);
+        newCharacter.Weight = characterWeight;
         newCharacter.PlayerName = "Shaun"; // To Be Implemented (get from active account creating the character)
         
         using var db = DbContext;
