@@ -6,7 +6,7 @@
     <button class="btn btn-primary" id="Button1" type="button" @onclick="RollDice">1d6+1</button>
     <br/>
 
-    @if (diceRollerResult != null)
+    @if (diceRollerResult != 0)
     {
         <table>
             <thead>
@@ -76,13 +76,40 @@
     }
 </div>
 
+<br/>
+
+<div>
+    <button class="btn btn-primary" id="Button4" type="button" @onclick="RollThreeDSixROne">4d6DR1</button>
+    <br/>
+    @if (fourDSixDLowestResults != null)
+    {
+        <table>
+            <thead>
+            <tr>
+                <th>Roll #</th>
+                <th>Result</th>
+            </tr>
+            </thead>
+            <tbody>
+            @for (var i = 0; i < fourDSixDLowestResults.Count; i++)
+            {
+                <tr>
+                    <td>@(i + 1)</td>
+                    <td>@fourDSixDLowestResults[i]</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    }
+</div>
+
 @code {
 
     private int diceRollerResult;
 
     private void RollDice()
     {
-        diceRollerResult = DiceRoller.RollDice(1, 6, 1);
+        diceRollerResult = DiceRoller.RollDice("1d6+1");
     }
 
     private List<int> threeDSixResult;
@@ -97,6 +124,13 @@
     private void RollFourDSix()
     {
         fourDSixResults = RollStats.FourDSixDropLowest();
+    }
+
+    private List<int> fourDSixDLowestResults;
+    
+    private void RollThreeDSixROne()
+    {
+        fourDSixDLowestResults = RollStats.ThreeDSixRerollOnes();
     }
 
 

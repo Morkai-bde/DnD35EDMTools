@@ -4,16 +4,37 @@ public static class DiceRoller
 {
     private static readonly Random Rand = new Random();
 
-    public static int RollDice(int numberOfDice, int diceSize, int modifier = 0)
+    public static int RollDice(string diceNotation)
     {
-        var total = 0;
+        int total = 0;
+        string[] parts = diceNotation.Split(new char[] { '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-        for (var i = 0; i < numberOfDice; i++)
+        foreach (string part in parts)
         {
-            total += Rand.Next(1, diceSize + 1);
-        }
+            int modifier = 0;
+            if (part.Contains("d"))
+            {
+                string[] dicePart = part.Split('d');
+                int numberOfDice = int.Parse(dicePart[0]);
+                int diceSize = int.Parse(dicePart[1]);
 
-        total += modifier;
+                for (int i = 0; i < numberOfDice; i++)
+                {
+                    total += Rand.Next(1, diceSize + 1);
+                }
+            }
+            else
+            {
+                modifier = int.Parse(part);
+            }
+
+            if (part.StartsWith("-"))
+            {
+                modifier *= -1;
+            }
+
+            total += modifier;
+        }
 
         return total;
     }
@@ -26,8 +47,32 @@ public static class RollStats
         var resultList = new List<int>();
         for (var i = 0; i < 6; i++)
         {
-            var result = DiceRoller.RollDice(3, 6);
+            var result = DiceRoller.RollDice("3d6");
             resultList.Add(result);
+        }
+
+        return resultList;
+    }
+    public static List<int> ThreeDSixRerollOnes()
+    {
+        var resultList = new List<int>();
+
+        for (var i = 0; i < 6; i++)
+        {
+            List<int> diceRolls = new List<int>();
+
+            for (var j = 0; j < 3; j++)
+            {
+                int result = 0;
+                do
+                {
+                    result =DiceRoller.RollDice("1d6");
+                } while (result == 1);
+                diceRolls.Add(result);
+            }
+
+            var sum = diceRolls.Sum();
+            resultList.Add(sum);
         }
 
         return resultList;
@@ -43,7 +88,7 @@ public static class RollStats
 
             for (var j = 0; j < 4; j++)
             {
-                var result = DiceRoller.RollDice(1, 6);
+                var result = DiceRoller.RollDice("1d6");
                 diceRolls.Add(result);
             }
 
