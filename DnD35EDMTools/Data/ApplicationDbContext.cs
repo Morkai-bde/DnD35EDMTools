@@ -21,6 +21,7 @@ namespace DnD35EDMTools.Data
         public DbSet<AlignmentData> Alignments { get; set; }
         public DbSet<OrderData> Orders { get; set; }
         public DbSet<MoralityData> Moralities { get; set; }
+        public DbSet<ClassData> Classes { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {

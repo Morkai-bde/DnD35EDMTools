@@ -38,17 +38,6 @@
                         </select>
                     </div>
                     <div>
-                        <label for="subrace">Sub-Race:</label>
-                    </div>
-                    <div>
-                        <select class="cc-input-select" id="subrace" @bind="_selectedSubRaceId">
-                            @foreach (var race in _races)
-                            {
-                                <option value=@race.Id title=@race.Description>@race.Race</option>
-                            }
-                        </select>
-                    </div>
-                    <div>
                         <label for="gender">Gender:</label>
                     </div>
                     <div>
@@ -78,6 +67,17 @@
                             @foreach (var morality in _moralities)
                             {
                                 <option value=@morality.Id title=@morality.Description>@morality.Morality</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="morality">Class:</label>
+                    </div>
+                    <div>
+                        <select class="cc-input-select" id="class" @bind="_selectedClassId">
+                            @foreach (var name in _classes)
+                            {
+                                <option value=@name.Id title=@name.Description>@name.Name</option>
                             }
                         </select>
                     </div>
@@ -132,7 +132,7 @@
                         <input class="cc-input-select" type="text" id="age" @bind="characterAge"/>
                     </div>
                         <div>
-                            <button class="cc-randomize-button">Random</button>
+                            <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
                         </div>
                     <div>
                         <label for="height">Height:</label>
@@ -173,16 +173,17 @@
     // private List<AlignmentData> _alignments = new List<AlignmentData>();
     private List<OrderData> _orders = new List<OrderData>();
     private List<MoralityData> _moralities = new List<MoralityData>();
+    private List<ClassData> _classes = new List<ClassData>();
     
     private string characterName, characterRace, characterSubRace,  characterAge, characterHeight, characterWeight;
     
     private int characterHair, characterEyes, characterSkin;
     
     private int _selectedRaceId = 0;
-    private int _selectedSubRaceId = 0;
     private int _selectedGenderId = 0;
     private int _selectedMoralityId = 0;
     private int _selectedOrderId = 0;
+    private int _selectedClassId = 0;
     
     protected override async Task OnInitializedAsync()
     {
@@ -194,6 +195,7 @@
             .ToListAsync();
         _orders = await db.Orders.ToListAsync();
         _moralities = await db.Moralities.ToListAsync();
+        _classes = await db.Classes.ToListAsync();
         
     }
     
@@ -229,14 +231,29 @@
             return new List<GenderData>();
         return _races.Single(r => r.Id == _selectedRaceId).Genders.ToList();
     }
-    
+
+    private void RandomizeAge()
+    {
+        int startingAge = _races.Single(r => r.Id == _selectedRaceId).AdulthoodAge;
+        string ageCategory = _classes.Single(c => c.Id == _selectedClassId).AgeCategory;
+        string ageTypeDice = "";
+        if (ageCategory == "Simple") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).SimpleDice;
+        else if (ageCategory == "Moderate") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).ModerateDice;
+        else if (ageCategory == "Complex") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).ComplexDice;
+
+        int result = startingAge + DiceRoller.RollDice(ageTypeDice);
+
+        Console.WriteLine(result);
+        characterAge = result.ToString();
+    }
+
+
     private void CreateNewCharacter()
     {
         var newCharacter = new CharacterData();
         newCharacter.Name = characterName;
         newCharacter.Class = "Barbarian"; // To be Implemented (Add Entity and Data)
         newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Race.ToString(); // Temporary fix to get the race name, it should be changed to an int with a foreign key
-        newCharacter.SubRace = "Calashite"; // characterSubRace;
         newCharacter.Experience = 0;
         newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
         newCharacter.Alignment = "Chaotic Evil"; // To be Implemented (split in two and derive from both)

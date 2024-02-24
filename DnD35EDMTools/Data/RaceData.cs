@@ -5,10 +5,8 @@ namespace DnD35EDMTools.Data;
 public class RaceData
 {
     public int Id { get; set; }
-    [MaxLength(30)]
+    [MaxLength(100)]
     public string Race { get; set; }
-    [MaxLength(30)]
-    public string SubRace { get; set; }
     [MaxLength(10)]
     public string Size { get; set; }
     public int BaseSpeed { get; set; }
