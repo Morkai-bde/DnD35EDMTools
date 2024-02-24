@@ -7,6 +7,8 @@ public class RaceData
     public int Id { get; set; }
     [MaxLength(30)]
     public string Race { get; set; }
+    [MaxLength(30)]
+    public string SubRace { get; set; }
     [MaxLength(10)]
     public string Size { get; set; }
     public int BaseSpeed { get; set; }
@@ -96,13 +98,15 @@ public class RaceData
     public List<ColourData> SkinColours { get; } = [];
     public int AdulthoodAge { get; set; }
     public int MiddleAge { get; set; }
+    public int OldAge { get; set; }
     public int VenerableAge { get; set; }
+    public string MaxAge { get; set; }
     [MaxLength(5)]
-    public string YoungAgeDice { get; set; }
+    public string SimpleDice { get; set; }
     [MaxLength(5)]
-    public string MiddleAgeDice { get; set; }
+    public string ModerateDice { get; set; }
     [MaxLength(5)]
-    public string OldAgeDice { get; set; }
+    public string ComplexDice { get; set; }
     public int FemaleHeight { get; set; }
     public int MaleHeight { get; set; }
     [MaxLength(5)]
@@ -111,6 +115,9 @@ public class RaceData
     public int MaleWeight { get; set; }
     [MaxLength(5)]
     public string WeightDice { get; set; }
+    // public List<ClassData> FavoredClass { get; set; }
+    // public List<LanguagesData> AutomaticLanguages{ get; set}
+    // Public List<LanguageData> BonusLanguages { get; set}
     public string? Description { get; set; }
     [MaxLength(64)]
     public string Source { get; set; }
