@@ -163,7 +163,10 @@
 
 <button @onclick="CreateNewCharacter">Create</button>
 &nbsp;
-<input type="checkbox" @bind="dryRun" />
+<div>
+    Is a Dry Run?
+    <input type="checkbox" @bind="dryRun"/>
+</div>
 @code {
     private bool dryRun = true;
     private List<RaceData> _races = new List<RaceData>();
