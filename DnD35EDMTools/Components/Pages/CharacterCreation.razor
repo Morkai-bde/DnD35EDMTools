@@ -71,6 +71,17 @@
                         </select>
                     </div>
                     <div>
+                        <label for="deity">Deity:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="deity" @bind="_selectedDeityId">
+                            @foreach (var name in _deities)
+                            {
+                                <option value=@name.Id title=@name.Description>@name.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
                         <label for="morality">Class:</label>
                     </div>
                     <div>
@@ -175,6 +186,7 @@
     private List<MoralityData> _moralities = new List<MoralityData>();
     private List<ClassData> _classes = new List<ClassData>();
     private List<GenderData> _genders = new List<GenderData>();
+    private List<DeityData> _deities = new List<DeityData>();
     
     private string characterName, characterRace, characterSubRace,  characterAge, characterHeight;
     
@@ -185,7 +197,8 @@
     private int _selectedMoralityId = 0;
     private int _selectedOrderId = 0;
     private int _selectedClassId = 0;
-    
+    private int _selectedDeityId = 0;
+
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
@@ -198,6 +211,7 @@
         _moralities = await db.Moralities.ToListAsync();
         _classes = await db.Classes.ToListAsync();
         _genders = await db.Genders.ToListAsync();
+        _deities = await db.Deities.ToListAsync();
         
     }
     
@@ -281,6 +295,7 @@
         newCharacter.Experience = 0;
         newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
         newCharacter.Alignment = "Chaotic Evil"; // To be Implemented (split in two and derive from both)
+        newCharacter.Deity = _deities.Single(d => d.Id == _selectedDeityId).Id;
         newCharacter.Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint;
         newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;
         // newCharacter.Deity = 0; // To be Implemented (Add Entity and Data)

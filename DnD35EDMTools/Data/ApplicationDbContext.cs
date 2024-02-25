@@ -19,6 +19,7 @@ namespace DnD35EDMTools.Data
         public DbSet<SpellsSLAData> SpellsSla { get; set; }
         public DbSet<GenderData> Genders { get; set; }
         public DbSet<AlignmentData> Alignments { get; set; }
+        public DbSet<DeityData> Deities { get; set; }
         public DbSet<OrderData> Orders { get; set; }
         public DbSet<MoralityData> Moralities { get; set; }
         public DbSet<ClassData> Classes { get; set; }
