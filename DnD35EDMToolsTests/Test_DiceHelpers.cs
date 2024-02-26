@@ -29,33 +29,16 @@ public class DiceHelperTests
     }
     
     [Fact]
-    public void test_ThreeDSix()
+    public void test_ThreeDSixReRollOnes()
     {
         // Arrange
 
         // Act
 
-        var resultList = RollStats.ThreeDSix();
+        var result = RollStats.ThreeDSixReRollOnes();
 
         // Assert
-        Assert.NotNull(resultList);
-        Assert.Equal(6, resultList.Count);
-        Assert.True(resultList.All(x => x is >= 3 and <= 18));
-    }
-    
-    [Fact]
-    public void test_ThreeDSixRerollOnes()
-    {
-        // Arrange
-
-        // Act
-
-        var resultList = RollStats.ThreeDSixRerollOnes();
-
-        // Assert
-        Assert.NotNull(resultList);
-        Assert.Equal(6, resultList.Count);
-        Assert.True(resultList.All(x => x is >= 2 and <= 18));
+        Assert.InRange(result, 3, 18);
     }
 
     [Fact]
@@ -65,11 +48,9 @@ public class DiceHelperTests
 
         // Act
 
-        var resultList = RollStats.FourDSixDropLowest();
+        var result = RollStats.FourDSixDropLowest();
 
         // Assert
-        Assert.NotNull(resultList);
-        Assert.Equal(6, resultList.Count);
-        Assert.True(resultList.All(x => x is >= 2 and <= 18));
+        Assert.InRange(result, 3, 18);
     }
 }
