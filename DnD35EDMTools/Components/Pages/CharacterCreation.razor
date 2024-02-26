@@ -221,7 +221,7 @@
                         <label for="weight">Luck:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="weight" @bind="characterLuck"/>
+                        <input class="cc-input" type="text" id="luck" @bind="characterLuck"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
@@ -368,7 +368,7 @@
 
     private void CalculateLuck()
     {
-        if (characterStrength != 0 && characterDexterity != 0 && characterConstitution != 0 && characterIntelligence != 0 && characterWisdom != 0 && characterCharisma !=0);
+        if (characterStrength != 0 && characterDexterity != 0 && characterConstitution != 0 && characterIntelligence != 0 && characterWisdom != 0 && characterCharisma !=0)
         characterLuck = (characterStrength + characterDexterity + characterConstitution + characterIntelligence + characterWisdom + characterCharisma) / 6;
     }
 
