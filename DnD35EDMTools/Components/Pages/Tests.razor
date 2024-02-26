@@ -46,7 +46,7 @@
 <div>
     <button class="btn btn-primary" id="Button3" type="button" @onclick="RollThreeDSixROne">3d6DR1</button>
     <br/>
-    @if (_threeDSixRerollOneResults != 0)
+    @if (_threeDSixReRollOneResults != 0)
     {
         <table>
             <thead>
@@ -55,7 +55,7 @@
             </tr>
             </thead>
             <tbody>
-            <tr># @_threeDSixRerollOneResults</tr>
+            <tr># @_threeDSixReRollOneResults</tr>
             </tbody>
         </table>
     }
@@ -77,11 +77,11 @@
         _fourDSixDlResults = RollStats.FourDSixDropLowest();
     }
 
-    private int _threeDSixRerollOneResults;
+    private int _threeDSixReRollOneResults;
 
     private void RollThreeDSixROne()
     {
-        _threeDSixRerollOneResults = RollStats.ThreeDSixRerollOnes();
+        _threeDSixReRollOneResults = RollStats.ThreeDSixReRollOnes();
     }
 
 

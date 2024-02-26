@@ -7,12 +7,12 @@ public static class DiceRoller
     public static int RollDice(string diceNotation)
     {
         int total = 0;
-        string[] parts = diceNotation.Split(new char[] { '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
+        string[] parts = diceNotation.Split(new[] { '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
         foreach (string part in parts)
         {
             int modifier = 0;
-            if (part.Contains("d"))
+            if (part.Contains('d'))
             {
                 string[] dicePart = part.Split('d');
                 int numberOfDice = int.Parse(dicePart[0]);
@@ -42,12 +42,12 @@ public static class DiceRoller
 
 public static class RollStats
 {
-    public static int ThreeDSixRerollOnes()
+    public static int ThreeDSixReRollOnes()
     {
         var result = 0;
         for (int i = 0; i < 3; i++)
         {
-            int roll = 0;
+            int roll;
             do
             {
                 roll = DiceRoller.RollDice("1d6");
@@ -60,8 +60,7 @@ public static class RollStats
 
     public static int FourDSixDropLowest()
     {
-        var result = 0;
-            var diceRolls = new List<int>();
+        var diceRolls = new List<int>();
 
             for (var j = 0; j < 4; j++)
             {
@@ -73,7 +72,7 @@ public static class RollStats
 
             diceRolls.Remove(lowestValue);
 
-            result = diceRolls.Sum();
+            var result = diceRolls.Sum();
 
         return result;
     }

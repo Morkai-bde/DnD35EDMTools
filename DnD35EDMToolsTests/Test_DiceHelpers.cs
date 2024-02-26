@@ -29,13 +29,13 @@ public class DiceHelperTests
     }
     
     [Fact]
-    public void test_ThreeDSixRerollOnes()
+    public void test_ThreeDSixReRollOnes()
     {
         // Arrange
 
         // Act
 
-        var result = RollStats.ThreeDSixRerollOnes();
+        var result = RollStats.ThreeDSixReRollOnes();
 
         // Assert
         Assert.InRange(result, 3, 18);
