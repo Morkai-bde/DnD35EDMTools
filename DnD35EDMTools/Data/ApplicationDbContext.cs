@@ -59,6 +59,20 @@ namespace DnD35EDMTools.Data
                         joinEntity.ToTable("JoinTableRaceGenders");
                     });
                 
+                modelBuilder.Entity<AlignmentData>()
+                    .HasMany(a => a.AllowedAlignments)
+                    .WithMany()
+                    .UsingEntity<Dictionary<string, object>>(
+                        "JoinTableAllowedAlignments",
+                        j => j
+                            .HasOne<AlignmentData>()
+                            .WithMany()
+                            .HasForeignKey("AlignmentDataId"),
+                        j => j
+                            .HasOne<AlignmentData>()
+                            .WithMany()
+                            .HasForeignKey("AllowedAlignmentId")
+                    );
             }
     }
 }
