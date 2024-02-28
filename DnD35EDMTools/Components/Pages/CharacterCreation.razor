@@ -235,7 +235,7 @@
     &nbsp;
 </div>
 
-<button @onclick="CreateNewCharacter">Create</button>
+<button style="padding: 4px" @onclick="CreateNewCharacter">Create</button>&nbsp;<button style="padding: 4px" @onclick="GenerateRandomCharacter">Random Jo</button>
 &nbsp;
 <div>
     Is a Dry Run?
@@ -386,6 +386,82 @@
     {
         if (characterStrength != 0 && characterDexterity != 0 && characterConstitution != 0 && characterIntelligence != 0 && characterWisdom != 0 && characterCharisma !=0)
         characterLuck = (characterStrength + characterDexterity + characterConstitution + characterIntelligence + characterWisdom + characterCharisma) / 6;
+    }
+
+    private void GenerateRandomCharacter()
+    {
+        try
+        {
+        var Rand = new Random();
+        characterName = "Random Jo";
+        _selectedRaceId = Rand.Next(2, _races.Count +1);
+
+        Thread.Sleep(10);
+        var raceEyes = GetRaceEyeColours();
+        int randomRaceEyesIndex = Rand.Next(1, raceEyes.Count);
+        characterEyes = raceEyes[randomRaceEyesIndex].Id;
+        
+        var raceHair = GetRaceHairColours();
+        int randomRaceHairIndex = Rand.Next(1, raceHair.Count);
+        characterHair = raceHair[randomRaceHairIndex].Id;
+        
+        var raceSkin = GetRaceSkinColours();
+        int randomRaceSkinIndex = Rand.Next(1, raceSkin.Count);
+        characterSkin = raceSkin[randomRaceSkinIndex].Id;
+
+        _selectedClassId = Rand.Next(1, _classes.Count);
+        
+        RandomizeAge();
+        
+        _selectedOrderId = Rand.Next(1, _orders.Count);
+        _selectedMoralityId = Rand.Next(1, _moralities.Count);
+
+        var deity = FilteredDeities;
+        int randomDeityIndex = Rand.Next(1, FilteredDeities.Count);
+        _selectedDeityId = deity[randomDeityIndex].Id;
+        
+        var raceGenders = GetRaceGenders();
+        int randomGenderIndex = Rand.Next(1, raceGenders.Count);
+        _selectedGenderId = raceGenders[randomGenderIndex].Id;
+        
+        Thread.Sleep(100);
+        RandomizeHeight();
+        Thread.Sleep(10);
+        RandomizeWeight();
+
+        characterStrength = 0;
+        Roll3d6("Strength");
+        characterDexterity = 0;
+        Roll3d6("Dexterity");
+        characterConstitution = 0;
+        Roll3d6("Constitution");
+        characterWisdom = 0;
+        Roll3d6("Wisdom");
+        characterIntelligence = 0;
+        Roll3d6("Intelligence");
+        characterCharisma = 0;
+        Roll3d6("Charisma");
+        CalculateLuck();
+        }
+        catch (Exception e)
+        {
+            // Console.WriteLine(e);
+            Console.WriteLine("Name: " + characterName);
+            Console.WriteLine("Race: " + _races.Single(r => r.Id == _selectedRaceId).Race.ToString());
+            Console.WriteLine("Class: " + _classes.Single(c => c.Id == _selectedClassId).Name.ToString());
+            Console.WriteLine("Order: " + _orders.Single(o => o.Id == _selectedOrderId).Midpoint);
+            Console.WriteLine("Morality: " + _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint);
+            Console.WriteLine("Deity: " + _deities.Single(d => d.Id == _selectedDeityId).Name);
+            Console.WriteLine("Gender: " + _genders.Single(g =>g. Id == _selectedGenderId).Gender);
+            Console.WriteLine("Height: " + characterHeight);
+            Console.WriteLine("Weight: " + characterWeight);
+            Console.WriteLine("EyesId: " +  characterEyes);
+            Console.WriteLine("HairId: " + characterHair);
+            Console.WriteLine("SkinId: " + characterSkin);
+            Console.WriteLine("Age: " + characterAge);
+
+            // throw;
+        }
     }
 
     private void CreateNewCharacter()
