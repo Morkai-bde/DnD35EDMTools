@@ -75,7 +75,7 @@
                     </div>
                     <div>
                         <select class="cc-select" id="deity" @bind="_selectedDeityId">
-                            @foreach (var name in _deities)
+                            @foreach (var name in FilteredDeities)
                             {
                                 <option value=@name.Id title=@name.Description>@name.Name</option>
                             }
@@ -187,6 +187,22 @@
     private List<ClassData> _classes = new List<ClassData>();
     private List<GenderData> _genders = new List<GenderData>();
     private List<DeityData> _deities = new List<DeityData>();
+    private List<DeityData> FilteredDeities
+    {
+        get
+        {
+            if (_selectedMoralityId == 0 || _selectedOrderId == 0)
+            {
+                return _deities;
+            }
+
+            var selectedAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, 
+                _orders.Single(m => m.Id == _selectedOrderId).Midpoint, 
+                _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint);
+            
+            return _deities.Where(d => d.Alignment == selectedAlignment || d.Alignment == "Any").ToList();
+        }
+    }
     
     private string characterName, characterRace, characterSubRace,  characterAge, characterHeight;
     
