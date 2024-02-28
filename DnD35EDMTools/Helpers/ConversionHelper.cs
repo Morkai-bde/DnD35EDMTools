@@ -42,4 +42,9 @@ public static class ConversionHelper
     {
         return centimeters / 2.54;
     }
+
+    public static int ConvertStatToBonus(int stat)
+    {
+        return (stat - 10) / 2;
+    }
 }

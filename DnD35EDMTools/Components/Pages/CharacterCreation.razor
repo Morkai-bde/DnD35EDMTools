@@ -105,9 +105,9 @@
                             }
                         </select>
                     </div>
-                        <div class="cc-colour-box" style="background-color: @(GetColourById(characterHair, GetRaceHairColours())?.ColourHexCode ?? "")">
-                            &nbsp;
-                        </div>
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(characterHair, GetRaceHairColours())?.ColourHexCode ?? "")">
+                        &nbsp;
+                    </div>
                     <div>
                         <label for="eyes">Eyes:</label>
                     </div>
@@ -119,9 +119,9 @@
                             }
                         </select>
                     </div>
-                        <div class="cc-colour-box" style="background-color: @(GetColourById(characterEyes, GetRaceEyeColours())?.ColourHexCode ?? "")">
-                            &nbsp;
-                        </div>
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(characterEyes, GetRaceEyeColours())?.ColourHexCode ?? "")">
+                        &nbsp;
+                    </div>
                     <div>
                         <label for="skin">Skin:</label>
                     </div>
@@ -133,36 +133,99 @@
                             }
                         </select>
                     </div>
-                        <div class="cc-colour-box" style="background-color: @(GetColourById(characterSkin, GetRaceSkinColours())?.ColourHexCode ?? "")">
-                            &nbsp;
-                        </div>
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(characterSkin, GetRaceSkinColours())?.ColourHexCode ?? "")">
+                        &nbsp;
+                    </div>
                     <div>
                         <label for="age">Age:</label>
                     </div>
                     <div>
                         <input class="cc-input" type="text" id="age" @bind="characterAge"/>
                     </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
-                        </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
+                    </div>
                     <div>
                         <label for="height">Height:</label>
                     </div>
                     <div>
                         <input class="cc-input" type="text" id="height" @bind="characterHeight"/>
                     </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
-                        </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
+                    </div>
                     <div>
                         <label for="weight">Weight:</label>
                     </div>
                     <div>
                         <input class="cc-input" type="text" id="weight" @bind="characterWeight"/>
                     </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
-                        </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
+                    </div>
+                    <div>
+                        <label for="weight">Strength:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="strength" @bind="characterStrength"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Strength")'>Roll</button>
+                    </div>
+                    <div>
+                        <label for="weight">Dexterity:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="dexterity" @bind="characterDexterity"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Dexterity")'>Roll</button>
+                    </div>
+                    <div>
+                        <label for="weight">Constitution:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="constitution" @bind="characterConstitution"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Constitution")'>Roll</button>
+                    </div>
+                    <div>
+                        <label for="weight">Intelligence:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="intelligence" @bind="characterIntelligence"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Intelligence")'>Roll</button>
+                    </div>
+                    <div>
+                        <label for="weight">Wisdom:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="wisdom" @bind="characterWisdom"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Wisdom")'>Roll</button>
+                    </div>
+                    <div>
+                        <label for="weight">Charisma:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="charisma" @bind="characterCharisma"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Charisma")'>Roll</button>
+                    </div>
+                    <div>
+                        <label for="weight">Luck:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="luck" @bind="characterLuck"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -206,7 +269,8 @@
     
     private string characterName, characterRace, characterSubRace,  characterAge, characterHeight;
     
-    private int characterHair, characterEyes, characterSkin, characterWeight;
+    private int characterHair, characterEyes, characterSkin, characterWeight, characterStrength, characterDexterity, 
+        characterConstitution, characterIntelligence, characterWisdom, characterCharisma, characterLuck;
     
     private int _selectedRaceId = 0;
     private int _selectedGenderId = 0;
@@ -300,6 +364,28 @@
         //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Weights
 
         characterWeight = baseWeight + DiceRoller.RollDice(randomWeight);
+    }
+
+    private void Roll3d6(string stat)
+    {
+        if (stat == "Strength")
+            if (characterStrength <= 7) characterStrength = DiceRoller.RollDice("3d6");
+        if (stat == "Dexterity")
+            if (characterDexterity <= 7) characterDexterity = DiceRoller.RollDice("3d6");
+        if (stat == "Constitution")
+            if (characterConstitution <= 7) characterConstitution = DiceRoller.RollDice("3d6");
+        if (stat == "Intelligence")
+            if (characterIntelligence <= 7) characterIntelligence = DiceRoller.RollDice("3d6");
+        if (stat == "Wisdom")
+            if (characterWisdom <= 7) characterWisdom = DiceRoller.RollDice("3d6");
+        if (stat == "Charisma")
+            if (characterCharisma <= 7) characterCharisma = DiceRoller.RollDice("3d6");
+    }
+
+    private void CalculateLuck()
+    {
+        if (characterStrength != 0 && characterDexterity != 0 && characterConstitution != 0 && characterIntelligence != 0 && characterWisdom != 0 && characterCharisma !=0)
+        characterLuck = (characterStrength + characterDexterity + characterConstitution + characterIntelligence + characterWisdom + characterCharisma) / 6;
     }
 
     private void CreateNewCharacter()

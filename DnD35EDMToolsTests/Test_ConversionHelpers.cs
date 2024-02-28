@@ -55,5 +55,18 @@ namespace DnD35EDMToolsTests
             // Assert
             Assert.Equal("6'1\"", result);
         }
+        
+        [Fact]
+        public void Test_ConvertStatToBonus()
+        {
+            // Arrange
+            int stat = 20;
+
+            // Act
+            var result = ConversionHelper.ConvertStatToBonus(stat);
+
+            // Assert
+            Assert.Equal(5, result);
+        }
     }
 }
