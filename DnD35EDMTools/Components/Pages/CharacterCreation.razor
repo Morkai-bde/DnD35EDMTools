@@ -75,7 +75,7 @@
                     </div>
                     <div>
                         <select class="cc-select" id="deity" @bind="_selectedDeityId">
-                            @foreach (var name in _deities)
+                            @foreach (var name in FilteredDeities)
                             {
                                 <option value=@name.Id title=@name.Description>@name.Name</option>
                             }
@@ -187,6 +187,22 @@
     private List<ClassData> _classes = new List<ClassData>();
     private List<GenderData> _genders = new List<GenderData>();
     private List<DeityData> _deities = new List<DeityData>();
+    private List<DeityData> FilteredDeities
+    {
+        get
+        {
+            if (_selectedMoralityId == 0 || _selectedOrderId == 0)
+            {
+                return _deities;
+            }
+
+            var selectedAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, 
+                _orders.Single(m => m.Id == _selectedOrderId).Midpoint, 
+                _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint);
+            
+            return _deities.Where(d => d.Alignment == selectedAlignment || d.Alignment == "Any").ToList();
+        }
+    }
     
     private string characterName, characterRace, characterSubRace,  characterAge, characterHeight;
     
@@ -194,10 +210,10 @@
     
     private int _selectedRaceId = 0;
     private int _selectedGenderId = 0;
-    private int _selectedMoralityId = 0;
     private int _selectedOrderId = 0;
-    private int _selectedClassId = 0;
+    private int _selectedMoralityId = 0;
     private int _selectedDeityId = 0;
+    private int _selectedClassId = 0;
 
     protected override async Task OnInitializedAsync()
     {
@@ -294,11 +310,10 @@
         newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Race.ToString(); // Temporary fix to get the race name, it should be changed to an int with a foreign key
         newCharacter.Experience = 0;
         newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
-        newCharacter.Alignment = "Chaotic Evil"; // To be Implemented (split in two and derive from both)
         newCharacter.Deity = _deities.Single(d => d.Id == _selectedDeityId).Id;
         newCharacter.Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint;
         newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;
-        // newCharacter.Deity = 0; // To be Implemented (Add Entity and Data)
+        newCharacter.Alignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, newCharacter.Order, newCharacter.Morality);
         newCharacter.Gender = _selectedGenderId;
         newCharacter.Hair = characterHair;
         newCharacter.Eyes = characterEyes;
