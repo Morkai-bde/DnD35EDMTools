@@ -390,8 +390,6 @@
 
     private void GenerateRandomCharacter()
     {
-        try
-        {
         var Rand = new Random();
         characterName = "Random Jo";
         _selectedRaceId = Rand.Next(2, _races.Count +1);
@@ -442,26 +440,6 @@
         characterCharisma = 0;
         Roll3d6("Charisma");
         CalculateLuck();
-        }
-        catch (Exception e)
-        {
-            // Console.WriteLine(e);
-            Console.WriteLine("Name: " + characterName);
-            Console.WriteLine("Race: " + _races.Single(r => r.Id == _selectedRaceId).Race.ToString());
-            Console.WriteLine("Class: " + _classes.Single(c => c.Id == _selectedClassId).Name.ToString());
-            Console.WriteLine("Order: " + _orders.Single(o => o.Id == _selectedOrderId).Midpoint);
-            Console.WriteLine("Morality: " + _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint);
-            Console.WriteLine("Deity: " + _deities.Single(d => d.Id == _selectedDeityId).Name);
-            Console.WriteLine("Gender: " + _genders.Single(g =>g. Id == _selectedGenderId).Gender);
-            Console.WriteLine("Height: " + characterHeight);
-            Console.WriteLine("Weight: " + characterWeight);
-            Console.WriteLine("EyesId: " +  characterEyes);
-            Console.WriteLine("HairId: " + characterHair);
-            Console.WriteLine("SkinId: " + characterSkin);
-            Console.WriteLine("Age: " + characterAge);
-
-            // throw;
-        }
     }
 
     private void CreateNewCharacter()
