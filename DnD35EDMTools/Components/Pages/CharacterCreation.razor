@@ -23,7 +23,7 @@
                         <label for="name">Character Name:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="name" @bind="characterName"/>
+                        <input class="cc-input" type="text" id="name" @bind="_characterName"/>
                     </div>
 
                     <div>
@@ -98,49 +98,49 @@
                         <label for="hair">Hair:</label>
                     </div>
                     <div>
-                        <select class="cc-select" id="hair" @bind="characterHair">
+                        <select class="cc-select" id="hair" @bind="_characterHair">
                             @foreach (var colour in GetRaceHairColours())
                             {
                                 <option value="@colour.Id">@colour.Colour</option>
                             }
                         </select>
                     </div>
-                    <div class="cc-colour-box" style="background-color: @(GetColourById(characterHair, GetRaceHairColours())?.ColourHexCode ?? "")">
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, GetRaceHairColours()).ColourHexCode)">
                         &nbsp;
                     </div>
                     <div>
                         <label for="eyes">Eyes:</label>
                     </div>
                     <div>
-                        <select class="cc-select" id="eyes" @bind="characterEyes">
+                        <select class="cc-select" id="eyes" @bind="_characterEyes">
                             @foreach (var colour in GetRaceEyeColours())
                             {
                                 <option value="@colour.Id">@colour.Colour</option>
                             }
                         </select>
                     </div>
-                    <div class="cc-colour-box" style="background-color: @(GetColourById(characterEyes, GetRaceEyeColours())?.ColourHexCode ?? "")">
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, GetRaceEyeColours()).ColourHexCode)">
                         &nbsp;
                     </div>
                     <div>
                         <label for="skin">Skin:</label>
                     </div>
                     <div>
-                        <select class="cc-select" id="skin" @bind="characterSkin">
+                        <select class="cc-select" id="skin" @bind="_characterSkin">
                             @foreach (var colour in GetRaceSkinColours())
                             {
                                 <option value="@colour.Id">@colour.Colour</option>
                             }
                         </select>
                     </div>
-                    <div class="cc-colour-box" style="background-color: @(GetColourById(characterSkin, GetRaceSkinColours())?.ColourHexCode ?? "")">
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, GetRaceSkinColours()).ColourHexCode)">
                         &nbsp;
                     </div>
                     <div>
                         <label for="age">Age:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="age" @bind="characterAge"/>
+                        <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
@@ -149,7 +149,7 @@
                         <label for="height">Height:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="height" @bind="characterHeight"/>
+                        <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
@@ -158,7 +158,7 @@
                         <label for="weight">Weight:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="weight" @bind="characterWeight"/>
+                        <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
@@ -167,7 +167,7 @@
                         <label for="weight">Strength:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="strength" @bind="characterStrength"/>
+                        <input class="cc-input" type="text" id="strength" @bind="_characterStrength"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick='() => Roll3d6("Strength")'>Roll</button>
@@ -176,7 +176,7 @@
                         <label for="weight">Dexterity:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="dexterity" @bind="characterDexterity"/>
+                        <input class="cc-input" type="text" id="dexterity" @bind="_characterDexterity"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick='() => Roll3d6("Dexterity")'>Roll</button>
@@ -185,7 +185,7 @@
                         <label for="weight">Constitution:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="constitution" @bind="characterConstitution"/>
+                        <input class="cc-input" type="text" id="constitution" @bind="_characterConstitution"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick='() => Roll3d6("Constitution")'>Roll</button>
@@ -194,7 +194,7 @@
                         <label for="weight">Intelligence:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="intelligence" @bind="characterIntelligence"/>
+                        <input class="cc-input" type="text" id="intelligence" @bind="_characterIntelligence"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick='() => Roll3d6("Intelligence")'>Roll</button>
@@ -203,7 +203,7 @@
                         <label for="weight">Wisdom:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="wisdom" @bind="characterWisdom"/>
+                        <input class="cc-input" type="text" id="wisdom" @bind="_characterWisdom"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick='() => Roll3d6("Wisdom")'>Roll</button>
@@ -212,7 +212,7 @@
                         <label for="weight">Charisma:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="charisma" @bind="characterCharisma"/>
+                        <input class="cc-input" type="text" id="charisma" @bind="_characterCharisma"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick='() => Roll3d6("Charisma")'>Roll</button>
@@ -221,7 +221,7 @@
                         <label for="weight">Luck:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="luck" @bind="characterLuck"/>
+                        <input class="cc-input" type="text" id="luck" @bind="_characterLuck"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
@@ -239,10 +239,10 @@
 &nbsp;
 <div>
     Is a Dry Run?
-    <input type="checkbox" @bind="dryRun"/>
+    <input type="checkbox" @bind="_dryRun"/>
 </div>
 @code {
-    private bool dryRun = true;
+    private bool _dryRun = true;
     private List<RaceData> _races = new List<RaceData>();
     // private List<AlignmentData> _alignments = new List<AlignmentData>();
     private List<OrderData> _orders = new List<OrderData>();
@@ -266,18 +266,29 @@
             return _deities.Where(d => d.Alignment == selectedAlignment || d.Alignment == "Any").ToList();
         }
     }
+
+    private string _characterName = "";
+    private string _characterAge = "";
+    private string _characterHeight = "";
+
+    private int _selectedRaceId;
+    private int _characterEyes;
+    private int _characterHair;
+    private int _characterSkin;
+    private int _selectedClassId;
+    private int _selectedOrderId;
+    private int _selectedMoralityId;
+    private int _selectedDeityId;
+    private int _selectedGenderId;
+    private int _characterWeight;
     
-    private string characterName, characterRace, characterSubRace,  characterAge, characterHeight;
-    
-    private int characterHair, characterEyes, characterSkin, characterWeight, characterStrength, characterDexterity, 
-        characterConstitution, characterIntelligence, characterWisdom, characterCharisma, characterLuck;
-    
-    private int _selectedRaceId = 0;
-    private int _selectedGenderId = 0;
-    private int _selectedOrderId = 0;
-    private int _selectedMoralityId = 0;
-    private int _selectedDeityId = 0;
-    private int _selectedClassId = 0;
+    private int _characterStrength;
+    private int _characterDexterity;
+    private int _characterConstitution;
+    private int _characterIntelligence;
+    private int _characterWisdom;
+    private int _characterCharisma;
+    private int _characterLuck;
 
     protected override async Task OnInitializedAsync()
     {
@@ -297,7 +308,12 @@
     
     private ColourData GetColourById(int colourId, List<ColourData> colours)
     {
-        return colours.FirstOrDefault(c => c.Id == colourId);
+        var defaultColour = new ColourData
+        {
+            Colour = "None",
+            ColourHexCode = "#00000000"
+        };
+        return colours.FirstOrDefault(c => c.Id == colourId)  ?? defaultColour;
     }
     
     private List<ColourData> GetRaceHairColours()
@@ -339,7 +355,7 @@
 
         int result = startingAge + DiceRoller.RollDice(ageTypeDice);
 
-        characterAge = result.ToString();
+        _characterAge = result.ToString();
     }
 
     private void RandomizeHeight()
@@ -351,7 +367,7 @@
         if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedClassId).FemaleHeight;
          //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Heights
         
-         characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + DiceRoller.RollDice(randomHeight));
+         _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + DiceRoller.RollDice(randomHeight));
     }
 
     private void RandomizeWeight()
@@ -363,63 +379,63 @@
         if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedClassId).FemaleWeight;
         //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Weights
 
-        characterWeight = baseWeight + DiceRoller.RollDice(randomWeight);
+        _characterWeight = baseWeight + DiceRoller.RollDice(randomWeight);
     }
 
     private void Roll3d6(string stat)
     {
         if (stat == "Strength")
-            if (characterStrength <= 7) characterStrength = DiceRoller.RollDice("3d6");
+            if (_characterStrength <= 7) _characterStrength = DiceRoller.RollDice("3d6");
         if (stat == "Dexterity")
-            if (characterDexterity <= 7) characterDexterity = DiceRoller.RollDice("3d6");
+            if (_characterDexterity <= 7) _characterDexterity = DiceRoller.RollDice("3d6");
         if (stat == "Constitution")
-            if (characterConstitution <= 7) characterConstitution = DiceRoller.RollDice("3d6");
+            if (_characterConstitution <= 7) _characterConstitution = DiceRoller.RollDice("3d6");
         if (stat == "Intelligence")
-            if (characterIntelligence <= 7) characterIntelligence = DiceRoller.RollDice("3d6");
+            if (_characterIntelligence <= 7) _characterIntelligence = DiceRoller.RollDice("3d6");
         if (stat == "Wisdom")
-            if (characterWisdom <= 7) characterWisdom = DiceRoller.RollDice("3d6");
+            if (_characterWisdom <= 7) _characterWisdom = DiceRoller.RollDice("3d6");
         if (stat == "Charisma")
-            if (characterCharisma <= 7) characterCharisma = DiceRoller.RollDice("3d6");
+            if (_characterCharisma <= 7) _characterCharisma = DiceRoller.RollDice("3d6");
     }
 
     private void CalculateLuck()
     {
-        if (characterStrength != 0 && characterDexterity != 0 && characterConstitution != 0 && characterIntelligence != 0 && characterWisdom != 0 && characterCharisma !=0)
-        characterLuck = (characterStrength + characterDexterity + characterConstitution + characterIntelligence + characterWisdom + characterCharisma) / 6;
+        if (_characterStrength != 0 && _characterDexterity != 0 && _characterConstitution != 0 && _characterIntelligence != 0 && _characterWisdom != 0 && _characterCharisma !=0)
+        _characterLuck = (_characterStrength + _characterDexterity + _characterConstitution + _characterIntelligence + _characterWisdom + _characterCharisma) / 6;
     }
 
     private void GenerateRandomCharacter()
     {
-        var Rand = new Random();
-        characterName = "Random Jo";
-        _selectedRaceId = Rand.Next(2, _races.Count +1);
+        var rand = new Random();
+        _characterName = "Random Jo";
+        _selectedRaceId = rand.Next(2, _races.Count +1);
 
         Thread.Sleep(10);
         var raceEyes = GetRaceEyeColours();
-        int randomRaceEyesIndex = Rand.Next(1, raceEyes.Count);
-        characterEyes = raceEyes[randomRaceEyesIndex].Id;
+        var randomRaceEyesIndex = rand.Next(1, raceEyes.Count);
+        _characterEyes = raceEyes[randomRaceEyesIndex].Id;
         
         var raceHair = GetRaceHairColours();
-        int randomRaceHairIndex = Rand.Next(1, raceHair.Count);
-        characterHair = raceHair[randomRaceHairIndex].Id;
+        var randomRaceHairIndex = rand.Next(1, raceHair.Count);
+        _characterHair = raceHair[randomRaceHairIndex].Id;
         
         var raceSkin = GetRaceSkinColours();
-        int randomRaceSkinIndex = Rand.Next(1, raceSkin.Count);
-        characterSkin = raceSkin[randomRaceSkinIndex].Id;
+        var randomRaceSkinIndex = rand.Next(1, raceSkin.Count);
+        _characterSkin = raceSkin[randomRaceSkinIndex].Id;
 
-        _selectedClassId = Rand.Next(1, _classes.Count);
+        _selectedClassId = rand.Next(1, _classes.Count);
         
         RandomizeAge();
         
-        _selectedOrderId = Rand.Next(1, _orders.Count);
-        _selectedMoralityId = Rand.Next(1, _moralities.Count);
+        _selectedOrderId = rand.Next(1, _orders.Count);
+        _selectedMoralityId = rand.Next(1, _moralities.Count);
 
         var deity = FilteredDeities;
-        int randomDeityIndex = Rand.Next(1, FilteredDeities.Count);
+        var randomDeityIndex = rand.Next(1, FilteredDeities.Count);
         _selectedDeityId = deity[randomDeityIndex].Id;
         
         var raceGenders = GetRaceGenders();
-        int randomGenderIndex = Rand.Next(1, raceGenders.Count);
+        var randomGenderIndex = rand.Next(1, raceGenders.Count);
         _selectedGenderId = raceGenders[randomGenderIndex].Id;
         
         Thread.Sleep(100);
@@ -427,17 +443,17 @@
         Thread.Sleep(10);
         RandomizeWeight();
 
-        characterStrength = 0;
+        _characterStrength = 0;
         Roll3d6("Strength");
-        characterDexterity = 0;
+        _characterDexterity = 0;
         Roll3d6("Dexterity");
-        characterConstitution = 0;
+        _characterConstitution = 0;
         Roll3d6("Constitution");
-        characterWisdom = 0;
+        _characterWisdom = 0;
         Roll3d6("Wisdom");
-        characterIntelligence = 0;
+        _characterIntelligence = 0;
         Roll3d6("Intelligence");
-        characterCharisma = 0;
+        _characterCharisma = 0;
         Roll3d6("Charisma");
         CalculateLuck();
     }
@@ -445,9 +461,9 @@
     private void CreateNewCharacter()
     {
         var newCharacter = new CharacterData();
-        newCharacter.Name = characterName;
-        newCharacter.Class = "Barbarian"; // To be Implemented (Add Entity and Data)
-        newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Race.ToString(); // Temporary fix to get the race name, it should be changed to an int with a foreign key
+        newCharacter.Name = _characterName;
+        newCharacter.Class = _classes.Single(c => c.Id == _selectedClassId).Id;
+        newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Id;
         newCharacter.Experience = 0;
         newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
         newCharacter.Deity = _deities.Single(d => d.Id == _selectedDeityId).Id;
@@ -455,19 +471,19 @@
         newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;
         newCharacter.Alignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, newCharacter.Order, newCharacter.Morality);
         newCharacter.Gender = _selectedGenderId;
-        newCharacter.Hair = characterHair;
-        newCharacter.Eyes = characterEyes;
-        newCharacter.Skin = characterSkin;
-        newCharacter.Age = Int32.Parse(characterAge);
-        newCharacter.Height = ConversionHelper.ConvertFeetAndInchesToInches(characterHeight);
-        newCharacter.Weight = characterWeight;
+        newCharacter.Hair = _characterHair;
+        newCharacter.Eyes = _characterEyes;
+        newCharacter.Skin = _characterSkin;
+        newCharacter.Age = Int32.Parse(_characterAge);
+        newCharacter.Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight);
+        newCharacter.Weight = _characterWeight;
         newCharacter.PlayerName = "Shaun"; // To Be Implemented (get from active account creating the character)
         
         using var db = DbContext;
 
         db.Characters.Add(newCharacter);
         
-        if (!dryRun)
+        if (!_dryRun)
             db.SaveChanges();
         
         foreach (var property in newCharacter.GetType().GetProperties())

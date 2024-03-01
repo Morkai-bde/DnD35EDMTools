@@ -6,19 +6,19 @@ public static class DiceRoller
 
     public static int RollDice(string diceNotation)
     {
-        int total = 0;
+        var total = 0;
         string[] parts = diceNotation.Split(new[] { '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
-        foreach (string part in parts)
+        foreach (var part in parts)
         {
-            int modifier = 0;
+            var modifier = 0;
             if (part.Contains('d'))
             {
-                string[] dicePart = part.Split('d');
-                int numberOfDice = int.Parse(dicePart[0]);
-                int diceSize = int.Parse(dicePart[1]);
+                var dicePart = part.Split('d');
+                var numberOfDice = int.Parse(dicePart[0]);
+                var diceSize = int.Parse(dicePart[1]);
 
-                for (int i = 0; i < numberOfDice; i++)
+                for (var i = 0; i < numberOfDice; i++)
                 {
                     total += Rand.Next(1, diceSize + 1);
                 }
@@ -45,7 +45,7 @@ public static class RollStats
     public static int ThreeDSixReRollOnes()
     {
         var result = 0;
-        for (int i = 0; i < 3; i++)
+        for (var i = 0; i < 3; i++)
         {
             int roll;
             do
