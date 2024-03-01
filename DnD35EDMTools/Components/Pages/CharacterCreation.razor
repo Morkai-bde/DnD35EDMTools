@@ -364,7 +364,8 @@
         string randomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
         string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
         if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-        if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedClassId).FemaleHeight;
+        else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
+        else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
          //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Heights
         
          _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + DiceRoller.RollDice(randomHeight));
@@ -376,7 +377,8 @@
         string randomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
         string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
         if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
-        if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedClassId).FemaleWeight;
+        else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
+        else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
         //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Weights
 
         _characterWeight = baseWeight + DiceRoller.RollDice(randomWeight);
@@ -385,17 +387,46 @@
     private void Roll3d6(string stat)
     {
         if (stat == "Strength")
-            if (_characterStrength <= 7) _characterStrength = DiceRoller.RollDice("3d6");
+            do
+            {
+                if (_characterStrength <= 7)
+                _characterStrength = DiceRoller.RollDice("3d6");
+            } while (_characterStrength <= 7);
+        
         if (stat == "Dexterity")
-            if (_characterDexterity <= 7) _characterDexterity = DiceRoller.RollDice("3d6");
+            do
+            {
+                if (_characterDexterity <= 7)
+                _characterDexterity = DiceRoller.RollDice("3d6");
+            } while (_characterDexterity <= 7);
+        
         if (stat == "Constitution")
-            if (_characterConstitution <= 7) _characterConstitution = DiceRoller.RollDice("3d6");
+            do
+            {
+                if (_characterConstitution <= 7)
+                _characterConstitution = DiceRoller.RollDice("3d6");
+            } while (_characterConstitution <= 7);
+        
         if (stat == "Intelligence")
-            if (_characterIntelligence <= 7) _characterIntelligence = DiceRoller.RollDice("3d6");
+            do
+            {
+                if (_characterIntelligence <=7)
+                _characterIntelligence = DiceRoller.RollDice("3d6");
+            } while (_characterIntelligence <= 7);
+        
         if (stat == "Wisdom")
-            if (_characterWisdom <= 7) _characterWisdom = DiceRoller.RollDice("3d6");
+            do
+            {
+                if (_characterWisdom <=7)
+                _characterWisdom = DiceRoller.RollDice("3d6");
+            } while (_characterWisdom <= 7);
+        
         if (stat == "Charisma")
-            if (_characterCharisma <= 7) _characterCharisma = DiceRoller.RollDice("3d6");
+            do
+            {
+                if (_characterCharisma <= 7)
+                _characterCharisma = DiceRoller.RollDice("3d6");
+            } while (_characterCharisma <= 7);
     }
 
     private void CalculateLuck()
@@ -409,21 +440,20 @@
         var rand = new Random();
         _characterName = "Random Jo";
         _selectedRaceId = rand.Next(2, _races.Count +1);
-
-        Thread.Sleep(10);
+        
         var raceEyes = GetRaceEyeColours();
-        var randomRaceEyesIndex = rand.Next(1, raceEyes.Count);
+        var randomRaceEyesIndex = rand.Next(2, raceEyes.Count);
         _characterEyes = raceEyes[randomRaceEyesIndex].Id;
         
         var raceHair = GetRaceHairColours();
-        var randomRaceHairIndex = rand.Next(1, raceHair.Count);
+        var randomRaceHairIndex = rand.Next(2, raceHair.Count);
         _characterHair = raceHair[randomRaceHairIndex].Id;
         
         var raceSkin = GetRaceSkinColours();
-        var randomRaceSkinIndex = rand.Next(1, raceSkin.Count);
+        var randomRaceSkinIndex = rand.Next(2, raceSkin.Count);
         _characterSkin = raceSkin[randomRaceSkinIndex].Id;
 
-        _selectedClassId = rand.Next(1, _classes.Count);
+        _selectedClassId = rand.Next(2, _classes.Count +1);
         
         RandomizeAge();
         
@@ -431,16 +461,14 @@
         _selectedMoralityId = rand.Next(1, _moralities.Count);
 
         var deity = FilteredDeities;
-        var randomDeityIndex = rand.Next(1, FilteredDeities.Count);
+        var randomDeityIndex = rand.Next(2, FilteredDeities.Count);
         _selectedDeityId = deity[randomDeityIndex].Id;
         
         var raceGenders = GetRaceGenders();
-        var randomGenderIndex = rand.Next(1, raceGenders.Count);
+        var randomGenderIndex = rand.Next(2, raceGenders.Count);
         _selectedGenderId = raceGenders[randomGenderIndex].Id;
         
-        Thread.Sleep(100);
         RandomizeHeight();
-        Thread.Sleep(10);
         RandomizeWeight();
 
         _characterStrength = 0;
