@@ -244,7 +244,6 @@
 @code {
     private bool _dryRun = true;
     private List<RaceData> _races = new List<RaceData>();
-    // private List<AlignmentData> _alignments = new List<AlignmentData>();
     private List<OrderData> _orders = new List<OrderData>();
     private List<MoralityData> _moralities = new List<MoralityData>();
     private List<ClassData> _classes = new List<ClassData>();
@@ -293,9 +292,9 @@
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
-        _races = await db.Races.Include(r => r.HairColours)/*.ThenInclude( h => h.RaceHairColours)*/
-            .Include(r => r.EyeColours)/*.ThenInclude(e => e.RaceEyeColours)*/
-            .Include(r => r.SkinColours)/*.ThenInclude(s => s.RaceSkinColours)*/
+        _races = await db.Races.Include(r => r.HairColours)
+            .Include(r => r.EyeColours)
+            .Include(r => r.SkinColours)
             .Include(r => r.Genders)
             .ToListAsync();
         _orders = await db.Orders.ToListAsync();
@@ -303,7 +302,6 @@
         _classes = await db.Classes.ToListAsync();
         _genders = await db.Genders.ToListAsync();
         _deities = await db.Deities.ToListAsync();
-        
     }
     
     private ColourData GetColourById(int colourId, List<ColourData> colours)
@@ -367,7 +365,6 @@
         if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
         else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
         else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
-         //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Heights
         
          _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
     }
@@ -381,7 +378,6 @@
         if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
         else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
         else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
-        //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Weights
 
         _characterWeight = baseWeight + (_randomHeight * randomWeight);
     }
@@ -499,7 +495,6 @@
         newCharacter.Deity = _deities.Single(d => d.Id == _selectedDeityId).Id;
         newCharacter.Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint;
         newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;
-        newCharacter.Alignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, newCharacter.Order, newCharacter.Morality);
         newCharacter.Gender = _selectedGenderId;
         newCharacter.Hair = _characterHair;
         newCharacter.Eyes = _characterEyes;
