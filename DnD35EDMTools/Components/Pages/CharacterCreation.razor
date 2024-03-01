@@ -270,7 +270,8 @@
     private string _characterName = "";
     private string _characterAge = "";
     private string _characterHeight = "";
-
+    private int _randomHeight;
+    private int _characterWeight;
     private int _selectedRaceId;
     private int _characterEyes;
     private int _characterHair;
@@ -280,7 +281,6 @@
     private int _selectedMoralityId;
     private int _selectedDeityId;
     private int _selectedGenderId;
-    private int _characterWeight;
     
     private int _characterStrength;
     private int _characterDexterity;
@@ -361,27 +361,29 @@
     private void RandomizeHeight()
     {
         int baseHeight = 0;
-        string randomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
+        string randomHeightDice = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
+        _randomHeight = DiceRoller.RollDice(randomHeightDice);
         string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
         if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
         else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
         else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
          //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Heights
         
-         _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + DiceRoller.RollDice(randomHeight));
+         _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
     }
 
     private void RandomizeWeight()
     {
         int baseWeight = 0;
-        string randomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
+        string randomWeightDice = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
+        int randomWeight = DiceRoller.RollDice(randomWeightDice);
         string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
         if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
         else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
         else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
         //else baseHeight = _races.Single(r => r.Id == _selectedClassId).otherHeight; // Placeholder for other Weights
 
-        _characterWeight = baseWeight + DiceRoller.RollDice(randomWeight);
+        _characterWeight = baseWeight + (_randomHeight * randomWeight);
     }
 
     private void Roll3d6(string stat)
