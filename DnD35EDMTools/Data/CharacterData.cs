@@ -1,16 +1,20 @@
-﻿namespace DnD35EDMTools.Data;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace DnD35EDMTools.Data;
 
 public class CharacterData
 {
     public int Id { get; set; }
-    public string Name { get; set; }
-    public string Class { get; set; }
-    public string Race { get; set; }
-    public string? SubRace { get; set; }
+    [MaxLength(100)]
+    public string Name { get; set; } = null!;
+
+    [MaxLength(100)]
+    public int Class { get; set; }
+    public int Race { get; set; }
     public int Experience { get; set; }
     public int HitPoints { get; set; }
-    public string Alignment { get; set; }
-    
+    [MaxLength(20)]
+    public string Alignment { get; set; } = null!;
     public int Order { get; set; }
     public int Morality { get; set; }
     public int? Deity { get; set; }
@@ -21,7 +25,8 @@ public class CharacterData
     public int Skin { get; set; }
     public int Weight { get; set; }
     public int Height { get; set; }
-    public string PlayerName { get; set; }
+    [MaxLength(100)]
+    public string? PlayerName { get; set; }
     // public List<string> Languages { get; set; }
     // public int PlatinumPieces { get; set; }
     // public int GoldPieces { get; set; }
@@ -46,5 +51,5 @@ public class CharacterData
     // public List<string> Immunities { get; set; }
     // public List<string> WornArmour { get; set; }
     // public List<int> Armour { get; set; }
-    // public List<string> EquipedWeapons { get; set; }
+    // public List<string> EquippedWeapons { get; set; }
 }

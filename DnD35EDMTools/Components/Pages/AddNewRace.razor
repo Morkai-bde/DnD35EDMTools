@@ -1,6 +1,4 @@
 ﻿@page "/AddNewRace"
-@using DnD35EDMTools.Data
-@using System.ComponentModel.DataAnnotations
 
 <h3>Add New Race</h3>
 
@@ -17,488 +15,488 @@
 <div class="dnd-nr-top-section">
 <div class="dnd-nr-top__left">
     <div>
-        <label for="racename">Name:</label>
+        <label for="race-name">Name:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="racename" @bind="RaceName"/>
+        <input class="nr-input-select" type="text" id="race-name" @bind="_raceName"/>
     </div>
     <div>
-        <label for="racesize">Size:</label>
+        <label for="race-size">Size:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="racesize" @bind="RaceSize"/>
+        <input class="nr-input-select" type="text" id="race-size" @bind="_raceSize"/>
     </div>
     <div>
-        <label for="racebasespeed">Base Speed:</label>
+        <label for="race-base-speed">Base Speed:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="racebasespeed" @bind="RaceBaseSpeed"/>
+        <input class="nr-input-select" type="text" id="race-base-speed" @bind="_raceBaseSpeed"/>
     </div>
     <div>
-        <label for="strengthbonus">Strength Bonus:</label>
+        <label for="strength-bonus">Strength Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="strengthbonus" @bind="RaceStrengthBonus"/>
+        <input class="nr-input-select" type="text" id="strength-bonus" @bind="_raceStrengthBonus"/>
     </div>
     <div>
-        <label for="dexteritybonus">Dexterity Bonus:</label>
+        <label for="dexterity-bonus">Dexterity Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="dexteritybonus" @bind="RaceDexterityBonus"/>
+        <input class="nr-input-select" type="text" id="dexterity-bonus" @bind="_raceDexterityBonus"/>
     </div>
     <div>
-        <label for="constitutionbonus">Constitution Bonus:</label>
+        <label for="constitution-bonus">Constitution Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="constitutionbonus" @bind="RaceConstitutionBonus"/>
+        <input class="nr-input-select" type="text" id="constitution-bonus" @bind="_raceConstitutionBonus"/>
     </div>
     <div>
-        <label for="intelligencebonus">Intelligence Bonus:</label>
+        <label for="intelligence-bonus">Intelligence Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="intelligencebonus" @bind="RaceIntelligenceBonus"/>
+        <input class="nr-input-select" type="text" id="intelligence-bonus" @bind="_raceIntelligenceBonus"/>
     </div>
     <div>
-        <label for="wisdombonus">Wisdom Bonus:</label>
+        <label for="wisdom-bonus">Wisdom Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="wisdombonus" @bind="RaceWisdomBonus"/>
+        <input class="nr-input-select" type="text" id="wisdom-bonus" @bind="_raceWisdomBonus"/>
     </div>
     <div>
-        <label for="charismabonus">Charisma Bonus:</label>
+        <label for="charisma-bonus">Charisma Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="charismabonus" @bind="RaceCharismaBonus"/>
+        <input class="nr-input-select" type="text" id="charisma-bonus" @bind="_raceCharismaBonus"/>
     </div>
 
     <div>
-        <label for="fortitudebonus">Fortitude Bonus:</label>
+        <label for="fortitude-bonus">Fortitude Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="fortitudebonus" @bind="RaceFortitudeBonus"/>
+        <input class="nr-input-select" type="text" id="fortitude-bonus" @bind="_raceFortitudeBonus"/>
     </div>
     <div>
-        <label for="reflexbonus">Reflex Bonus:</label>
+        <label for="reflex-bonus">Reflex Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="reflexbonus" @bind="RaceReflexBonus"/>
+        <input class="nr-input-select" type="text" id="reflex-bonus" @bind="_raceReflexBonus"/>
     </div>
     <div>
-        <label for="willbonus">Will Bonus Bonus:</label>
+        <label for="will-bonus">Will Bonus Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="willbonus" @bind="RaceWillBonus"/>
+        <input class="nr-input-select" type="text" id="will-bonus" @bind="_raceWillBonus"/>
     </div>
     <div>
-        <label for="skillpointbonus">Skillpoint Bonus:</label>
+        <label for="skill-point-bonus">Skill point Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="skillpointbonus" @bind="RaceSkillPointBonus"/>
+        <input class="nr-input-select" type="text" id="skill-point-bonus" @bind="_raceSkillPointBonus"/>
     </div>
     <div>
-        <label for="skillpointsperlevelbonus">Skillpoints Per Level Bonus:</label>
+        <label for="skill-points-per-level-bonus">Skill points Per Level Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="skillpointsperlevelbonus" @bind="RaceSkillPointsPerLevelBonus"/>
+        <input class="nr-input-select" type="text" id="skill-points-per-level-bonus" @bind="_raceSkillPointsPerLevelBonus"/>
     </div>
     <div>
-        <label for="featbonus">Feat Bonus:</label>
+        <label for="feat-bonus">Feat Bonus:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="featbonus" @bind="RaceFeatBonus"/>
+        <input class="nr-input-select" type="text" id="feat-bonus" @bind="_raceFeatBonus"/>
     </div>
     <div>
-        <label for="adulthoodage">Adulthood Age:</label>
+        <label for="adulthood-age">Adulthood Age:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="adulthoodage" @bind="RaceAdulthoodAge"/>
+        <input class="nr-input-select" type="text" id="adulthood-age" @bind="_raceAdulthoodAge"/>
     </div>
     <div>
-        <label for="middleage">Middle Age:</label>
+        <label for="middle-age">Middle Age:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="middleage" @bind="RaceMiddleAge"/>
+        <input class="nr-input-select" type="text" id="middle-age" @bind="_raceMiddleAge"/>
     </div>
     <div>
-        <label for="venerableage">Venerable Age:</label>
+        <label for="venerable-age">Venerable Age:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="venerableage" @bind="RaceVenerableAge"/>
+        <input class="nr-input-select" type="text" id="venerable-age" @bind="_raceVenerableAge"/>
     </div>
     <div>
-        <label for="youngagedice">Young Age Dice:</label>
+        <label for="young-age-dice">Young Age Dice:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="youngagedice" @bind="RaceYoungAgeDice"/>
+        <input class="nr-input-select" type="text" id="young-age-dice" @bind="_raceYoungAgeDice"/>
     </div>
     <div>
-        <label for="middleagedice">Middle Age Dice:</label>
+        <label for="middle-age-dice">Middle Age Dice:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="middleagedice" @bind="RaceMiddleAgeDice"/>
+        <input class="nr-input-select" type="text" id="middle-age-dice" @bind="_raceMiddleAgeDice"/>
     </div>
     <div>
-        <label for="oldagedice">Old Age Dice:</label>
+        <label for="old-age-dice">Old Age Dice:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="oldagedice" @bind="RaceOldAgeDice"/>
+        <input class="nr-input-select" type="text" id="old-age-dice" @bind="_raceOldAgeDice"/>
     </div>
     <div>
-        <label for="femaleheight">Female Height:</label>
+        <label for="female-height">Female Height:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="femaleheight" @bind="RaceFemaleHeight"/>
+        <input class="nr-input-select" type="text" id="female-height" @bind="_raceFemaleHeight"/>
     </div>
     <div>
-        <label for="maleheight">Male Height:</label>
+        <label for="male-height">Male Height:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="maleheight" @bind="RaceMaleHeight"/>
+        <input class="nr-input-select" type="text" id="male-height" @bind="_raceMaleHeight"/>
     </div>
     <div>
-        <label for="femaleweight">Female Weight:</label>
+        <label for="female-weight">Female Weight:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="femaleweight" @bind="RaceFemaleWeight"/>
+        <input class="nr-input-select" type="text" id="female-weight" @bind="_raceFemaleWeight"/>
     </div>
     <div>
-        <label for="maleweight">Male Weight:</label>
+        <label for="male-weight">Male Weight:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="maleweight" @bind="RaceMaleWeight"/>
+        <input class="nr-input-select" type="text" id="male-weight" @bind="_raceMaleWeight"/>
     </div>
     <div>
-        <label for="sourcebook">Sourcebook:</label>
+        <label for="source-book">Source book:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="sourcebook" @bind="RaceSource"/>
+        <input class="nr-input-select" type="text" id="source-book" @bind="_raceSource"/>
     </div>
     <div>
         <label for="page">Page:</label>
     </div>
     <div>
-        <input class="nr-input-select" type="text" id="page" @bind="RacePage"/>
+        <input class="nr-input-select" type="text" id="page" @bind="_racePage"/>
     </div>
 
 </div>
 <div class="dnd-nr-top__right">
 <div>
-    <label for="appraisebonus">Appraise Bonus:</label>
+    <label for="appraise-bonus">Appraise Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="appraisebonus" @bind="RaceAppraiseBonus"/>
+    <input class="nr-input-select" type="text" id="appraise-bonus" @bind="_raceAppraiseBonus"/>
 </div>
 <div>
-    <label for="autohypnosisbonus">Autohypnosis Bonus:</label>
+    <label for="autohypnosis-bonus">Autohypnosis Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="autohypnosisbonus" @bind="RaceAutohypnosisBonus"/>
+    <input class="nr-input-select" type="text" id="autohypnosis-bonus" @bind="_raceAutohypnosisBonus"/>
 </div>
 <div>
-    <label for="balancebonus">Balance Bonus:</label>
+    <label for="balance-bonus">Balance Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="balancebonus" @bind="RaceBalanceBonus"/>
+    <input class="nr-input-select" type="text" id="balance-bonus" @bind="_raceBalanceBonus"/>
 </div>
 <div>
-    <label for="bluffbonus">Bluff Bonus:</label>
+    <label for="bluff-bonus">Bluff Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="bluffbonus" @bind="RaceBluffBonus"/>
+    <input class="nr-input-select" type="text" id="bluff-bonus" @bind="_raceBluffBonus"/>
 </div>
 <div>
-    <label for="climbbonus">Climb Bonus:</label>
+    <label for="climb-bonus">Climb Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="climbbonus" @bind="RaceClimbBonus"/>
+    <input class="nr-input-select" type="text" id="climb-bonus" @bind="_raceClimbBonus"/>
 </div>
 <div>
-    <label for="controlshapebonus">ControlShape Bonus:</label>
+    <label for="control-shape-bonus">ControlShape Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="controlshapebonus" @bind="RaceControlShapeBonus"/>
+    <input class="nr-input-select" type="text" id="control-shape-bonus" @bind="_raceControlShapeBonus"/>
 </div>
 <div>
-    <label for="concentrationbonus">Concentration Bonus:</label>
+    <label for="concentration-bonus">Concentration Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="concentrationbonus" @bind="RaceConcentrationBonus"/>
+    <input class="nr-input-select" type="text" id="concentration-bonus" @bind="_raceConcentrationBonus"/>
 </div>
 <div>
-    <label for="craftalchemybonus">CraftAlchemy Bonus:</label>
+    <label for="craft-alchemy-bonus">CraftAlchemy Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="craftalchemybonus" @bind="RaceCraftAlchemyBonus"/>
+    <input class="nr-input-select" type="text" id="craft-alchemy-bonus" @bind="_raceCraftAlchemyBonus"/>
 </div>
 <div>
-    <label for="decipherscriptbonus">DecipherScript Bonus:</label>
+    <label for="decipher-script-bonus">DecipherScript Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="decipherscriptbonus" @bind="RaceDecipherScriptBonus"/>
+    <input class="nr-input-select" type="text" id="decipher-script-bonus" @bind="_raceDecipherScriptBonus"/>
 </div>
 <div>
-    <label for="diplomacybonus">Diplomacy Bonus:</label>
+    <label for="diplomacy-bonus">Diplomacy Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="diplomacybonus" @bind="RaceDiplomacyBonus"/>
+    <input class="nr-input-select" type="text" id="diplomacy-bonus" @bind="_raceDiplomacyBonus"/>
 </div>
 <div>
-    <label for="disabledevicebonus">DisableDevice Bonus:</label>
+    <label for="disable-device-bonus">DisableDevice Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="disabledevicebonus" @bind="RaceDisableDeviceBonus"/>
+    <input class="nr-input-select" type="text" id="disable-device-bonus" @bind="_raceDisableDeviceBonus"/>
 </div>
 <div>
-    <label for="disguisebonus">Disguise Bonus:</label>
+    <label for="disguise-bonus">Disguise Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="disguisebonus" @bind="RaceDisguiseBonus"/>
+    <input class="nr-input-select" type="text" id="disguise-bonus" @bind="_raceDisguiseBonus"/>
 </div>
 <div>
-    <label for="escapeartistbonus">EscapeArtist Bonus:</label>
+    <label for="escape-artist-bonus">EscapeArtist Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="escapeartistbonus" @bind="RaceEscapeArtistBonus"/>
+    <input class="nr-input-select" type="text" id="escape-artist-bonus" @bind="_raceEscapeArtistBonus"/>
 </div>
 <div>
-    <label for="forgerybonus">Forgery Bonus:</label>
+    <label for="forgery-bonus">Forgery Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="forgerybonus" @bind="RaceForgeryBonus"/>
+    <input class="nr-input-select" type="text" id="forgery-bonus" @bind="_raceForgeryBonus"/>
 </div>
 <div>
-    <label for="gatherinformationbonus">GatherInformation Bonus:</label>
+    <label for="gather-information-bonus">GatherInformation Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="gatherinformationbonus" @bind="RaceGatherInformationBonus"/>
+    <input class="nr-input-select" type="text" id="gather-information-bonus" @bind="_raceGatherInformationBonus"/>
 </div>
 <div>
-    <label for="handleanimalbonus">HandleAnimal Bonus:</label>
+    <label for="handle-animal-bonus">HandleAnimal Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="handleanimalbonus" @bind="RaceHandleAnimalBonus"/>
+    <input class="nr-input-select" type="text" id="handle-animal-bonus" @bind="_raceHandleAnimalBonus"/>
 </div>
 <div>
-    <label for="healbonus">Heal Bonus:</label>
+    <label for="heal-bonus">Heal Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="healbonus" @bind="RaceHealBonus"/>
+    <input class="nr-input-select" type="text" id="heal-bonus" @bind="_raceHealBonus"/>
 </div>
 <div>
-    <label for="hidebonus">Hide Bonus:</label>
+    <label for="hide-bonus">Hide Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="hidebonus" @bind="RaceHideBonus"/>
+    <input class="nr-input-select" type="text" id="hide-bonus" @bind="_raceHideBonus"/>
 </div>
 <div>
-    <label for="hypnosisbonus">Hypnosis Bonus:</label>
+    <label for="hypnosis-bonus">Hypnosis Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="hypnosisbonus" @bind="RaceHypnosisBonus"/>
+    <input class="nr-input-select" type="text" id="hypnosis-bonus" @bind="_raceHypnosisBonus"/>
 </div>
 <div>
-    <label for="intimidatebonus">Intimidate Bonus:</label>
+    <label for="intimidate-bonus">Intimidate Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="intimidatebonus" @bind="RaceIntimidateBonus"/>
+    <input class="nr-input-select" type="text" id="intimidate-bonus" @bind="_raceIntimidateBonus"/>
 </div>
 <div>
-    <label for="jumpbonus">Jump Bonus:</label>
+    <label for="jump-bonus">Jump Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="jumpbonus" @bind="RaceJumpBonus"/>
+    <input class="nr-input-select" type="text" id="jump-bonus" @bind="_raceJumpBonus"/>
 </div>
 <div>
-    <label for="knowledgearcanabonus">Knowledge Arcana Bonus:</label>
+    <label for="knowledge-arcana-bonus">Knowledge Arcana Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgearcanabonus" @bind="RaceKnowledgeArcanaBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-arcana-bonus" @bind="_raceKnowledgeArcanaBonus"/>
 </div>
 <div>
-    <label for="knowledgearchandengbonus">Knowledge Arch And Eng Bonus:</label>
+    <label for="knowledge-arch-and-eng-bonus">Knowledge Arch And Eng Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgearchandengbonus" @bind="RaceKnowledgeArchAndEngBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-arch-and-eng-bonus" @bind="_raceKnowledgeArchAndEngBonus"/>
 </div>
 <div>
-    <label for="knowledgedungeoneeringbonus">Knowledge Dungeoneering Bonus:</label>
+    <label for="knowledge-dungeoneering-bonus">Knowledge Dungeoneering Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgedungeoneeringbonus" @bind="RaceKnowledgeDungeoneeringBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-dungeoneering-bonus" @bind="_raceKnowledgeDungeoneeringBonus"/>
 </div>
 <div>
-    <label for="knowledgegeographybonus">Knowledge Geography Bonus:</label>
+    <label for="knowledge-geography-bonus">Knowledge Geography Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgegeographybonus" @bind="RaceKnowledgeGeographyBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-geography-bonus" @bind="_raceKnowledgeGeographyBonus"/>
 </div>
 <div>
-    <label for="knowledgehistorybonus">Knowledge History Bonus:</label>
+    <label for="knowledge-history-bonus">Knowledge History Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgehistorybonus" @bind="RaceKnowledgeHistoryBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-history-bonus" @bind="_raceKnowledgeHistoryBonus"/>
 </div>
 <div>
-    <label for="knowledgelocalbonus">Knowledge Local Bonus:</label>
+    <label for="knowledge-local-bonus">Knowledge Local Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgelocalbonus" @bind="RaceKnowledgeLocalBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-local-bonus" @bind="_raceKnowledgeLocalBonus"/>
 </div>
 <div>
-    <label for="knowledgemonsterlorebonus">Knowledge MonsterLore Bonus:</label>
+    <label for="knowledge-monster-lore-bonus">Knowledge MonsterLore Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgemonsterlorebonus" @bind="RaceKnowledgeMonsterLoreBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-monster-lore-bonus" @bind="_raceKnowledgeMonsterLoreBonus"/>
 </div>
 <div>
-    <label for="knowledgenaturebonus">Knowledge Nature Bonus:</label>
+    <label for="knowledge-nature-bonus">Knowledge Nature Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgenaturebonus" @bind="RaceKnowledgeNatureBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-nature-bonus" @bind="_raceKnowledgeNatureBonus"/>
 </div>
 <div>
-    <label for="knowledgenobilitybonus">Knowledge Nobility Bonus:</label>
+    <label for="knowledge-nobility-bonus">Knowledge Nobility Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgenobilitybonus" @bind="RaceKnowledgeNobilityBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-nobility-bonus" @bind="_raceKnowledgeNobilityBonus"/>
 </div>
 <div>
-    <label for="knowledgepsionicsbonus">Knowledge Psionics Bonus:</label>
+    <label for="knowledge-psionics-bonus">Knowledge Psionics Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgepsionicsbonus" @bind="RaceKnowledgePsionicsBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-psionics-bonus" @bind="_raceKnowledgePsionicsBonus"/>
 </div>
 <div>
-    <label for="knowledgeravenloftbonus">Knowledge Ravenloft Bonus:</label>
+    <label for="knowledge-ravenloft-bonus">Knowledge Ravenloft Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgeravenloftbonus" @bind="RaceKnowledgeRavenloftBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-ravenloft-bonus" @bind="_raceKnowledgeRavenloftBonus"/>
 </div>
 <div>
-    <label for="knowledgereligionbonus">Knowledge Religion Bonus:</label>
+    <label for="knowledge-religion-bonus">Knowledge Religion Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgereligionbonus" @bind="RaceKnowledgeReligionBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-religion-bonus" @bind="_raceKnowledgeReligionBonus"/>
 </div>
 <div>
-    <label for="knowledgetheplanesbonus">Knowledge The Planess Bonus:</label>
+    <label for="knowledge-the-planes-bonus">Knowledge The Planes Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="knowledgetheplanesbonus" @bind="RaceKnowledgeThePlanesBonus"/>
+    <input class="nr-input-select" type="text" id="knowledge-the-planes-bonus" @bind="_raceKnowledgeThePlanesBonus"/>
 </div>
 <div>
-    <label for="listenbonus">Listen Bonus:</label>
+    <label for="listen-bonus">Listen Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="listenbonus" @bind="RaceListenBonus"/>
+    <input class="nr-input-select" type="text" id="listen-bonus" @bind="_raceListenBonus"/>
 </div>
 <div>
-    <label for="martiallorebonus">MartialLore Bonus:</label>
+    <label for="martial-lore-bonus">MartialLore Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="martiallorebonus" @bind="RaceMartialLoreBonus"/>
+    <input class="nr-input-select" type="text" id="martial-lore-bonus" @bind="_raceMartialLoreBonus"/>
 </div>
 <div>
-    <label for="movesilentlybonus">MoveSilently Bonus:</label>
+    <label for="move-silently-bonus">MoveSilently Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="movesilentlybonus" @bind="RaceMoveSilentlyBonus"/>
+    <input class="nr-input-select" type="text" id="move-silently-bonus" @bind="_raceMoveSilentlyBonus"/>
 </div>
 <div>
-    <label for="openlockbonus">OpenLock Bonus:</label>
+    <label for="open-lock-bonus">OpenLock Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="openlockbonus" @bind="RaceOpenLockBonus"/>
+    <input class="nr-input-select" type="text" id="open-lock-bonus" @bind="_raceOpenLockBonus"/>
 </div>
 <div>
-    <label for="psicraftbonus">Psicraft Bonus:</label>
+    <label for="psicraft-bonus">Psicraft Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="psicraftbonus" @bind="RacePsicraftBonus"/>
+    <input class="nr-input-select" type="text" id="psicraft-bonus" @bind="_racePsicraftBonus"/>
 </div>
 <div>
-    <label for="ridebonus">Ride Bonus:</label>
+    <label for="ride-bonus">Ride Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="ridebonus" @bind="RaceRideBonus"/>
+    <input class="nr-input-select" type="text" id="ride-bonus" @bind="_raceRideBonus"/>
 </div>
 <div>
-    <label for="searchbonus">Search Bonus:</label>
+    <label for="search-bonus">Search Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="searchbonus" @bind="RaceSearchBonus"/>
+    <input class="nr-input-select" type="text" id="search-bonus" @bind="_raceSearchBonus"/>
 </div>
 <div>
-    <label for="sensemotivebonus">SenseMotive Bonus:</label>
+    <label for="sense-motive-bonus">SenseMotive Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="sensemotivebonus" @bind="RaceSenseMotiveBonus"/>
+    <input class="nr-input-select" type="text" id="sense-motive-bonus" @bind="_raceSenseMotiveBonus"/>
 </div>
 <div>
-    <label for="skilltricksbonus">SkillTricks Bonus:</label>
+    <label for="skill-tricks-bonus">SkillTricks Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="skilltricksbonus" @bind="RaceSkillTricksBonus"/>
+    <input class="nr-input-select" type="text" id="skill-tricks-bonus" @bind="_raceSkillTricksBonus"/>
 </div>
 <div>
-    <label for="sleightofhandbonus">SleightofHand Bonus:</label>
+    <label for="sleight-of-hand-bonus">SleightofHand Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="sleightofhandbonus" @bind="RaceSleightofHandBonus"/>
+    <input class="nr-input-select" type="text" id="sleight-of-hand-bonus" @bind="_raceSleightofHandBonus"/>
 </div>
 <div>
-    <label for="speaklanguagebonus">SpeakLanguage Bonus:</label>
+    <label for="speak-language-bonus">SpeakLanguage Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="speaklanguagebonus" @bind="RaceSpeakLanguageBonus"/>
+    <input class="nr-input-select" type="text" id="speak-language-bonus" @bind="_raceSpeakLanguageBonus"/>
 </div>
 <div>
-    <label for="spellcraftbonus">Spellcraft Bonus:</label>
+    <label for="spellcraft-bonus">Spellcraft Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="spellcraftbonus" @bind="RaceSpellcraftBonus"/>
+    <input class="nr-input-select" type="text" id="spellcraft-bonus" @bind="_raceSpellcraftBonus"/>
 </div>
 <div>
-    <label for="spotbonus">Spot Bonus:</label>
+    <label for="spot-bonus">Spot Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="spotbonus" @bind="RaceSpotBonus"/>
+    <input class="nr-input-select" type="text" id="spot-bonus" @bind="_raceSpotBonus"/>
 </div>
 <div>
-    <label for="survivalbonus">Survival Bonus:</label>
+    <label for="survival-bonus">Survival Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="survivalbonus" @bind="RaceSurvivalBonus"/>
+    <input class="nr-input-select" type="text" id="survival-bonus" @bind="_raceSurvivalBonus"/>
 </div>
 <div>
-    <label for="swimbonus">Swim Bonus:</label>
+    <label for="swim-bonus">Swim Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="swimbonus" @bind="RaceSwimBonus"/>
+    <input class="nr-input-select" type="text" id="swim-bonus" @bind="_raceSwimBonus"/>
 </div>
 <div>
-    <label for="tumblebonus">Tumble Bonus:</label>
+    <label for="tumble-bonus">Tumble Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="tumblebonus" @bind="RaceTumbleBonus"/>
+    <input class="nr-input-select" type="text" id="tumble-bonus" @bind="_raceTumbleBonus"/>
 </div>
 <div>
-    <label for="usemagicdevicebonus">Use Magic Device Bonus:</label>
+    <label for="use-magic-device-bonus">Use Magic Device Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="usemagicdevicebonus" @bind="RaceUseMagicDeviceBonus"/>
+    <input class="nr-input-select" type="text" id="use-magic-device-bonus" @bind="_raceUseMagicDeviceBonus"/>
 </div>
 <div>
-    <label for="usepsionicdevicebonus">Use Psionic Device Bonus:</label>
+    <label for="use-psionic-device-bonus">Use Psionic Device Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="usepsionicdevicebonus" @bind="RaceUsePsionicDeviceBonus"/>
+    <input class="nr-input-select" type="text" id="use-psionic-device-bonus" @bind="_raceUsePsionicDeviceBonus"/>
 </div>
 <div>
-    <label for="useropebonus">Use Rope Bonus:</label>
+    <label for="use-rope-bonus">Use Rope Bonus:</label>
 </div>
 <div>
-    <input class="nr-input-select" type="text" id="useropebonus" @bind="RaceUseRopeBonus"/>
+    <input class="nr-input-select" type="text" id="use-rope-bonus" @bind="_raceUseRopeBonus"/>
 </div>
 </div>
 </div>
@@ -510,26 +508,26 @@
 
 @code {
 
-    private string RaceName, RaceSize, RaceYoungAgeDice, RaceMiddleAgeDice, RaceOldAgeDice, RaceHeightDice, RaceWeightDice, RaceDescription, RaceSource;
+    private string _raceName, _raceSize, _raceYoungAgeDice, _raceMiddleAgeDice, _raceOldAgeDice, _raceHeightDice, _raceWeightDice, _raceDescription, _raceSource;
 
-    private int RaceBaseSpeed, RaceStrengthBonus, RaceDexterityBonus, RaceConstitutionBonus,
-        RaceIntelligenceBonus, RaceWisdomBonus, RaceCharismaBonus, RaceAppraiseBonus, RaceAutohypnosisBonus,
-        RaceBalanceBonus, RaceBluffBonus, RaceClimbBonus, RaceControlShapeBonus, RaceConcentrationBonus,
-        RaceCraftAlchemyBonus, RaceDecipherScriptBonus, RaceDiplomacyBonus, RaceDisableDeviceBonus,
-        RaceDisguiseBonus, RaceEscapeArtistBonus, RaceForgeryBonus, RaceGatherInformationBonus, RaceHandleAnimalBonus,
-        RaceHealBonus, RaceHideBonus, RaceHypnosisBonus, RaceIntimidateBonus, RaceJumpBonus, RaceKnowledgeArcanaBonus,
-        RaceKnowledgeArchAndEngBonus, RaceKnowledgeDungeoneeringBonus, RaceKnowledgeGeographyBonus,
-        RaceKnowledgeHistoryBonus, RaceKnowledgeLocalBonus, RaceKnowledgeMonsterLoreBonus, RaceKnowledgeNatureBonus,
-        RaceKnowledgeNobilityBonus, RaceKnowledgePsionicsBonus, RaceKnowledgeRavenloftBonus, RaceKnowledgeReligionBonus,
-        RaceKnowledgeThePlanesBonus, RaceListenBonus, RaceMartialLoreBonus, RaceMoveSilentlyBonus, RaceOpenLockBonus,
-        RacePsicraftBonus, RaceRideBonus, RaceSearchBonus, RaceSenseMotiveBonus, RaceSkillTricksBonus,
-        RaceSleightofHandBonus, RaceSpeakLanguageBonus, RaceSpellcraftBonus, RaceSpotBonus, RaceSurvivalBonus,
-        RaceSwimBonus, RaceTumbleBonus, RaceUseMagicDeviceBonus, RaceUsePsionicDeviceBonus, RaceUseRopeBonus,
-        RaceFortitudeBonus, RaceReflexBonus, RaceWillBonus, RaceSkillPointBonus, RaceSkillPointsPerLevelBonus,
-        RaceFeatBonus, RaceAdulthoodAge, RaceMiddleAge, RaceVenerableAge, RaceFemaleHeight, RaceMaleHeight,
-        RaceFemaleWeight, RaceMaleWeight, RacePage;
+    private int _raceBaseSpeed, _raceStrengthBonus, _raceDexterityBonus, _raceConstitutionBonus,
+        _raceIntelligenceBonus, _raceWisdomBonus, _raceCharismaBonus, _raceAppraiseBonus, _raceAutohypnosisBonus,
+        _raceBalanceBonus, _raceBluffBonus, _raceClimbBonus, _raceControlShapeBonus, _raceConcentrationBonus,
+        _raceCraftAlchemyBonus, _raceDecipherScriptBonus, _raceDiplomacyBonus, _raceDisableDeviceBonus,
+        _raceDisguiseBonus, _raceEscapeArtistBonus, _raceForgeryBonus, _raceGatherInformationBonus, _raceHandleAnimalBonus,
+        _raceHealBonus, _raceHideBonus, _raceHypnosisBonus, _raceIntimidateBonus, _raceJumpBonus, _raceKnowledgeArcanaBonus,
+        _raceKnowledgeArchAndEngBonus, _raceKnowledgeDungeoneeringBonus, _raceKnowledgeGeographyBonus,
+        _raceKnowledgeHistoryBonus, _raceKnowledgeLocalBonus, _raceKnowledgeMonsterLoreBonus, _raceKnowledgeNatureBonus,
+        _raceKnowledgeNobilityBonus, _raceKnowledgePsionicsBonus, _raceKnowledgeRavenloftBonus, _raceKnowledgeReligionBonus,
+        _raceKnowledgeThePlanesBonus, _raceListenBonus, _raceMartialLoreBonus, _raceMoveSilentlyBonus, _raceOpenLockBonus,
+        _racePsicraftBonus, _raceRideBonus, _raceSearchBonus, _raceSenseMotiveBonus, _raceSkillTricksBonus,
+        _raceSleightofHandBonus, _raceSpeakLanguageBonus, _raceSpellcraftBonus, _raceSpotBonus, _raceSurvivalBonus,
+        _raceSwimBonus, _raceTumbleBonus, _raceUseMagicDeviceBonus, _raceUsePsionicDeviceBonus, _raceUseRopeBonus,
+        _raceFortitudeBonus, _raceReflexBonus, _raceWillBonus, _raceSkillPointBonus, _raceSkillPointsPerLevelBonus,
+        _raceFeatBonus, _raceAdulthoodAge, _raceMiddleAge, _raceVenerableAge, _raceFemaleHeight, _raceMaleHeight,
+        _raceFemaleWeight, _raceMaleWeight, _racePage;
     
-    private void CreateNewRace()
+    private static void CreateNewRace()
     {
         Console.WriteLine("Database Saving Not Implemented");
     }
