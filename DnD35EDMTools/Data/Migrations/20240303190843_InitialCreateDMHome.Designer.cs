@@ -3,34 +3,22 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240303190843_InitialCreateDMHome")]
+    partial class InitialCreateDMHome
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
-
-            modelBuilder.Entity("CampaignDataSourceBookData", b =>
-                {
-                    b.Property<int>("AllowedSourcesId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("CampaignSourceBooksId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("AllowedSourcesId", "CampaignSourceBooksId");
-
-                    b.HasIndex("CampaignSourceBooksId");
-
-                    b.ToTable("JoinTableCampaignSourceBooks", (string)null);
-                });
 
             modelBuilder.Entity("ColourDataRaceData", b =>
                 {
@@ -784,6 +772,9 @@ namespace DnD35EDMTools.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
+                    b.Property<int?>("CampaignDataId")
+                        .HasColumnType("INTEGER");
+
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
@@ -791,17 +782,13 @@ namespace DnD35EDMTools.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("Implemented")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsSelected")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");
+
+                    b.HasIndex("CampaignDataId");
 
                     b.ToTable("SourceBooks");
                 });
@@ -1268,21 +1255,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("CampaignDataSourceBookData", b =>
-                {
-                    b.HasOne("DnD35EDMTools.Data.SourceBookData", null)
-                        .WithMany()
-                        .HasForeignKey("AllowedSourcesId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DnD35EDMTools.Data.CampaignData", null)
-                        .WithMany()
-                        .HasForeignKey("CampaignSourceBooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
             modelBuilder.Entity("ColourDataRaceData", b =>
                 {
                     b.HasOne("DnD35EDMTools.Data.ColourData", null)
@@ -1337,6 +1309,13 @@ namespace DnD35EDMTools.Data.Migrations
                     b.HasOne("DnD35EDMTools.Data.RaceData", null)
                         .WithMany("RacialFeatureList")
                         .HasForeignKey("RaceDataId");
+                });
+
+            modelBuilder.Entity("DnD35EDMTools.Data.SourceBookData", b =>
+                {
+                    b.HasOne("DnD35EDMTools.Data.CampaignData", null)
+                        .WithMany("AllowedSources")
+                        .HasForeignKey("CampaignDataId");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.SpellsSLAData", b =>
@@ -1425,6 +1404,11 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
+                });
+
+            modelBuilder.Entity("DnD35EDMTools.Data.CampaignData", b =>
+                {
+                    b.Navigation("AllowedSources");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.FeatsTraitsData", b =>

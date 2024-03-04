@@ -23,6 +23,8 @@ namespace DnD35EDMTools.Data
         public DbSet<OrderData> Orders { get; set; }
         public DbSet<MoralityData> Moralities { get; set; }
         public DbSet<ClassData> Classes { get; set; }
+        public DbSet<CampaignData> Campaigns { get; set; }
+        public DbSet<SourceBookData> SourceBooks { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
@@ -73,6 +75,14 @@ namespace DnD35EDMTools.Data
                             .WithMany()
                             .HasForeignKey("AllowedAlignmentId")
                     );
+                
+                modelBuilder.Entity<CampaignData>()
+                    .HasMany(c => c.AllowedSources)
+                    .WithMany(s => s.CampaignSourceBooks)
+                    .UsingEntity(joinEntity =>
+                    {
+                        joinEntity.ToTable("JoinTableCampaignSourceBooks");
+                    });
             }
     }
 }

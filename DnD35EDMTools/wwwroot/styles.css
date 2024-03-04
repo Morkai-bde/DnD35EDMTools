@@ -559,6 +559,73 @@
     height: 20px;
 }
 
+/*DM Home Styles */
+
+.dnd-dm-home-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 80vw;
+}
+
+.dnd-dm-home-main-content {
+    height: 100%;
+    width: 100%;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-dm-home-sheet {
+    height: 300px;
+    width: 698px;
+    border: 2px solid;
+    padding: 5px;
+}
+
+.dnd-dm-home-top-section {
+    display: grid;
+    grid-template-columns: 60% 40%;
+    height: 100%;
+}
+
+.dnd-dm-home-top__left {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-columns: .5fr 1.5fr;
+}
+
+.dnd-dm-home-top__right {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-columns: .2fr 1.8fr;
+}
+
+.dm-select {
+    width: 120px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
+
+.dm-input {
+    width: 120px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+.dm-textarea {
+    resize: none;
+    width: 70%;
+    height: 100%;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px
+}
+
 @media only screen and (max-width: 1050px) {
     .top-section {
         display: grid;
