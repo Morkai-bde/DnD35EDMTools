@@ -1,0 +1,506 @@
+﻿@page "/DMHome"
+
+@using DnD35EDMTools.Data
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<h3>DM Home</h3>
+
+<head>
+    <meta charset="UTF-8"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>DM Home</title>
+    <link rel="stylesheet" href="./styles.css"/>
+</head>
+
+<div class="dnd-dm-home-container">
+    <div class="dnd-dm-home-main-content">
+        <div class="dnd-dm-home-sheet">
+            <div class="dnd-dm-home-top-section">
+                <div class="dnd-dm-home-top__left">
+                    <div>
+                        <label for="campaign-name">Campaign Name</label>
+                    </div>
+                    <div>
+                        <select class="dm-select" id="campaign-name" @bind="SelectedCampaignId">
+                            @foreach (var id in _campaigns)
+                            {
+                                <option value=@id.Id title=@id.Description>@id.Name</option>
+                            }
+                        </select>
+                    </div>
+                    @if (_selectedCampaignId >= 2)
+                    {
+                        <div>
+                            <label for="campaign-name">Campaign Name:</label>
+                        </div>
+                        <div>
+                            <input class="dm-input" type="text" id="name" @bind="CampaignName"/>
+                        </div>
+                        <div>
+                            <label for="stat-rolling-method">Stat Rolling Method</label>
+                        </div>
+                        <div>
+                            <select class="dm-input" id="stat-rolling-method" @bind="SelectedStatRollingMethod">
+                                <option value="3d6" title="Roll 3d6">3D6</option>
+                                <option value="3D6R1" title="Roll 3d6 and Re Roll any 1's">3D6R1</option>
+                                <option value="4D6DL" title="Roll 4d6 and drop the lowest value">4D6DL</option>
+                                <option value="SAL" title="Players can assign the following stats: 13, 12, 11, 10, 9, 8">Standard Array (Low)</option>
+                                <option value="SAA" title="Players can assign the following stats: 15, 14, 13, 12, 10, 8">Standard Array (Average)</option>
+                                <option value="SAH" title="Players can assign the following stats: 17, 16, 15, 14, 11, 9">Standard Array (High)</option>
+                                <option value="PBA" title="Players can divide 72 points between stats on a 1-1 basis">Point Buy</option>
+                                <option value="PBR" title="Players can divide a random amount of points between 60 and 108 between stats on a 1-1 basis">Random Point Buy</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="hit-point-rolling-method">Hit Point Rolling Method</label>
+                        </div>
+                        <div>
+                            <select class="dm-input" id="hit-point-rolling-method" @bind="SelectedHitPointRollingMethod">
+                                <option value="REL" title="Max roll at Level 1, then roll every level afterwards, Players get up to 3 rolls, if they choose to roll again, they can not take the previous result. If they run out of rolls, they have to take the last rolled result.">Roll Every Level</option>
+                                <option value="HP1" title="Max roll at Level 1, then 1/2 +1 of the class dice per level afterwards">1/2 +1</option>
+                                <option value="TRD" title="Max roll at Level 1, then 2/3 Rounded down of the class dice per level afterwards">2/3 Rounded Down</option>
+                                <option value="QRD" title="Max roll at Level 1, then 3/4 Rounded down of the class dice per level afterwards">3/4 Rounded Down</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="hide-trained-only-skills" value="@HideTrainedOnlySkills" @bind="HideTrainedOnlySkills"/>
+                        </div>
+                        <div>
+                            <label for="hide-trained-only-skills">Hide trained only skills on character sheet.</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-avatar-points" value="@AllowAvatarPoints" @bind="AllowAvatarPoints"/>
+                        </div>
+                        <div>
+                            <label for="allow-avatar-points">Enable Avatar Points.</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-luck" value="@AllowLuck" @bind="AllowLuck"/>
+                        </div>
+                        <div>
+                            <label for="allow-luck">Enable custom luck stat.</label>
+                        </div>
+                        <div>
+                            <label for="description">Description</label>
+                        </div>
+                        <div>
+                            <textarea class="dm-textarea" id="description" @bind="Description"></textarea>
+                        </div>
+                    }
+                </div>
+                <div class="dnd-dm-home-top__right">
+                    @if (_selectedCampaignId >= 2)
+                    {
+                        @foreach (var book in _sourceBooks)
+                        {
+                            <div>
+                                <input type="checkbox" id="@book.Id" @bind="_selectedSourceBooks[book.Id]"/>
+                            </div>
+                            <div>
+                                <label for="@book.Id">@book.Name</label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    &nbsp;
+</div>
+
+<button style="padding: 4px" @onclick="CreateCampaign">Create Campaign</button>&nbsp;
+<button style="padding: 4px" @onclick="UpdateCampaign">Update Campaign</button>&nbsp;
+<button style="padding: 4px" @onclick="DeleteCampaign">Delete Campaign</button>
+&nbsp;
+<div>
+    Is a Dry Run?
+    <input type="checkbox" @bind="_dryRun"/>
+</div>
+
+@code {
+    private bool _dryRun = true;
+
+    private int _selectedCampaignId = 1;
+
+    public int SelectedCampaignId
+    {
+        get { return _selectedCampaignId; }
+        set
+        {
+            _selectedCampaignId = value;
+            LoadSelectedBooks();
+        }
+    }
+
+    private Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
+
+    private string CampaignName
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.Name;
+                }
+            }
+
+            return "";
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.Name = value;
+                }
+            }
+        }
+    }
+
+    private string SelectedStatRollingMethod
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.StatRollingMethod;
+                }
+            }
+
+            return "";
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.StatRollingMethod = value;
+                }
+            }
+        }
+    }
+
+    private string SelectedHitPointRollingMethod
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.HitPointRollingMethod;
+                }
+            }
+
+            return "";
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.HitPointRollingMethod = value;
+                }
+            }
+        }
+    }
+
+    private bool HideTrainedOnlySkills
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.HideTrainedOnlySkills;
+                }
+            }
+
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.HideTrainedOnlySkills = value;
+                }
+            }
+        }
+    }
+
+    private bool AllowAvatarPoints
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.AllowAvatarPoints;
+                }
+            }
+
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.AllowAvatarPoints = value;
+                }
+            }
+        }
+    }
+
+    private bool AllowLuck
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.AllowLuck;
+                }
+            }
+
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.AllowLuck = value;
+                }
+            }
+        }
+    }
+
+    private string? Description
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.Description;
+                }
+            }
+
+            return "";
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.Description = value;
+                }
+            }
+        }
+    }
+
+    private List<CampaignData> _campaigns = new List<CampaignData>();
+    private List<SourceBookData> _sourceBooks = new List<SourceBookData>();
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var db = DbContext;
+        _campaigns = await db.Campaigns.ToListAsync();
+        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+
+        foreach (var book in _sourceBooks)
+        {
+            _selectedSourceBooks[book.Id] = false;
+        }
+    }
+
+    private async void LoadSelectedBooks()
+    {
+        if (_selectedCampaignId != 0)
+        {
+            await using var db = DbContext;
+            var selectedCampaign = await db.Campaigns
+                .Include(c => c.AllowedSources)
+                .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+            if (selectedCampaign != null)
+            {
+                foreach (var book in _sourceBooks)
+                {
+                    _selectedSourceBooks[book.Id] = selectedCampaign.AllowedSources.Any(s => s.Id == book.Id);
+                }
+            }
+        }
+    }
+
+    private async Task CreateCampaign()
+    {
+        var newCampaign = new CampaignData
+        {
+            Name = CampaignName,
+            Description = Description,
+            StatRollingMethod = SelectedStatRollingMethod,
+            HitPointRollingMethod = SelectedHitPointRollingMethod,
+            HideTrainedOnlySkills = HideTrainedOnlySkills,
+            AllowAvatarPoints = AllowAvatarPoints,
+            AllowLuck = AllowLuck,
+            AllowedSources = new List<SourceBookData>()
+        };
+
+        newCampaign.AllowedSources.Clear();
+
+        var db = DbContext;
+        db.Campaigns.Add(newCampaign);
+
+        if (!_dryRun)
+            await db.SaveChangesAsync();
+
+        foreach (var book in _sourceBooks)
+        {
+            if (_selectedSourceBooks[book.Id])
+            {
+                if (newCampaign.AllowedSources.Any(x => x.Id == newCampaign.Id)) continue;
+                newCampaign.AllowedSources.Add(book);
+            }
+        }
+
+        db.Campaigns.Update(newCampaign);
+
+        if (!_dryRun)
+            await db.SaveChangesAsync();
+
+        _sourceBooks.Clear();
+        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+        _selectedSourceBooks.Clear();
+
+        foreach (var book in _sourceBooks)
+        {
+            _selectedSourceBooks[book.Id] = false;
+        }
+
+        _campaigns = await db.Campaigns.ToListAsync();
+    }
+
+    private async Task UpdateCampaign()
+    {
+        if (_selectedCampaignId == 0)
+        {
+            Console.WriteLine("No campaign selected.");
+            return;
+        }
+
+        if (_selectedCampaignId <= 2)
+        {
+            Console.WriteLine("Can not update default campaigns");
+            return;
+        }
+
+        await using var db = DbContext;
+
+        var campaignToUpdate = await db.Campaigns
+            .Include(c => c.AllowedSources)
+            .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+        if (campaignToUpdate == null)
+        {
+            Console.WriteLine("Campaign not found.");
+            return;
+        }
+
+        campaignToUpdate.Name = CampaignName;
+        campaignToUpdate.Description = Description;
+        campaignToUpdate.StatRollingMethod = SelectedStatRollingMethod;
+        campaignToUpdate.HitPointRollingMethod = SelectedHitPointRollingMethod;
+        campaignToUpdate.HideTrainedOnlySkills = HideTrainedOnlySkills;
+        campaignToUpdate.AllowAvatarPoints = AllowAvatarPoints;
+        campaignToUpdate.AllowLuck = AllowLuck;
+
+        var selectedSourceBooks = _sourceBooks.Where(book => _selectedSourceBooks[book.Id]);
+
+        campaignToUpdate.AllowedSources.Clear();
+
+        foreach (var book in selectedSourceBooks)
+        {
+            db.Attach(book);
+            campaignToUpdate.AllowedSources.Add(book);
+        }
+
+        if (!_dryRun)
+            await db.SaveChangesAsync();
+        _campaigns = await db.Campaigns.ToListAsync();
+    }
+
+    private async Task DeleteCampaign()
+    {
+        if (_selectedCampaignId == 0)
+        {
+            Console.WriteLine("No campaign selected.");
+            return;
+        }
+        
+        if (_selectedCampaignId <= 2)
+        {
+            Console.WriteLine("Can not delete default campaigns");
+            return;
+        }
+
+        await using var db = DbContext;
+
+        var campaignToDelete = await db.Campaigns.Include(c => c.AllowedSources)
+            .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+        if (campaignToDelete == null)
+        {
+            Console.WriteLine("Campaign not found.");
+            return;
+        }
+        foreach (var sourceBook in campaignToDelete.AllowedSources)
+        {
+            sourceBook.CampaignSourceBooks.Remove(campaignToDelete);
+        }
+        
+        db.Campaigns.Remove(campaignToDelete);
+
+        if (!_dryRun)
+        {
+            await db.SaveChangesAsync();
+            _campaigns = await db.Campaigns.ToListAsync();
+        }
+    }
+}
