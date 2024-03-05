@@ -8,7 +8,5 @@ public class SourceBookData
     public string Abbreviation { get; set; }
     public string? Description { get; set; }
     public bool Implemented { get; set; } = false;
-
-    public bool IsSelected { get; set; } = false;
     public List<CampaignData>CampaignSourceBooks { get; set; }
 }

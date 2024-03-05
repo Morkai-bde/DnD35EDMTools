@@ -22,7 +22,7 @@
                         <label for="campaign-name">Campaign Name</label>
                     </div>
                     <div>
-                        <select class="dm-select" id="campaign-name" @bind="_selectedCampaignId">
+                        <select class="dm-select" id="campaign-name" @bind="SelectedCampaignId">
                             @foreach (var id in _campaigns)
                             {
                                 <option value=@id.Id title=@id.Description>@id.Name</option>
@@ -35,16 +35,21 @@
                             <label for="campaign-name">Campaign Name:</label>
                         </div>
                         <div>
-                            <input type="text" id="name" @bind="CampaignName"/>
+                            <input class="dm-input" type="text" id="name" @bind="CampaignName"/>
                         </div>
                         <div>
                             <label for="stat-rolling-method">Stat Rolling Method</label>
                         </div>
                         <div>
-                            <select id="stat-rolling-method" @bind="SelectedStatRollingMethod">
-                                <option value="1" title="3D6">3D6</option>
-                                <option value="2" title="4D6DL">4D6DL</option>
-                                <option value="3" title="4D6R1">4D6R1</option>
+                            <select class="dm-input" id="stat-rolling-method" @bind="SelectedStatRollingMethod">
+                                <option value="3d6" title="Roll 3d6">3D6</option>
+                                <option value="3D6R1" title="Roll 3d6 and Re Roll any 1's">3D6R1</option>
+                                <option value="4D6DL" title="Roll 4d6 and drop the lowest value">4D6DL</option>
+                                <option value="SAL" title="Players can assign the following stats: 13, 12, 11, 10, 9, 8">Standard Array (Low)</option>
+                                <option value="SAA" title="Players can assign the following stats: 15, 14, 13, 12, 10, 8">Standard Array (Average)</option>
+                                <option value="SAH" title="Players can assign the following stats: 17, 16, 15, 14, 11, 9">Standard Array (High)</option>
+                                <option value="PBA" title="Players can divide 72 points between stats on a 1-1 basis">Point Buy</option>
+                                <option value="PBR" title="Players can divide a random amount of points between 60 and 108 between stats on a 1-1 basis">Random Point Buy</option>
                             </select>
                         </div>
 
@@ -52,10 +57,11 @@
                             <label for="hit-point-rolling-method">Hit Point Rolling Method</label>
                         </div>
                         <div>
-                            <select id="hit-point-rolling-method" @bind="SelectedHitPointRollingMethod">
-                                <option value="3D6" title="3D6">3D6</option>
-                                <option value="4D6DL" title="4D6DL">4D6DL</option>
-                                <option value="4D6R1" title="4D6R1">4D6R1</option>
+                            <select class="dm-input" id="hit-point-rolling-method" @bind="SelectedHitPointRollingMethod">
+                                <option value="REL" title="Max roll at Level 1, then roll every level afterwards, Players get up to 3 rolls, if they choose to roll again, they can not take the previous result. If they run out of rolls, they have to take the last rolled result.">Roll Every Level</option>
+                                <option value="HP1" title="Max roll at Level 1, then 1/2 +1 of the class dice per level afterwards">1/2 +1</option>
+                                <option value="TRD" title="Max roll at Level 1, then 2/3 Rounded down of the class dice per level afterwards">2/3 Rounded Down</option>
+                                <option value="QRD" title="Max roll at Level 1, then 3/4 Rounded down of the class dice per level afterwards">3/4 Rounded Down</option>
                             </select>
                         </div>
                         <div>
@@ -90,7 +96,7 @@
                         @foreach (var book in _sourceBooks)
                         {
                             <div>
-                                <input type="checkbox" id="@book.Id" @bind="_sourceBooks.Single(b => b.Id == book.Id).IsSelected"/>
+                                <input type="checkbox" id="@book.Id" @bind="_selectedSourceBooks[book.Id]"/>
                             </div>
                             <div>
                                 <label for="@book.Id">@book.Name</label>
@@ -119,6 +125,18 @@
     private bool _dryRun = true;
 
     private int _selectedCampaignId = 1;
+
+    public int SelectedCampaignId
+    {
+        get { return _selectedCampaignId; }
+        set
+        {
+            _selectedCampaignId = value;
+            LoadSelectedBooks();
+        }
+    }
+
+    private Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
 
     private string CampaignName
     {
@@ -287,7 +305,7 @@
             }
         }
     }
-    
+
     private string? Description
     {
         get
@@ -324,14 +342,37 @@
     {
         await using var db = DbContext;
         _campaigns = await db.Campaigns.ToListAsync();
-        _sourceBooks = await db.SourceBooks.Where(book => book.Implemented).ToListAsync();
+        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+
+        foreach (var book in _sourceBooks)
+        {
+            _selectedSourceBooks[book.Id] = false;
+        }
+    }
+
+    private async void LoadSelectedBooks()
+    {
+        if (_selectedCampaignId != 0)
+        {
+            await using var db = DbContext;
+            var selectedCampaign = await db.Campaigns
+                .Include(c => c.AllowedSources)
+                .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+            if (selectedCampaign != null)
+            {
+                foreach (var book in _sourceBooks)
+                {
+                    _selectedSourceBooks[book.Id] = selectedCampaign.AllowedSources.Any(s => s.Id == book.Id);
+                }
+            }
+        }
     }
 
     private async Task CreateCampaign()
     {
         var newCampaign = new CampaignData
         {
-            Id = 0,
             Name = CampaignName,
             Description = Description,
             StatRollingMethod = SelectedStatRollingMethod,
@@ -342,29 +383,38 @@
             AllowedSources = new List<SourceBookData>()
         };
 
-        // foreach (var book in _sourceBooks)
-        // {
-        //     if (book.IsSelected)
-        //     {
-        //         newCampaign.AllowedSources.Add(book);
-        //     }
-        // }
+        newCampaign.AllowedSources.Clear();
 
-        await using var db = DbContext;
+        var db = DbContext;
         db.Campaigns.Add(newCampaign);
 
         if (!_dryRun)
             await db.SaveChangesAsync();
 
-        foreach (var prop in newCampaign.GetType().GetProperties())
+        foreach (var book in _sourceBooks)
         {
-            Console.WriteLine($"{prop.Name}: {prop.GetValue(newCampaign)}");
+            if (_selectedSourceBooks[book.Id])
+            {
+                if (newCampaign.AllowedSources.Any(x => x.Id == newCampaign.Id)) continue;
+                newCampaign.AllowedSources.Add(book);
+            }
         }
 
-        foreach (var book in newCampaign.AllowedSources)
+        db.Campaigns.Update(newCampaign);
+
+        if (!_dryRun)
+            await db.SaveChangesAsync();
+
+        _sourceBooks.Clear();
+        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+        _selectedSourceBooks.Clear();
+
+        foreach (var book in _sourceBooks)
         {
-            Console.WriteLine($"Book: {book.Id}");
+            _selectedSourceBooks[book.Id] = false;
         }
+
+        _campaigns = await db.Campaigns.ToListAsync();
     }
 
     private async Task UpdateCampaign()
@@ -375,9 +425,17 @@
             return;
         }
 
+        if (_selectedCampaignId <= 2)
+        {
+            Console.WriteLine("Can not update default campaigns");
+            return;
+        }
+
         await using var db = DbContext;
 
-        var campaignToUpdate = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+        var campaignToUpdate = await db.Campaigns
+            .Include(c => c.AllowedSources)
+            .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
 
         if (campaignToUpdate == null)
         {
@@ -393,10 +451,20 @@
         campaignToUpdate.AllowAvatarPoints = AllowAvatarPoints;
         campaignToUpdate.AllowLuck = AllowLuck;
 
+        var selectedSourceBooks = _sourceBooks.Where(book => _selectedSourceBooks[book.Id]);
+
+        campaignToUpdate.AllowedSources.Clear();
+
+        foreach (var book in selectedSourceBooks)
+        {
+            db.Attach(book);
+            campaignToUpdate.AllowedSources.Add(book);
+        }
+
         if (!_dryRun)
             await db.SaveChangesAsync();
+        _campaigns = await db.Campaigns.ToListAsync();
     }
-
 
     private async Task DeleteCampaign()
     {
@@ -405,17 +473,28 @@
             Console.WriteLine("No campaign selected.");
             return;
         }
+        
+        if (_selectedCampaignId <= 2)
+        {
+            Console.WriteLine("Can not delete default campaigns");
+            return;
+        }
 
         await using var db = DbContext;
 
-        var campaignToDelete = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+        var campaignToDelete = await db.Campaigns.Include(c => c.AllowedSources)
+            .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
 
         if (campaignToDelete == null)
         {
             Console.WriteLine("Campaign not found.");
             return;
         }
-
+        foreach (var sourceBook in campaignToDelete.AllowedSources)
+        {
+            sourceBook.CampaignSourceBooks.Remove(campaignToDelete);
+        }
+        
         db.Campaigns.Remove(campaignToDelete);
 
         if (!_dryRun)

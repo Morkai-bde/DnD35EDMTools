@@ -577,8 +577,8 @@
 }
 
 .dnd-dm-home-sheet {
-    height: 300px;
-    width: 698px;
+    height: 400px;
+    width: 700px;
     border: 2px solid;
     padding: 5px;
 }
@@ -604,14 +604,14 @@
 }
 
 .dm-select {
-    width: 120px;
+    width: 200px;
     height: 20px;
     border-width: thin;
     border-radius: 3px;
 }
 
 .dm-input {
-    width: 120px;
+    width: 200px;
     height: 20px;
     border-width: thin;
     border-radius: 3px;
@@ -619,8 +619,8 @@
 }
 .dm-textarea {
     resize: none;
-    width: 70%;
-    height: 100%;
+    width: 200px;
+    height: 150px;
     border-width: thin;
     border-radius: 3px;
     padding: 3px
