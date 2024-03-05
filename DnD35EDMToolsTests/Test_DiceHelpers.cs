@@ -53,4 +53,79 @@ public class DiceHelperTests
         // Assert
         Assert.InRange(result, 3, 18);
     }
+    
+    [Fact]
+    public void test_HPEveryLevel()
+    {
+        // Arrange
+        
+        var HitDice = "1d6";
+        
+        // Act
+
+        var result = RollHp.HpEveryLevel(HitDice);
+
+        // Assert
+        Assert.InRange(result, 1, 6);
+    }
+    
+    [Fact]
+    public void test_HpEveryLevel()
+    {
+        // Arrange
+        
+        var HitDice = "1d6";
+        
+        // Act
+
+        var result = RollHp.HpEveryLevel(HitDice);
+
+        // Assert
+        Assert.InRange(result, 1, 6);
+    }
+    
+    [Fact]
+    public void test_HalfPlusOne()
+    {
+        // Arrange
+        
+        var HitDice = "1d6";
+        
+        // Act
+
+        var result = RollHp.HalfPlusOne(HitDice);
+
+        // Assert
+        Assert.Equal(4, result);
+    }
+    
+    [Fact]
+    public void test_TwoThirdsRoundedDown()
+    {
+        // Arrange
+        
+        var HitDice = "1d6";
+        
+        // Act
+
+        var result = RollHp.TwoThirdsRoundedDown(HitDice);
+
+        // Assert
+        Assert.Equal(4, result);
+    }
+    
+    [Fact]
+    public void test_ThreeQuartersRoundedDown()
+    {
+        // Arrange
+        
+        var HitDice = "1d6";
+        
+        // Act
+
+        var result = RollHp.ThreeQuartersRoundedDown(HitDice);
+
+        // Assert
+        Assert.Equal(4, result);
+    }
 }
