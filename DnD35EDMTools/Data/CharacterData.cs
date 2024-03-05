@@ -5,6 +5,7 @@ namespace DnD35EDMTools.Data;
 public class CharacterData
 {
     public int Id { get; set; }
+    public int CampaignId { get; set; } = 1;
     [MaxLength(100)]
     public string Name { get; set; } = null!;
 

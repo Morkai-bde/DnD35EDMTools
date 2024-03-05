@@ -19,6 +19,18 @@
         <div class="dnd-character-creation-sheet">
             <div class="dnd-cc-top-section">
                 <div class="dnd-cc-top__left">
+                    <!--#region -->
+                    <div>
+                        <label for="campaign">Campaign</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="campaign" name="campaign" @bind="_selectedCampaignId">
+                            @foreach (var id in _campaigns)
+                            {
+                                <option value="@id.Id" title="@id.Description">@id.Name</option>
+                            }
+                        </select>
+                    </div>
                     <div>
                         <label for="name">Character Name:</label>
                     </div>
@@ -41,7 +53,7 @@
                         <label for="gender">Gender:</label>
                     </div>
                     <div>
-                        <select class="cc-select" id="gender" @bind="_selectedGenderId" >
+                        <select class="cc-select" id="gender" @bind="_selectedGenderId">
                             @foreach (var gender in GetRaceGenders())
                             {
                                 <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
@@ -93,7 +105,18 @@
                         </select>
                     </div>
                 </div>
+                <!--#endregion -->
                 <div class="dnd-cc-top__right">
+                    <!--#region -->
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
                     <div>
                         <label for="hair">Hair:</label>
                     </div>
@@ -170,7 +193,7 @@
                         <input class="cc-input" type="text" id="strength" @bind="_characterStrength"/>
                     </div>
                     <div>
-                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Strength")'>Roll</button>
+                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Strength")'>Roll</button>
                     </div>
                     <div>
                         <label for="weight">Dexterity:</label>
@@ -179,7 +202,7 @@
                         <input class="cc-input" type="text" id="dexterity" @bind="_characterDexterity"/>
                     </div>
                     <div>
-                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Dexterity")'>Roll</button>
+                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Dexterity")'>Roll</button>
                     </div>
                     <div>
                         <label for="weight">Constitution:</label>
@@ -188,7 +211,7 @@
                         <input class="cc-input" type="text" id="constitution" @bind="_characterConstitution"/>
                     </div>
                     <div>
-                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Constitution")'>Roll</button>
+                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Constitution")'>Roll</button>
                     </div>
                     <div>
                         <label for="weight">Intelligence:</label>
@@ -197,7 +220,7 @@
                         <input class="cc-input" type="text" id="intelligence" @bind="_characterIntelligence"/>
                     </div>
                     <div>
-                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Intelligence")'>Roll</button>
+                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Intelligence")'>Roll</button>
                     </div>
                     <div>
                         <label for="weight">Wisdom:</label>
@@ -206,7 +229,7 @@
                         <input class="cc-input" type="text" id="wisdom" @bind="_characterWisdom"/>
                     </div>
                     <div>
-                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Wisdom")'>Roll</button>
+                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Wisdom")'>Roll</button>
                     </div>
                     <div>
                         <label for="weight">Charisma:</label>
@@ -215,7 +238,7 @@
                         <input class="cc-input" type="text" id="charisma" @bind="_characterCharisma"/>
                     </div>
                     <div>
-                        <button class="cc-randomize-button" @onclick='() => Roll3d6("Charisma")'>Roll</button>
+                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Charisma")'>Roll</button>
                     </div>
                     <div>
                         <label for="weight">Luck:</label>
@@ -226,6 +249,7 @@
                     <div>
                         <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
                     </div>
+                    <!--#endregion -->
                 </div>
             </div>
         </div>
@@ -243,12 +267,14 @@
 </div>
 @code {
     private bool _dryRun = true;
+    private List<CampaignData> _campaigns = new List<CampaignData>();
     private List<RaceData> _races = new List<RaceData>();
     private List<OrderData> _orders = new List<OrderData>();
     private List<MoralityData> _moralities = new List<MoralityData>();
     private List<ClassData> _classes = new List<ClassData>();
     private List<GenderData> _genders = new List<GenderData>();
     private List<DeityData> _deities = new List<DeityData>();
+
     private List<DeityData> FilteredDeities
     {
         get
@@ -258,14 +284,24 @@
                 return _deities;
             }
 
-            var selectedAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, 
-                _orders.Single(m => m.Id == _selectedOrderId).Midpoint, 
+            var selectedAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities,
+                _orders.Single(m => m.Id == _selectedOrderId).Midpoint,
                 _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint);
-            
+
             return _deities.Where(d => d.Alignment == selectedAlignment || d.Alignment == "Any").ToList();
         }
     }
 
+    private int _selectedCampaignId = 1;
+
+    private string SelectedCampaignStatRollingMethod
+    {
+        get
+        {
+            return _campaigns.Single(c =>c.Id == _selectedCampaignId).StatRollingMethod;
+        }
+    }
+    
     private string _characterName = "";
     private string _characterAge = "";
     private string _characterHeight = "";
@@ -292,6 +328,10 @@
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
+        _campaigns = await db.Campaigns
+            .Where(c => c.Id != 2)
+            .Include(c => c.AllowedSources)
+            .ToListAsync();
         _races = await db.Races.Include(r => r.HairColours)
             .Include(r => r.EyeColours)
             .Include(r => r.SkinColours)
@@ -382,51 +422,65 @@
         _characterWeight = baseWeight + (_randomHeight * randomWeight);
     }
 
-    private void Roll3d6(string stat)
+    private void RollStat(string rollingMethod, string stat)
     {
-        if (stat == "Strength")
-            do
-            {
-                if (_characterStrength <= 7)
-                _characterStrength = DiceRoller.RollDice("3d6");
-            } while (_characterStrength <= 7);
-        
-        if (stat == "Dexterity")
-            do
-            {
-                if (_characterDexterity <= 7)
-                _characterDexterity = DiceRoller.RollDice("3d6");
-            } while (_characterDexterity <= 7);
-        
-        if (stat == "Constitution")
-            do
-            {
-                if (_characterConstitution <= 7)
-                _characterConstitution = DiceRoller.RollDice("3d6");
-            } while (_characterConstitution <= 7);
-        
-        if (stat == "Intelligence")
-            do
-            {
-                if (_characterIntelligence <=7)
-                _characterIntelligence = DiceRoller.RollDice("3d6");
-            } while (_characterIntelligence <= 7);
-        
-        if (stat == "Wisdom")
-            do
-            {
-                if (_characterWisdom <=7)
-                _characterWisdom = DiceRoller.RollDice("3d6");
-            } while (_characterWisdom <= 7);
-        
-        if (stat == "Charisma")
-            do
-            {
-                if (_characterCharisma <= 7)
-                _characterCharisma = DiceRoller.RollDice("3d6");
-            } while (_characterCharisma <= 7);
+        int statValue = GetStatValue(stat);
+        do
+        {
+            if (statValue <= 7)
+                statValue = RollStats.RollStatBasedOnMethod(rollingMethod);
+        } while (statValue <= 7);
+        SetStatValue(stat, statValue);
+    }
+    
+    private int GetStatValue(string stat)
+    {
+        switch (stat)
+        {
+            case "Strength":
+                return _characterStrength;
+            case "Dexterity":
+                return _characterDexterity;
+            case "Constitution":
+                return _characterConstitution;
+            case "Intelligence":
+                return _characterIntelligence;
+            case "Wisdom":
+                return _characterWisdom;
+            case "Charisma":
+                return _characterCharisma;
+            default:
+                throw new ArgumentException("Invalid stat");
+        }
     }
 
+    private void SetStatValue(string stat, int value)
+    {
+        switch (stat)
+        {
+            case "Strength":
+                _characterStrength = value;
+                break;
+            case "Dexterity":
+                _characterDexterity = value;
+                break;
+            case "Constitution":
+                _characterConstitution = value;
+                break;
+            case "Intelligence":
+                _characterIntelligence = value;
+                break;
+            case "Wisdom":
+                _characterWisdom = value;
+                break;
+            case "Charisma":
+                _characterCharisma = value;
+                break;
+            default:
+                throw new ArgumentException("Invalid stat");
+        }
+    }
+    
     private void CalculateLuck()
     {
         if (_characterStrength != 0 && _characterDexterity != 0 && _characterConstitution != 0 && _characterIntelligence != 0 && _characterWisdom != 0 && _characterCharisma !=0)
@@ -470,17 +524,17 @@
         RandomizeWeight();
 
         _characterStrength = 0;
-        Roll3d6("Strength");
+        RollStat(SelectedCampaignStatRollingMethod, "Strength");
         _characterDexterity = 0;
-        Roll3d6("Dexterity");
+        RollStat(SelectedCampaignStatRollingMethod, "Dexterity");
         _characterConstitution = 0;
-        Roll3d6("Constitution");
+        RollStat(SelectedCampaignStatRollingMethod, "Constitution");
         _characterWisdom = 0;
-        Roll3d6("Wisdom");
+        RollStat(SelectedCampaignStatRollingMethod, "Wisdom");
         _characterIntelligence = 0;
-        Roll3d6("Intelligence");
+        RollStat(SelectedCampaignStatRollingMethod, "Intelligence");
         _characterCharisma = 0;
-        Roll3d6("Charisma");
+        RollStat(SelectedCampaignStatRollingMethod, "Charisma");
         CalculateLuck();
     }
 
@@ -488,6 +542,7 @@
     {
         var newCharacter = new CharacterData();
         newCharacter.Name = _characterName;
+        newCharacter.CampaignId = _selectedCampaignId;
         newCharacter.Class = _classes.Single(c => c.Id == _selectedClassId).Id;
         newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Id;
         newCharacter.Experience = 0;

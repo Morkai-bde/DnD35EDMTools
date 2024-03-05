@@ -154,6 +154,18 @@ public static class RollStats
             throw new Exception("An error occurred while rolling the dice", ex);
         }
     }
+    public static int RollStatBasedOnMethod(string rollingMethod)
+    {
+        if (rollingMethod == "3d6")
+            return RollStats.ThreeDSix();
+        else if (rollingMethod == "3D6R1")
+            return RollStats.ThreeDSixReRollOnes();
+        else if (rollingMethod == "4D6DL")
+            return RollStats.FourDSixDropLowest();
+        else 
+            return 10;
+    }
+
 }
 
 public static class RollHp

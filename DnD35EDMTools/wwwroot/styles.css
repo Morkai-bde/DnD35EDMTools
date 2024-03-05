@@ -4,6 +4,7 @@
     --cellheadercolor: #000000;
     --celldefaultcolor: #CCCCCC;
     --cellaltcolor: #E0E0E0;
+    --bs-body-bg: #808080; /*Temporary colour change to save my poor eyes*/
 }
 
 *,
@@ -466,14 +467,14 @@
 .dnd-cc-top__left {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
     grid-template-columns: .5fr 1.5fr;
 }
 
 .dnd-cc-top__right {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
     grid-template-columns: .2fr .8fr 1fr;
 }
 
