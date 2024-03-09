@@ -453,8 +453,8 @@
 }
 
 .dnd-character-creation-sheet {
-    height : auto;
-    width: 698px;
+    height : 280px;
+    width: 700px;
     border: 2px solid;
 }
 
@@ -467,14 +467,14 @@
 .dnd-cc-top__left {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
     grid-template-columns: .5fr 1.5fr;
 }
 
 .dnd-cc-top__right {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
+    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
     grid-template-columns: .2fr .8fr 1fr;
 }
 
@@ -488,6 +488,20 @@
 
 .cc-input {
     width: 120px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+.cc-point-buy-stat-input {
+    width: 60px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+.cc-point-buy-modifier-input {
+    width: 60px;
     height: 20px;
     border-width: thin;
     border-radius: 3px;
@@ -507,6 +521,14 @@
     border-width: thin;
     border-radius: 3px;
 }
+
+.cc-point-buy-button {
+    width: 20px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
+
 /*New Race Styles*/
 
 .dnd-new-race-container {

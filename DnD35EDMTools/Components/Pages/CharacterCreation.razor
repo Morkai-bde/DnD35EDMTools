@@ -186,69 +186,142 @@
                     <div>
                         <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
                     </div>
-                    <div>
-                        <label for="weight">Strength:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="strength" @bind="_characterStrength"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Strength")'>Roll</button>
-                    </div>
-                    <div>
-                        <label for="weight">Dexterity:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="dexterity" @bind="_characterDexterity"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Dexterity")'>Roll</button>
-                    </div>
-                    <div>
-                        <label for="weight">Constitution:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="constitution" @bind="_characterConstitution"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Constitution")'>Roll</button>
-                    </div>
-                    <div>
-                        <label for="weight">Intelligence:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="intelligence" @bind="_characterIntelligence"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Intelligence")'>Roll</button>
-                    </div>
-                    <div>
-                        <label for="weight">Wisdom:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="wisdom" @bind="_characterWisdom"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Wisdom")'>Roll</button>
-                    </div>
-                    <div>
-                        <label for="weight">Charisma:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="charisma" @bind="_characterCharisma"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Charisma")'>Roll</button>
-                    </div>
-                    <div>
-                        <label for="weight">Luck:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="luck" @bind="_characterLuck"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
-                    </div>
+                    @if (SelectedCampaignStatRollingMethod == "3D6" || SelectedCampaignStatRollingMethod == "3D6R1" || SelectedCampaignStatRollingMethod == "4D6DL")
+                    {
+                        <div>
+                            <label for="weight">Strength:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="strength" @bind="_characterStrength"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Strength")'>Roll</button>
+                        </div>
+                        <div>
+                            <label for="weight">Dexterity:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="dexterity" @bind="_characterDexterity"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Dexterity")'>Roll</button>
+                        </div>
+                        <div>
+                            <label for="weight">Constitution:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="constitution" @bind="_characterConstitution"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Constitution")'>Roll</button>
+                        </div>
+                        <div>
+                            <label for="weight">Intelligence:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="intelligence" @bind="_characterIntelligence"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Intelligence")'>Roll</button>
+                        </div>
+                        <div>
+                            <label for="weight">Wisdom:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="wisdom" @bind="_characterWisdom"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Wisdom")'>Roll</button>
+                        </div>
+                        <div>
+                            <label for="weight">Charisma:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="charisma" @bind="_characterCharisma"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Charisma")'>Roll</button>
+                        </div>
+                    }
+                    @if (SelectedCampaignStatRollingMethod == "PBA" || SelectedCampaignStatRollingMethod == "PBR")
+                    {
+                        <div>
+                            Points:
+                        </div>
+                        <div>
+                            @_characterStatPoints
+                        </div>
+                        <div>
+                            &nbsp;
+                        </div>
+                        <div>
+                            <label for="weight">Strength:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="strength" @bind="_characterStrength"/><input class="cc-point-buy-modifier-input" type="text" id="strength-modifier" value="@CalculateModifier(_characterStrength)"/>
+                        </div>
+                        <div>
+                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Strength")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Strength")'>-</button>
+                        </div>
+                        <div>
+                            <label for="weight">Dexterity:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="dexterity" @bind="_characterDexterity"/><input class="cc-point-buy-modifier-input" type="text" id="dexterity-modifier" value="@CalculateModifier(_characterDexterity)"/>
+                        </div>
+                        <div>
+                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Dexterity")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Dexterity")'>-</button>
+                        </div>
+                        <div>
+                            <label for="weight">Constitution:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="constitution" @bind="_characterConstitution"/><input class="cc-point-buy-modifier-input" type="text" id="constitution-modifier" value="@CalculateModifier(_characterConstitution)"/>
+                        </div>
+                        <div>
+                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Constitution")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Constitution")'>-</button>
+                        </div>
+                        <div>
+                            <label for="weight">Intelligence:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="intelligence" @bind="_characterIntelligence"/><input class="cc-point-buy-modifier-input" type="text" id="intelligence-modifier" value="@CalculateModifier(_characterIntelligence)"/>
+                        </div>
+                        <div>
+                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Intelligence")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Intelligence")'>-</button>
+                        </div>
+                        <div>
+                            <label for="weight">Wisdom:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="wisdom" @bind="_characterWisdom"/><input class="cc-point-buy-modifier-input" type="text" id="wisdom-modifier" value="@CalculateModifier(_characterWisdom)"/>
+                        </div>
+                        <div>
+                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Wisdom")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Wisdom")'>-</button>
+                        </div>
+                        <div>
+                            <label for="weight">Charisma:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="charisma" @bind="_characterCharisma"/><input class="cc-point-buy-modifier-input" type="text" id="charisma-modifier" value="@CalculateModifier(_characterCharisma)"/>
+                        </div>
+                        <div>
+                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Charisma")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Charisma")'>-</button>
+                        </div>
+                    }
+                    @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck) 
+                    {
+                        <div>
+                            <label for="weight">Luck:</label>
+                        </div>
+                   
+                        <div>
+                            <input class="cc-input" type="text" id="luck" @bind="_characterLuck"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
+                        </div>
+                    }
                     <!--#endregion -->
                 </div>
             </div>
@@ -316,7 +389,8 @@
     private int _selectedMoralityId;
     private int _selectedDeityId;
     private int _selectedGenderId;
-    
+
+    private int _characterStatPoints = 30;
     private int _characterStrength;
     private int _characterDexterity;
     private int _characterConstitution;
@@ -480,6 +554,161 @@
                 throw new ArgumentException("Invalid stat");
         }
     }
+
+    private void IncreaseStatValue(string stat)
+    {
+        int maxStatValue = 18;
+        switch (stat)
+        {
+            case "Strength":
+                if (_characterStrength < maxStatValue)
+                {
+                    if (_characterStrength < 13)
+                        _characterStatPoints -= 1;
+                    else
+                    _characterStatPoints -= CalculateModifier(_characterStrength);
+                    _characterStrength++;
+                }
+                break;
+            case "Dexterity":
+                if (_characterDexterity < maxStatValue)
+                {
+                    if (_characterDexterity < 13)
+                        _characterStatPoints -= 1;
+                    else
+                        _characterStatPoints -= CalculateModifier(_characterDexterity);
+                    _characterDexterity++;
+                }
+            break;
+            case "Constitution":
+                if (_characterConstitution < maxStatValue)
+                {
+                    if (_characterConstitution < 13)
+                        _characterStatPoints -= 1;
+                    else
+                        _characterStatPoints -= CalculateModifier(_characterConstitution);
+                    _characterConstitution++;
+                }
+                break;
+            case "Intelligence":
+                if (_characterIntelligence < maxStatValue)
+                {
+                    if (_characterIntelligence < 13)
+                        _characterStatPoints -= 1;
+                    else
+                        _characterStatPoints -= CalculateModifier(_characterIntelligence);
+                    _characterIntelligence++;
+                }
+                break;
+            case "Wisdom":
+                if (_characterWisdom < maxStatValue)
+                {
+                    if (_characterWisdom < 13)
+                        _characterStatPoints -= 1;
+                    else
+                        _characterStatPoints -= CalculateModifier(_characterWisdom);
+                    _characterWisdom++;
+                }
+                break;
+            case "Charisma":
+                if (_characterCharisma < maxStatValue)
+                {
+                    if (_characterCharisma < 13)
+                        _characterStatPoints -= 1;
+                    else
+                        _characterStatPoints -= CalculateModifier(_characterCharisma);
+                    _characterCharisma++;
+                }
+                break;
+        }
+    }
+    
+    private void DecreaseStatValue(string stat)
+    {
+        int minStatValue = 8;
+        switch (stat)
+        {
+            case "Strength":
+                if (_characterStrength > minStatValue)
+                {
+                    if (_characterStrength < 13)
+                        _characterStatPoints += 1;
+                    else
+                        if (CalculateModifier(_characterStrength -1) == CalculateModifier(_characterStrength))
+                        _characterStatPoints += CalculateModifier(_characterStrength);
+                        else 
+                            _characterStatPoints += CalculateModifier(_characterStrength) - 1;
+                    _characterStrength--;
+                }
+                break;
+            case "Dexterity":
+                if (_characterDexterity > minStatValue)
+                {
+                    if (_characterDexterity < 13)
+                        _characterStatPoints += 1;
+                    else if (CalculateModifier(_characterDexterity - 1) == CalculateModifier(_characterDexterity))
+                        _characterStatPoints += CalculateModifier(_characterDexterity);
+                    else
+                        _characterStatPoints += CalculateModifier(_characterDexterity) - 1;
+                    _characterDexterity--;
+                }
+                break;
+            case "Constitution":
+                if (_characterConstitution > minStatValue)
+                {
+                    if (_characterConstitution < 13)
+                        _characterStatPoints += 1;
+                    else if (CalculateModifier(_characterConstitution - 1) == CalculateModifier(_characterConstitution))
+                        _characterStatPoints += CalculateModifier(_characterConstitution);
+                    else
+                        _characterConstitution += CalculateModifier(_characterConstitution) - 1;
+                    _characterConstitution--;
+                }
+                break;
+            case "Intelligence":
+                if (_characterIntelligence > minStatValue)
+                {
+                    if (_characterIntelligence < 13)
+                        _characterStatPoints += 1;
+                    else if (CalculateModifier(_characterIntelligence - 1) == CalculateModifier(_characterIntelligence))
+                        _characterStatPoints += CalculateModifier(_characterIntelligence);
+                    else
+                        _characterIntelligence += CalculateModifier(_characterIntelligence) - 1;
+                    _characterIntelligence--;
+                }
+                break;
+            case "Wisdom":
+                if (_characterWisdom > minStatValue)
+                {
+                    if (_characterWisdom < 13)
+                        _characterStatPoints += 1;
+                    else if (CalculateModifier(_characterWisdom - 1) == CalculateModifier(_characterWisdom))
+                        _characterStatPoints += CalculateModifier(_characterWisdom);
+                    else
+                        _characterWisdom += CalculateModifier(_characterWisdom) - 1;
+                    _characterWisdom--;
+                }
+                break;
+            case "Charisma":
+                if (_characterCharisma > minStatValue)
+                {
+                    if (_characterCharisma < 13)
+                        _characterStatPoints += 1;
+                    else if (CalculateModifier(_characterCharisma - 1) == CalculateModifier(_characterCharisma))
+                        _characterStatPoints += CalculateModifier(_characterCharisma);
+                    else
+                        _characterCharisma += CalculateModifier(_characterCharisma) - 1;
+                    _characterCharisma--;
+                }
+                break;
+        }
+    }
+
+    private int CalculateModifier(int stat)
+    {
+        Console.WriteLine((int)Math.Floor((stat - 10) / 2.0));
+        return (int)Math.Floor((stat - 10) / 2.0);
+    }
     
     private void CalculateLuck()
     {
@@ -489,6 +718,12 @@
 
     private void GenerateRandomCharacter()
     {
+        if (_selectedCampaignId == 1)
+        {
+            Console.WriteLine("No Campaign Selected");
+            return;
+        }
+        
         var rand = new Random();
         _characterName = "Random Jo";
         _selectedRaceId = rand.Next(2, _races.Count +1);
@@ -540,6 +775,12 @@
 
     private void CreateNewCharacter()
     {
+        if (_selectedCampaignId == 1)
+        {
+            Console.WriteLine("No Campaign Selected");
+            return;
+        }
+        
         var newCharacter = new CharacterData();
         newCharacter.Name = _characterName;
         newCharacter.CampaignId = _selectedCampaignId;
