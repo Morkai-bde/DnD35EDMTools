@@ -24,7 +24,7 @@
                         <label for="campaign">Campaign</label>
                     </div>
                     <div>
-                        <select class="cc-select" id="campaign" name="campaign" @bind="_selectedCampaignId">
+                        <select class="cc-select" id="campaign" name="campaign" @bind="SelectedCampaignId">
                             @foreach (var id in _campaigns)
                             {
                                 <option value="@id.Id" title="@id.Description">@id.Name</option>
@@ -252,6 +252,10 @@
                             @_characterStatPoints
                         </div>
                         <div>
+                            @if (SelectedCampaignStatRollingMethod == "PBR")
+                            {
+                                <button class="cc-randomize-button" @onclick='() => RollRandomStatPoints()'>Roll</button>
+                            }
                             &nbsp;
                         </div>
                         <div>
@@ -367,6 +371,44 @@
 
     private int _selectedCampaignId = 1;
 
+    private int SelectedCampaignId
+    {
+        get
+        {
+            return _selectedCampaignId;
+        }
+        set
+        {
+            _selectedCampaignId = value;
+            InitializeCharacterStatsBasedOnCampaign();
+        }
+    }
+
+    private void InitializeCharacterStatsBasedOnCampaign()
+    {
+        if (SelectedCampaignStatRollingMethod == "PBA" || SelectedCampaignStatRollingMethod == "PBR")
+        {
+            if (SelectedCampaignStatRollingMethod == "PBR")
+                _characterStatPoints = 0;
+            _characterStatPoints = 25;
+            _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+            _characterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+            _characterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+            _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+            _characterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+            _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+        }
+        else
+        {
+            _characterStrength = 0;
+            _characterDexterity = 0;
+            _characterConstitution = 0;
+            _characterIntelligence = 0;
+            _characterWisdom = 0;
+            _characterCharisma = 0;
+        }
+    }
+
     private string SelectedCampaignStatRollingMethod
     {
         get
@@ -390,7 +432,8 @@
     private int _selectedDeityId;
     private int _selectedGenderId;
 
-    private int _characterStatPoints = 30;
+    private int _randomPointsRolled;
+    private int _characterStatPoints = 25;
     private int _characterStrength;
     private int _characterDexterity;
     private int _characterConstitution;
@@ -557,67 +600,85 @@
 
     private void IncreaseStatValue(string stat)
     {
-        int maxStatValue = 18;
+        const int maxStatValue = 18;
         switch (stat)
         {
             case "Strength":
                 if (_characterStrength < maxStatValue)
                 {
-                    if (_characterStrength < 13)
-                        _characterStatPoints -= 1;
-                    else
-                    _characterStatPoints -= CalculateModifier(_characterStrength);
-                    _characterStrength++;
+                    var pointsToDeduct = 0;
+                    pointsToDeduct = _characterStrength < 13 ? 1 : CalculateModifier(_characterStrength);
+
+                    if (_characterStatPoints - pointsToDeduct >= 0)
+                    {
+                        _characterStatPoints -= pointsToDeduct;
+                        _characterStrength++;
+                    }
                 }
                 break;
             case "Dexterity":
                 if (_characterDexterity < maxStatValue)
                 {
-                    if (_characterDexterity < 13)
-                        _characterStatPoints -= 1;
-                    else
-                        _characterStatPoints -= CalculateModifier(_characterDexterity);
-                    _characterDexterity++;
+                    var pointsToDeduct = 0;
+                    pointsToDeduct = _characterDexterity < 13 ? 1 : CalculateModifier(_characterDexterity);
+
+                    if (_characterStatPoints - pointsToDeduct >= 0)
+                    {
+                        _characterStatPoints -= pointsToDeduct;
+                        _characterDexterity++;
+                    }
                 }
             break;
             case "Constitution":
                 if (_characterConstitution < maxStatValue)
                 {
-                    if (_characterConstitution < 13)
-                        _characterStatPoints -= 1;
-                    else
-                        _characterStatPoints -= CalculateModifier(_characterConstitution);
-                    _characterConstitution++;
+                    var pointsToDeduct = 0;
+                    pointsToDeduct = _characterConstitution < 13 ? 1 : CalculateModifier(_characterConstitution);
+
+                    if (_characterStatPoints - pointsToDeduct >= 0)
+                    {
+                        _characterStatPoints -= pointsToDeduct;
+                        _characterConstitution++;
+                    }
                 }
                 break;
             case "Intelligence":
                 if (_characterIntelligence < maxStatValue)
                 {
-                    if (_characterIntelligence < 13)
-                        _characterStatPoints -= 1;
-                    else
-                        _characterStatPoints -= CalculateModifier(_characterIntelligence);
-                    _characterIntelligence++;
+                    var pointsToDeduct = 0;
+                    pointsToDeduct = _characterIntelligence < 13 ? 1 : CalculateModifier(_characterIntelligence);
+
+                    if (_characterStatPoints - pointsToDeduct >= 0)
+                    {
+                        _characterStatPoints -= pointsToDeduct;
+                        _characterIntelligence++;
+                    }
                 }
                 break;
             case "Wisdom":
                 if (_characterWisdom < maxStatValue)
                 {
-                    if (_characterWisdom < 13)
-                        _characterStatPoints -= 1;
-                    else
-                        _characterStatPoints -= CalculateModifier(_characterWisdom);
-                    _characterWisdom++;
+                    var pointsToDeduct = 0;
+                    pointsToDeduct = _characterWisdom < 13 ? 1 : CalculateModifier(_characterWisdom);
+
+                    if (_characterStatPoints - pointsToDeduct >= 0)
+                    {
+                        _characterStatPoints -= pointsToDeduct;
+                        _characterWisdom++;
+                    }
                 }
                 break;
             case "Charisma":
                 if (_characterCharisma < maxStatValue)
                 {
-                    if (_characterCharisma < 13)
-                        _characterStatPoints -= 1;
-                    else
-                        _characterStatPoints -= CalculateModifier(_characterCharisma);
-                    _characterCharisma++;
+                    var pointsToDeduct = 0;
+                    pointsToDeduct = _characterCharisma < 13 ? 1 : CalculateModifier(_characterCharisma);
+
+                    if (_characterStatPoints - pointsToDeduct >= 0)
+                    {
+                        _characterStatPoints -= pointsToDeduct;
+                        _characterCharisma++;
+                    }
                 }
                 break;
         }
@@ -625,7 +686,7 @@
     
     private void DecreaseStatValue(string stat)
     {
-        int minStatValue = 8;
+        const int minStatValue = 8;
         switch (stat)
         {
             case "Strength":
@@ -661,7 +722,7 @@
                     else if (CalculateModifier(_characterConstitution - 1) == CalculateModifier(_characterConstitution))
                         _characterStatPoints += CalculateModifier(_characterConstitution);
                     else
-                        _characterConstitution += CalculateModifier(_characterConstitution) - 1;
+                        _characterStatPoints += CalculateModifier(_characterConstitution) - 1;
                     _characterConstitution--;
                 }
                 break;
@@ -673,7 +734,7 @@
                     else if (CalculateModifier(_characterIntelligence - 1) == CalculateModifier(_characterIntelligence))
                         _characterStatPoints += CalculateModifier(_characterIntelligence);
                     else
-                        _characterIntelligence += CalculateModifier(_characterIntelligence) - 1;
+                        _characterStatPoints += CalculateModifier(_characterIntelligence) - 1;
                     _characterIntelligence--;
                 }
                 break;
@@ -685,7 +746,7 @@
                     else if (CalculateModifier(_characterWisdom - 1) == CalculateModifier(_characterWisdom))
                         _characterStatPoints += CalculateModifier(_characterWisdom);
                     else
-                        _characterWisdom += CalculateModifier(_characterWisdom) - 1;
+                        _characterStatPoints += CalculateModifier(_characterWisdom) - 1;
                     _characterWisdom--;
                 }
                 break;
@@ -697,16 +758,22 @@
                     else if (CalculateModifier(_characterCharisma - 1) == CalculateModifier(_characterCharisma))
                         _characterStatPoints += CalculateModifier(_characterCharisma);
                     else
-                        _characterCharisma += CalculateModifier(_characterCharisma) - 1;
+                        _characterStatPoints += CalculateModifier(_characterCharisma) - 1;
                     _characterCharisma--;
                 }
                 break;
         }
     }
 
+    private void RollRandomStatPoints()
+    {
+        if (_randomPointsRolled != 0) return;
+        _characterStatPoints = DiceRoller.RollDice("8d12");
+        _randomPointsRolled = 1;
+    }
+
     private int CalculateModifier(int stat)
     {
-        Console.WriteLine((int)Math.Floor((stat - 10) / 2.0));
         return (int)Math.Floor((stat - 10) / 2.0);
     }
     
@@ -718,6 +785,7 @@
 
     private void GenerateRandomCharacter()
     {
+        bool skipRollStatsAndLuck = false;
         if (_selectedCampaignId == 1)
         {
             Console.WriteLine("No Campaign Selected");
@@ -744,8 +812,8 @@
         
         RandomizeAge();
         
-        _selectedOrderId = rand.Next(1, _orders.Count);
-        _selectedMoralityId = rand.Next(1, _moralities.Count);
+        _selectedOrderId = rand.Next(1, _orders.Count +1);
+        _selectedMoralityId = rand.Next(1, _moralities.Count +1);
 
         var deity = FilteredDeities;
         var randomDeityIndex = rand.Next(2, FilteredDeities.Count);
@@ -757,20 +825,29 @@
         
         RandomizeHeight();
         RandomizeWeight();
+        
+        var notAllowedMethods = new[] { "PBA", "BPR", "SAL", "SAA", "SAH" };
+        if (notAllowedMethods.Contains(SelectedCampaignStatRollingMethod))
+        {
+            skipRollStatsAndLuck = true;
+        }
 
-        _characterStrength = 0;
-        RollStat(SelectedCampaignStatRollingMethod, "Strength");
-        _characterDexterity = 0;
-        RollStat(SelectedCampaignStatRollingMethod, "Dexterity");
-        _characterConstitution = 0;
-        RollStat(SelectedCampaignStatRollingMethod, "Constitution");
-        _characterWisdom = 0;
-        RollStat(SelectedCampaignStatRollingMethod, "Wisdom");
-        _characterIntelligence = 0;
-        RollStat(SelectedCampaignStatRollingMethod, "Intelligence");
-        _characterCharisma = 0;
-        RollStat(SelectedCampaignStatRollingMethod, "Charisma");
-        CalculateLuck();
+        if (!skipRollStatsAndLuck)
+        {
+            _characterStrength = 0;
+            RollStat(SelectedCampaignStatRollingMethod, "Strength");
+            _characterDexterity = 0;
+            RollStat(SelectedCampaignStatRollingMethod, "Dexterity");
+            _characterConstitution = 0;
+            RollStat(SelectedCampaignStatRollingMethod, "Constitution");
+            _characterWisdom = 0;
+            RollStat(SelectedCampaignStatRollingMethod, "Wisdom");
+            _characterIntelligence = 0;
+            RollStat(SelectedCampaignStatRollingMethod, "Intelligence");
+            _characterCharisma = 0;
+            RollStat(SelectedCampaignStatRollingMethod, "Charisma");
+            CalculateLuck();
+        }
     }
 
     private void CreateNewCharacter()
@@ -787,7 +864,13 @@
         newCharacter.Class = _classes.Single(c => c.Id == _selectedClassId).Id;
         newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Id;
         newCharacter.Experience = 0;
-        newCharacter.HitPoints = 10; // To be Implemented (Add Calculations)
+        newCharacter.Strength = _characterStrength;
+        newCharacter.Dexterity = _characterDexterity;
+        newCharacter.Constitution = _characterConstitution;
+        newCharacter.Wisdom = _characterWisdom;
+        newCharacter.Intelligence = _characterIntelligence;
+        newCharacter.Charisma = _characterCharisma;
+        newCharacter.HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == _selectedClassId).HitDice) + CalculateModifier(_characterConstitution);
         newCharacter.Deity = _deities.Single(d => d.Id == _selectedDeityId).Id;
         newCharacter.Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint;
         newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;

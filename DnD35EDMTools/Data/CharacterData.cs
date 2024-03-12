@@ -26,6 +26,13 @@ public class CharacterData
     public int Skin { get; set; }
     public int Weight { get; set; }
     public int Height { get; set; }
+    public int Strength { get; set; }
+    public int Dexterity { get; set; }
+    public int Constitution { get; set; }
+    public int Wisdom { get; set; }
+    public int Intelligence { get; set; }
+    public int Charisma { get; set; }
+    
     [MaxLength(100)]
     public string? PlayerName { get; set; }
     // public List<string> Languages { get; set; }
@@ -45,7 +52,6 @@ public class CharacterData
     // public int ArcaneSpellFailure { get; set; }
     // public int BaseAttackBonus { get; set; }
     // public int SpellResistance { get; set; }
-    // public List<int> AbilityScores { get; set; }
     // public List<int> Saves { get; set; }
     // public List<int> OtherStats { get; set; }
     // public List<string> DamageReductions { get; set; }

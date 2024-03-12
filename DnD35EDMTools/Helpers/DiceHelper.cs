@@ -9,7 +9,7 @@ public static class DiceRoller
         try
         {
             var total = 0;
-            string[] parts = diceNotation.Split(new[] { '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
+            var parts = diceNotation.Split(new[] { '+', '-' }, StringSplitOptions.RemoveEmptyEntries);
 
             foreach (var part in parts)
             {
@@ -57,7 +57,6 @@ public static class DiceRoller
         }
         catch (Exception ex)
         {
-            // Log the exception or rethrow it
             throw new Exception("An error occurred while rolling the dice", ex);
         }
     }
@@ -66,7 +65,7 @@ public static class DiceRoller
 public static class RollStats
 {
     // 3D6
-    public static int ThreeDSix()
+    private static int ThreeDSix()
     {
         var result = 0;
         try
@@ -83,7 +82,6 @@ public static class RollStats
         }
         catch (Exception ex)
         {
-            // Log the exception or rethrow it
             throw new Exception("An error occurred while rolling the dice", ex);
         }
         return result;
@@ -112,7 +110,6 @@ public static class RollStats
         }
         catch (Exception ex)
         {
-            // Log the exception or rethrow it
             throw new Exception("An error occurred while rolling the dice", ex);
         }
         return result;
@@ -150,49 +147,65 @@ public static class RollStats
         }
         catch (Exception ex)
         {
-            // Log the exception or rethrow it
             throw new Exception("An error occurred while rolling the dice", ex);
         }
     }
+
     public static int RollStatBasedOnMethod(string rollingMethod)
     {
-        if (rollingMethod == "3d6")
-            return RollStats.ThreeDSix();
-        else if (rollingMethod == "3D6R1")
-            return RollStats.ThreeDSixReRollOnes();
-        else if (rollingMethod == "4D6DL")
-            return RollStats.FourDSixDropLowest();
-        else 
-            return 10;
+        return rollingMethod switch
+        {
+            "3D6" => RollStats.ThreeDSix(),
+            "3D6R1" => RollStats.ThreeDSixReRollOnes(),
+            "4D6DL" => RollStats.FourDSixDropLowest(),
+            _ => 8
+        };
     }
-
 }
 
 public static class RollHp
 {
-    // REL
-    public static int HpEveryLevel(string HitDice)
+    // First Level
+    public static int LevelOneHitPoints(string hitDice)
     {
-        if (string.IsNullOrEmpty(HitDice) || !HitDice.Contains('d'))
+        if (string.IsNullOrEmpty(hitDice) || !hitDice.ToUpper().Contains('D'))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
-        return DiceRoller.RollDice(HitDice);
+        var dIndex = hitDice.ToUpper().IndexOf('D') + 1;
+        var diceSizeStr = hitDice.Substring(dIndex);
+
+        if (!int.TryParse(diceSizeStr, out var diceSize))
+        {
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
+        }
+
+        return diceSize;
+    }
+    // REL
+    public static int HpEveryLevel(string hitDice)
+    {
+        if (string.IsNullOrEmpty(hitDice) || !hitDice.Contains('d'))
+        {
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
+        }
+
+        return DiceRoller.RollDice(hitDice);
     }
     
     // HP1
-    public static int HalfPlusOne(string HitDice)
+    public static int HalfPlusOne(string hitDice)
     {
-        if (string.IsNullOrEmpty(HitDice) || !HitDice.Contains('d'))
+        if (string.IsNullOrEmpty(hitDice) || !hitDice.Contains('d'))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
-        string[] parts = HitDice.Split(new[] { 'd' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = hitDice.Split(new[] { 'd' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length != 2 || !int.TryParse(parts[1], out int diceSize))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
         var result = 1 + (int)Math.Round(diceSize / 2.0);
@@ -200,17 +213,17 @@ public static class RollHp
     }
     
     // TRD
-    public static int TwoThirdsRoundedDown(string HitDice)
+    public static int TwoThirdsRoundedDown(string hitDice)
     {
-        if (string.IsNullOrEmpty(HitDice) || !HitDice.Contains('d'))
+        if (string.IsNullOrEmpty(hitDice) || !hitDice.Contains('d'))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
-        string[] parts = HitDice.Split(new[] { 'd' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = hitDice.Split(new[] { 'd' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length != 2 || !int.TryParse(parts[1], out int number))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
         var result = Math.Floor(number * (2.0 / 3));
@@ -218,17 +231,17 @@ public static class RollHp
     }
     
     // QRD
-    public static int ThreeQuartersRoundedDown(string HitDice)
+    public static int ThreeQuartersRoundedDown(string hitDice)
     {
-        if (string.IsNullOrEmpty(HitDice) || !HitDice.Contains('d'))
+        if (string.IsNullOrEmpty(hitDice) || !hitDice.Contains('d'))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
-        string[] parts = HitDice.Split(new[] { 'd' }, StringSplitOptions.RemoveEmptyEntries);
+        var parts = hitDice.Split(new[] { 'd' }, StringSplitOptions.RemoveEmptyEntries);
         if (parts.Length != 2 || !int.TryParse(parts[1], out int number))
         {
-            throw new ArgumentException("Invalid Hit Dice format", nameof(HitDice));
+            throw new ArgumentException("Invalid Hit Dice format", nameof(hitDice));
         }
 
         var result = Math.Floor(number * (3.0 / 4));
