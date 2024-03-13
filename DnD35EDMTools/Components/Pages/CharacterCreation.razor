@@ -3,6 +3,7 @@
 @using DnD35EDMTools.Data
 @using Microsoft.EntityFrameworkCore
 @using DnD35EDMTools.Helpers
+@using System.Reflection
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
 
 <h3>Character Creation</h3>
@@ -186,10 +187,11 @@
                     <div>
                         <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
                     </div>
-                    @if (SelectedCampaignStatRollingMethod == "3D6" || SelectedCampaignStatRollingMethod == "3D6R1" || SelectedCampaignStatRollingMethod == "4D6DL")
+                    <!--#region-->
+                    @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
                         <div>
-                            <label for="weight">Strength:</label>
+                            <label for="strength">Strength:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="strength" @bind="_characterStrength"/>
@@ -198,7 +200,7 @@
                             <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Strength")'>Roll</button>
                         </div>
                         <div>
-                            <label for="weight">Dexterity:</label>
+                            <label for="dexterity">Dexterity:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="dexterity" @bind="_characterDexterity"/>
@@ -207,7 +209,7 @@
                             <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Dexterity")'>Roll</button>
                         </div>
                         <div>
-                            <label for="weight">Constitution:</label>
+                            <label for="constitution">Constitution:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="constitution" @bind="_characterConstitution"/>
@@ -216,7 +218,7 @@
                             <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Constitution")'>Roll</button>
                         </div>
                         <div>
-                            <label for="weight">Intelligence:</label>
+                            <label for="intelligence">Intelligence:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="intelligence" @bind="_characterIntelligence"/>
@@ -225,7 +227,7 @@
                             <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Intelligence")'>Roll</button>
                         </div>
                         <div>
-                            <label for="weight">Wisdom:</label>
+                            <label for="wisdom">Wisdom:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="wisdom" @bind="_characterWisdom"/>
@@ -234,7 +236,7 @@
                             <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Wisdom")'>Roll</button>
                         </div>
                         <div>
-                            <label for="weight">Charisma:</label>
+                            <label for="charisma">Charisma:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="charisma" @bind="_characterCharisma"/>
@@ -243,7 +245,95 @@
                             <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Charisma")'>Roll</button>
                         </div>
                     }
-                    @if (SelectedCampaignStatRollingMethod == "PBA" || SelectedCampaignStatRollingMethod == "PBR")
+                    <!--#endregion-->
+                    <!--region-->
+                    @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
+                    {
+                        <div>
+                            &nbsp;
+                        </div>
+                        <div>
+                            &nbsp;
+                        </div>
+                        <div>
+                            &nbsp;
+                        </div>
+                        <div>
+                            <label for="strength">Strength:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="strength" @bind="_characterStrength"/><input class="cc-point-buy-modifier-input" type="text" id="strength-modifier" value="@CalculateModifier(_characterStrength)"/>
+                        </div>
+                        <div>
+                            @foreach (var number in _standardArray)
+                            {
+                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterStrength))">@number</button>
+                            }
+                        </div>
+                        <div>
+                            <label for="dexterity">Dexterity:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="dexterity" @bind="_characterDexterity"/><input class="cc-point-buy-modifier-input" type="text" id="dexterity-modifier" value="@CalculateModifier(_characterDexterity)"/>
+                        </div>
+                        <div>
+                            @foreach (var number in _standardArray)
+                            {
+                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterDexterity))">@number</button>
+                            }
+                        </div>
+                        <div>
+                            <label for="constitution">Constitution:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="constitution" @bind="_characterConstitution"/><input class="cc-point-buy-modifier-input" type="text" id="constitution-modifier" value="@CalculateModifier(_characterConstitution)"/>
+                        </div>
+                        <div>
+                            @foreach (var number in _standardArray)
+                            {
+                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterConstitution))">@number</button>
+                            }
+                        </div>
+                        <div>
+                            <label for="intelligence">Intelligence:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="intelligence" @bind="_characterIntelligence"/><input class="cc-point-buy-modifier-input" type="text" id="intelligence-modifier" value="@CalculateModifier(_characterIntelligence)"/>
+                        </div>
+                        <div>
+                            @foreach (var number in _standardArray)
+                            {
+                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterIntelligence))">@number</button>
+                            }
+                        </div>
+                        <div>
+                            <label for="wisdom">Wisdom:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="wisdom" @bind="_characterWisdom"/><input class="cc-point-buy-modifier-input" type="text" id="wisdom-modifier" value="@CalculateModifier(_characterWisdom)"/>
+                        </div>
+                        <div>
+                            @foreach (var number in _standardArray)
+                            {
+                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterWisdom))">@number</button>
+                            }
+                        </div>
+                        <div>
+                            <label for="charisma">Charisma:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="charisma" @bind="_characterCharisma"/><input class="cc-point-buy-modifier-input" type="text" id="charisma-modifier" value="@CalculateModifier(_characterCharisma)"/>
+                        </div>
+                        <div>
+                            @foreach (var number in _standardArray)
+                            {
+                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterCharisma))">@number</button>
+                            }
+                        </div>
+                    }
+                    <!--endregion-->
+                    <!--region-->
+                    @if (SelectedCampaignStatRollingMethod is "PBA" or "PBR")
                     {
                         <div>
                             Points:
@@ -259,7 +349,7 @@
                             &nbsp;
                         </div>
                         <div>
-                            <label for="weight">Strength:</label>
+                            <label for="strength">Strength:</label>
                         </div>
                         <div>
                             <input class="cc-point-buy-stat-input" type="text" id="strength" @bind="_characterStrength"/><input class="cc-point-buy-modifier-input" type="text" id="strength-modifier" value="@CalculateModifier(_characterStrength)"/>
@@ -268,7 +358,7 @@
                             <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Strength")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Strength")'>-</button>
                         </div>
                         <div>
-                            <label for="weight">Dexterity:</label>
+                            <label for="dexterity">Dexterity:</label>
                         </div>
                         <div>
                             <input class="cc-point-buy-stat-input" type="text" id="dexterity" @bind="_characterDexterity"/><input class="cc-point-buy-modifier-input" type="text" id="dexterity-modifier" value="@CalculateModifier(_characterDexterity)"/>
@@ -277,7 +367,7 @@
                             <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Dexterity")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Dexterity")'>-</button>
                         </div>
                         <div>
-                            <label for="weight">Constitution:</label>
+                            <label for="constitution">Constitution:</label>
                         </div>
                         <div>
                             <input class="cc-point-buy-stat-input" type="text" id="constitution" @bind="_characterConstitution"/><input class="cc-point-buy-modifier-input" type="text" id="constitution-modifier" value="@CalculateModifier(_characterConstitution)"/>
@@ -286,7 +376,7 @@
                             <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Constitution")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Constitution")'>-</button>
                         </div>
                         <div>
-                            <label for="weight">Intelligence:</label>
+                            <label for="intelligence">Intelligence:</label>
                         </div>
                         <div>
                             <input class="cc-point-buy-stat-input" type="text" id="intelligence" @bind="_characterIntelligence"/><input class="cc-point-buy-modifier-input" type="text" id="intelligence-modifier" value="@CalculateModifier(_characterIntelligence)"/>
@@ -295,7 +385,7 @@
                             <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Intelligence")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Intelligence")'>-</button>
                         </div>
                         <div>
-                            <label for="weight">Wisdom:</label>
+                            <label for="wisdom">Wisdom:</label>
                         </div>
                         <div>
                             <input class="cc-point-buy-stat-input" type="text" id="wisdom" @bind="_characterWisdom"/><input class="cc-point-buy-modifier-input" type="text" id="wisdom-modifier" value="@CalculateModifier(_characterWisdom)"/>
@@ -304,7 +394,7 @@
                             <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Wisdom")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Wisdom")'>-</button>
                         </div>
                         <div>
-                            <label for="weight">Charisma:</label>
+                            <label for="charisma">Charisma:</label>
                         </div>
                         <div>
                             <input class="cc-point-buy-stat-input" type="text" id="charisma" @bind="_characterCharisma"/><input class="cc-point-buy-modifier-input" type="text" id="charisma-modifier" value="@CalculateModifier(_characterCharisma)"/>
@@ -313,6 +403,7 @@
                             <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Charisma")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Charisma")'>-</button>
                         </div>
                     }
+                    <!--endregion-->
                     @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck) 
                     {
                         <div>
@@ -351,7 +442,7 @@
     private List<ClassData> _classes = new List<ClassData>();
     private List<GenderData> _genders = new List<GenderData>();
     private List<DeityData> _deities = new List<DeityData>();
-
+    private List<int> _standardArray = new List<int>();
     private List<DeityData> FilteredDeities
     {
         get
@@ -386,26 +477,37 @@
 
     private void InitializeCharacterStatsBasedOnCampaign()
     {
-        if (SelectedCampaignStatRollingMethod == "PBA" || SelectedCampaignStatRollingMethod == "PBR")
+        switch (SelectedCampaignStatRollingMethod)
         {
-            if (SelectedCampaignStatRollingMethod == "PBR")
-                _characterStatPoints = 0;
-            _characterStatPoints = 25;
-            _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-            _characterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-            _characterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-            _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-            _characterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-            _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-        }
-        else
-        {
-            _characterStrength = 0;
-            _characterDexterity = 0;
-            _characterConstitution = 0;
-            _characterIntelligence = 0;
-            _characterWisdom = 0;
-            _characterCharisma = 0;
+            case "3D6":
+            case "3D5R1":
+            case "4D6DL":
+                SetStatsToZero();
+                break;
+            case "SAL":
+                SetStatsToZero();
+                _standardArray = [13, 12, 11, 10, 9, 8];
+                break;
+            case "SAA":
+                SetStatsToZero();
+                _standardArray = [15, 14, 13, 12, 10, 8];
+                break;
+            case "SAH":
+                SetStatsToZero();
+                _standardArray = [17, 16, 15, 14, 11, 9];
+                break;
+            case "PBA":
+            case "PBR":
+                if (SelectedCampaignStatRollingMethod == "PBR")
+                    _characterStatPoints = 0;
+                _characterStatPoints = 25;
+                _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                break;
         }
     }
 
@@ -539,6 +641,15 @@
         _characterWeight = baseWeight + (_randomHeight * randomWeight);
     }
 
+    private void SetStatsToZero()
+    {
+        _characterStrength = 0;
+        _characterDexterity = 0;
+        _characterConstitution = 0;
+        _characterIntelligence = 0;
+        _characterWisdom = 0;
+        _characterCharisma = 0;
+    }
     private void RollStat(string rollingMethod, string stat)
     {
         int statValue = GetStatValue(stat);
@@ -549,26 +660,19 @@
         } while (statValue <= 7);
         SetStatValue(stat, statValue);
     }
-    
+
     private int GetStatValue(string stat)
     {
-        switch (stat)
+        return stat switch
         {
-            case "Strength":
-                return _characterStrength;
-            case "Dexterity":
-                return _characterDexterity;
-            case "Constitution":
-                return _characterConstitution;
-            case "Intelligence":
-                return _characterIntelligence;
-            case "Wisdom":
-                return _characterWisdom;
-            case "Charisma":
-                return _characterCharisma;
-            default:
-                throw new ArgumentException("Invalid stat");
-        }
+            "Strength" => _characterStrength,
+            "Dexterity" => _characterDexterity,
+            "Constitution" => _characterConstitution,
+            "Intelligence" => _characterIntelligence,
+            "Wisdom" => _characterWisdom,
+            "Charisma" => _characterCharisma,
+            _ => throw new ArgumentException("Invalid stat name", nameof(stat)),
+        };
     }
 
     private void SetStatValue(string stat, int value)
@@ -601,168 +705,55 @@
     private void IncreaseStatValue(string stat)
     {
         const int maxStatValue = 18;
-        switch (stat)
+        var statFields = new Dictionary<string, Action<int>>
         {
-            case "Strength":
-                if (_characterStrength < maxStatValue)
-                {
-                    var pointsToDeduct = 0;
-                    pointsToDeduct = _characterStrength < 13 ? 1 : CalculateModifier(_characterStrength);
+            { "Strength", val => _characterStrength = val },
+            { "Dexterity", val => _characterDexterity = val },
+            { "Constitution", val => _characterConstitution = val },
+            { "Intelligence", val => _characterIntelligence = val },
+            { "Wisdom", val => _characterWisdom = val },
+            { "Charisma", val => _characterCharisma = val },
+        };
 
-                    if (_characterStatPoints - pointsToDeduct >= 0)
-                    {
-                        _characterStatPoints -= pointsToDeduct;
-                        _characterStrength++;
-                    }
-                }
-                break;
-            case "Dexterity":
-                if (_characterDexterity < maxStatValue)
-                {
-                    var pointsToDeduct = 0;
-                    pointsToDeduct = _characterDexterity < 13 ? 1 : CalculateModifier(_characterDexterity);
+        if (!statFields.ContainsKey(stat)) return;
 
-                    if (_characterStatPoints - pointsToDeduct >= 0)
-                    {
-                        _characterStatPoints -= pointsToDeduct;
-                        _characterDexterity++;
-                    }
-                }
-            break;
-            case "Constitution":
-                if (_characterConstitution < maxStatValue)
-                {
-                    var pointsToDeduct = 0;
-                    pointsToDeduct = _characterConstitution < 13 ? 1 : CalculateModifier(_characterConstitution);
+        var currentStatValue = GetStatValue(stat);
+        if (currentStatValue >= maxStatValue) return;
 
-                    if (_characterStatPoints - pointsToDeduct >= 0)
-                    {
-                        _characterStatPoints -= pointsToDeduct;
-                        _characterConstitution++;
-                    }
-                }
-                break;
-            case "Intelligence":
-                if (_characterIntelligence < maxStatValue)
-                {
-                    var pointsToDeduct = 0;
-                    pointsToDeduct = _characterIntelligence < 13 ? 1 : CalculateModifier(_characterIntelligence);
-
-                    if (_characterStatPoints - pointsToDeduct >= 0)
-                    {
-                        _characterStatPoints -= pointsToDeduct;
-                        _characterIntelligence++;
-                    }
-                }
-                break;
-            case "Wisdom":
-                if (_characterWisdom < maxStatValue)
-                {
-                    var pointsToDeduct = 0;
-                    pointsToDeduct = _characterWisdom < 13 ? 1 : CalculateModifier(_characterWisdom);
-
-                    if (_characterStatPoints - pointsToDeduct >= 0)
-                    {
-                        _characterStatPoints -= pointsToDeduct;
-                        _characterWisdom++;
-                    }
-                }
-                break;
-            case "Charisma":
-                if (_characterCharisma < maxStatValue)
-                {
-                    var pointsToDeduct = 0;
-                    pointsToDeduct = _characterCharisma < 13 ? 1 : CalculateModifier(_characterCharisma);
-
-                    if (_characterStatPoints - pointsToDeduct >= 0)
-                    {
-                        _characterStatPoints -= pointsToDeduct;
-                        _characterCharisma++;
-                    }
-                }
-                break;
+        var pointsToDeduct = currentStatValue < 13 ? 1 : CalculateModifier(currentStatValue);
+        if (_characterStatPoints - pointsToDeduct >= 0)
+        {
+            _characterStatPoints -= pointsToDeduct;
+            statFields[stat](currentStatValue + 1);
         }
     }
     
     private void DecreaseStatValue(string stat)
     {
         const int minStatValue = 8;
-        switch (stat)
+        var statFields = new Dictionary<string, Action<int>>
         {
-            case "Strength":
-                if (_characterStrength > minStatValue)
-                {
-                    if (_characterStrength < 13)
-                        _characterStatPoints += 1;
-                    else
-                        if (CalculateModifier(_characterStrength -1) == CalculateModifier(_characterStrength))
-                        _characterStatPoints += CalculateModifier(_characterStrength);
-                        else 
-                            _characterStatPoints += CalculateModifier(_characterStrength) - 1;
-                    _characterStrength--;
-                }
-                break;
-            case "Dexterity":
-                if (_characterDexterity > minStatValue)
-                {
-                    if (_characterDexterity < 13)
-                        _characterStatPoints += 1;
-                    else if (CalculateModifier(_characterDexterity - 1) == CalculateModifier(_characterDexterity))
-                        _characterStatPoints += CalculateModifier(_characterDexterity);
-                    else
-                        _characterStatPoints += CalculateModifier(_characterDexterity) - 1;
-                    _characterDexterity--;
-                }
-                break;
-            case "Constitution":
-                if (_characterConstitution > minStatValue)
-                {
-                    if (_characterConstitution < 13)
-                        _characterStatPoints += 1;
-                    else if (CalculateModifier(_characterConstitution - 1) == CalculateModifier(_characterConstitution))
-                        _characterStatPoints += CalculateModifier(_characterConstitution);
-                    else
-                        _characterStatPoints += CalculateModifier(_characterConstitution) - 1;
-                    _characterConstitution--;
-                }
-                break;
-            case "Intelligence":
-                if (_characterIntelligence > minStatValue)
-                {
-                    if (_characterIntelligence < 13)
-                        _characterStatPoints += 1;
-                    else if (CalculateModifier(_characterIntelligence - 1) == CalculateModifier(_characterIntelligence))
-                        _characterStatPoints += CalculateModifier(_characterIntelligence);
-                    else
-                        _characterStatPoints += CalculateModifier(_characterIntelligence) - 1;
-                    _characterIntelligence--;
-                }
-                break;
-            case "Wisdom":
-                if (_characterWisdom > minStatValue)
-                {
-                    if (_characterWisdom < 13)
-                        _characterStatPoints += 1;
-                    else if (CalculateModifier(_characterWisdom - 1) == CalculateModifier(_characterWisdom))
-                        _characterStatPoints += CalculateModifier(_characterWisdom);
-                    else
-                        _characterStatPoints += CalculateModifier(_characterWisdom) - 1;
-                    _characterWisdom--;
-                }
-                break;
-            case "Charisma":
-                if (_characterCharisma > minStatValue)
-                {
-                    if (_characterCharisma < 13)
-                        _characterStatPoints += 1;
-                    else if (CalculateModifier(_characterCharisma - 1) == CalculateModifier(_characterCharisma))
-                        _characterStatPoints += CalculateModifier(_characterCharisma);
-                    else
-                        _characterStatPoints += CalculateModifier(_characterCharisma) - 1;
-                    _characterCharisma--;
-                }
-                break;
+            { "Strength", val => _characterStrength = val },
+            { "Dexterity", val => _characterDexterity = val },
+            { "Constitution", val => _characterConstitution = val },
+            { "Intelligence", val => _characterIntelligence = val },
+            { "Wisdom", val => _characterWisdom = val },
+            { "Charisma", val => _characterCharisma = val },
+        };
+        
+        if (!statFields.ContainsKey(stat)) return;
+        
+        var currentStatValue = GetStatValue(stat);
+        if (currentStatValue <= minStatValue) return;
+
+        var pointsToAdd = 1;
+        if (currentStatValue >= 13)
+        {
+            pointsToAdd = CalculateModifier(currentStatValue) - (CalculateModifier(currentStatValue - 1) == CalculateModifier(currentStatValue) ? 0 : 1);
         }
+
+        _characterStatPoints += pointsToAdd;
+        SetStatValue(stat, currentStatValue - 1);
     }
 
     private void RollRandomStatPoints()
@@ -770,6 +761,39 @@
         if (_randomPointsRolled != 0) return;
         _characterStatPoints = DiceRoller.RollDice("8d12");
         _randomPointsRolled = 1;
+    }
+    
+    private void SwapStatValues(int selectedNumber, string targetPropertyName)
+    {
+        // Get the type of the current component to access its properties
+        Type thisType = this.GetType();
+
+        // Get the target property using reflection
+        PropertyInfo targetProperty = thisType.GetProperty(targetPropertyName);
+
+        if (targetProperty == null) return; // If the property doesn't exist, exit the method
+
+        // Get the current value of the target property
+        var targetValue = (int)targetProperty.GetValue(this)!;
+
+        // List of all character stat property names
+        var propertyNames = new[] { "_characterStrength", "_characterDexterity", "_characterConstitution", "_characterIntelligence", "_characterWisdom", "_characterCharisma" };
+
+        foreach (var propName in propertyNames)
+        {
+            PropertyInfo prop = thisType.GetProperty(propName);
+            if (prop == null) continue;
+            var propValue = (int)prop.GetValue(this)!;
+            // Check if the current property contains the selected number
+            if (propValue != selectedNumber) continue;
+            // Swap the values
+            prop.SetValue(this, targetValue);
+            targetProperty.SetValue(this, selectedNumber);
+            break; // Exit the loop after swapping
+        }
+
+        // Optionally, invoke StateHasChanged() if you're directly manipulating properties not bound with @bind
+        StateHasChanged();
     }
 
     private int CalculateModifier(int stat)
