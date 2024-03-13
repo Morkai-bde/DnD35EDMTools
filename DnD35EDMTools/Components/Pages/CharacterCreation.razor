@@ -788,49 +788,43 @@
 
     private void SwapStatValues(int selectedNumber, string targetStat)
     {
-        switch (targetStat)
+        var statFields = new Dictionary<string, Action<int>>
         {
-            case "Strength":
-                SetSecondaryStatValue(selectedNumber, _characterStrength);
-                _characterStrength = selectedNumber;
-                break;
-            case "Dexterity":
-                SetSecondaryStatValue(selectedNumber, _characterDexterity);
-                _characterDexterity = selectedNumber;
-                break;
-            case "Constitution":
-                SetSecondaryStatValue(selectedNumber, _characterConstitution);
-                _characterConstitution = selectedNumber;
-                break;
-            case "Intelligence":
-                SetSecondaryStatValue(selectedNumber, _characterIntelligence);
-                _characterIntelligence = selectedNumber;
-                break;
-            case "Wisdom":
-                SetSecondaryStatValue(selectedNumber, _characterWisdom);
-                _characterWisdom = selectedNumber;
-                break;
-            case "Charisma":
-                SetSecondaryStatValue(selectedNumber, _characterCharisma);
-                _characterCharisma = selectedNumber;
-                break;
+            { "Strength", val => _characterStrength = val },
+            { "Dexterity", val => _characterDexterity = val },
+            { "Constitution", val => _characterConstitution = val },
+            { "Intelligence", val => _characterIntelligence = val },
+            { "Wisdom", val => _characterWisdom = val },
+            { "Charisma", val => _characterCharisma = val },
+        };
+
+        if (statFields.ContainsKey(targetStat))
+        {
+            SetSecondaryStatValue(selectedNumber, GetStatValue(targetStat));
+            statFields[targetStat](selectedNumber);
         }
     }
 
     private void SetSecondaryStatValue(int number, int tempStat)
     {
-        if (_characterStrength == number)
-            _characterStrength = tempStat;
-        if (_characterDexterity == number)
-            _characterDexterity = tempStat;
-        if (_characterConstitution == number)
-            _characterConstitution = tempStat;
-        if (_characterIntelligence == number)
-            _characterIntelligence = tempStat;
-        if (_characterWisdom == number)
-            _characterWisdom = tempStat;
-        if (_characterCharisma == number)
-            _characterCharisma = tempStat;
+        var statFields = new Dictionary<string, Action<int>>
+        {
+            { "Strength", val => _characterStrength = val },
+            { "Dexterity", val => _characterDexterity = val },
+            { "Constitution", val => _characterConstitution = val },
+            { "Intelligence", val => _characterIntelligence = val },
+            { "Wisdom", val => _characterWisdom = val },
+            { "Charisma", val => _characterCharisma = val },
+        };
+
+        foreach (var statField in statFields)
+        {
+            if (GetStatValue(statField.Key) == number)
+            {
+                statField.Value(tempStat);
+                break;
+            }
+        }
     }
     
     private int CalculateModifier(int stat)
