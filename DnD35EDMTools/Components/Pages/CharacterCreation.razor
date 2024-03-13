@@ -267,7 +267,11 @@
                         <div>
                             @foreach (var number in _standardArray)
                             {
-                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterStrength))">@number</button>
+                                <button class="cc-point-buy-button"
+                                        @onclick='() => SwapStatValues(number, "Strength")'
+                                        disabled="@(_characterStrength == number)">
+                                    @number
+                                </button>
                             }
                         </div>
                         <div>
@@ -279,7 +283,11 @@
                         <div>
                             @foreach (var number in _standardArray)
                             {
-                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterDexterity))">@number</button>
+                                <button class="cc-point-buy-button"
+                                        @onclick='() => SwapStatValues(number, "Dexterity")'
+                                        disabled="@(_characterDexterity == number)">
+                                    @number
+                                </button>
                             }
                         </div>
                         <div>
@@ -291,7 +299,11 @@
                         <div>
                             @foreach (var number in _standardArray)
                             {
-                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterConstitution))">@number</button>
+                                <button class="cc-point-buy-button"
+                                        @onclick='() => SwapStatValues(number, "Constitution")'
+                                        disabled="@(_characterConstitution == number)">
+                                    @number
+                                </button>
                             }
                         </div>
                         <div>
@@ -303,7 +315,11 @@
                         <div>
                             @foreach (var number in _standardArray)
                             {
-                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterIntelligence))">@number</button>
+                                <button class="cc-point-buy-button"
+                                        @onclick='() => SwapStatValues(number, "Intelligence")'
+                                        disabled="@(_characterIntelligence == number)">
+                                    @number
+                                </button>
                             }
                         </div>
                         <div>
@@ -315,7 +331,11 @@
                         <div>
                             @foreach (var number in _standardArray)
                             {
-                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterWisdom))">@number</button>
+                                <button class="cc-point-buy-button"
+                                        @onclick='() => SwapStatValues(number, "Wisdom")'
+                                        disabled="@(_characterWisdom == number)">
+                                    @number
+                                </button>
                             }
                         </div>
                         <div>
@@ -327,7 +347,11 @@
                         <div>
                             @foreach (var number in _standardArray)
                             {
-                                <button class="cc-point-buy-button" @onclick="() => SwapStatValues(number, nameof(_characterCharisma))">@number</button>
+                                <button class="cc-point-buy-button"
+                                        @onclick='() => SwapStatValues(number, "Charisma")'
+                                        disabled="@(_characterCharisma == number)">
+                                    @number
+                                </button>
                             }
                         </div>
                     }
@@ -404,12 +428,11 @@
                         </div>
                     }
                     <!--endregion-->
-                    @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck) 
+                    @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
                     {
                         <div>
                             <label for="weight">Luck:</label>
                         </div>
-                   
                         <div>
                             <input class="cc-input" type="text" id="luck" @bind="_characterLuck"/>
                         </div>
@@ -762,40 +785,54 @@
         _characterStatPoints = DiceRoller.RollDice("8d12");
         _randomPointsRolled = 1;
     }
-    
-    private void SwapStatValues(int selectedNumber, string targetPropertyName)
+
+    private void SwapStatValues(int selectedNumber, string targetStat)
     {
-        // Get the type of the current component to access its properties
-        Type thisType = this.GetType();
-
-        // Get the target property using reflection
-        PropertyInfo targetProperty = thisType.GetProperty(targetPropertyName);
-
-        if (targetProperty == null) return; // If the property doesn't exist, exit the method
-
-        // Get the current value of the target property
-        var targetValue = (int)targetProperty.GetValue(this)!;
-
-        // List of all character stat property names
-        var propertyNames = new[] { "_characterStrength", "_characterDexterity", "_characterConstitution", "_characterIntelligence", "_characterWisdom", "_characterCharisma" };
-
-        foreach (var propName in propertyNames)
+        switch (targetStat)
         {
-            PropertyInfo prop = thisType.GetProperty(propName);
-            if (prop == null) continue;
-            var propValue = (int)prop.GetValue(this)!;
-            // Check if the current property contains the selected number
-            if (propValue != selectedNumber) continue;
-            // Swap the values
-            prop.SetValue(this, targetValue);
-            targetProperty.SetValue(this, selectedNumber);
-            break; // Exit the loop after swapping
+            case "Strength":
+                SetSecondaryStatValue(selectedNumber, _characterStrength);
+                _characterStrength = selectedNumber;
+                break;
+            case "Dexterity":
+                SetSecondaryStatValue(selectedNumber, _characterDexterity);
+                _characterDexterity = selectedNumber;
+                break;
+            case "Constitution":
+                SetSecondaryStatValue(selectedNumber, _characterConstitution);
+                _characterConstitution = selectedNumber;
+                break;
+            case "Intelligence":
+                SetSecondaryStatValue(selectedNumber, _characterIntelligence);
+                _characterIntelligence = selectedNumber;
+                break;
+            case "Wisdom":
+                SetSecondaryStatValue(selectedNumber, _characterWisdom);
+                _characterWisdom = selectedNumber;
+                break;
+            case "Charisma":
+                SetSecondaryStatValue(selectedNumber, _characterCharisma);
+                _characterCharisma = selectedNumber;
+                break;
         }
-
-        // Optionally, invoke StateHasChanged() if you're directly manipulating properties not bound with @bind
-        StateHasChanged();
     }
 
+    private void SetSecondaryStatValue(int number, int tempStat)
+    {
+        if (_characterStrength == number)
+            _characterStrength = tempStat;
+        if (_characterDexterity == number)
+            _characterDexterity = tempStat;
+        if (_characterConstitution == number)
+            _characterConstitution = tempStat;
+        if (_characterIntelligence == number)
+            _characterIntelligence = tempStat;
+        if (_characterWisdom == number)
+            _characterWisdom = tempStat;
+        if (_characterCharisma == number)
+            _characterCharisma = tempStat;
+    }
+    
     private int CalculateModifier(int stat)
     {
         return (int)Math.Floor((stat - 10) / 2.0);
