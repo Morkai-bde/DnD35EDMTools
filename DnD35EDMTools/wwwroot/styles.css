@@ -4,6 +4,7 @@
     --cellheadercolor: #000000;
     --celldefaultcolor: #CCCCCC;
     --cellaltcolor: #E0E0E0;
+    --bs-body-bg: #808080; /*Temporary colour change to save my poor eyes*/
 }
 
 *,
@@ -452,8 +453,8 @@
 }
 
 .dnd-character-creation-sheet {
-    height : auto;
-    width: 698px;
+    height : 280px;
+    width: 700px;
     border: 2px solid;
 }
 
@@ -492,6 +493,20 @@
     border-radius: 3px;
     padding: 3px;
 }
+.cc-point-buy-stat-input {
+    width: 60px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+.cc-point-buy-modifier-input {
+    width: 60px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
 
 .cc-colour-box {
     width: 20px;
@@ -506,6 +521,14 @@
     border-width: thin;
     border-radius: 3px;
 }
+
+.cc-point-buy-button {
+    width: 20px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
+
 /*New Race Styles*/
 
 .dnd-new-race-container {

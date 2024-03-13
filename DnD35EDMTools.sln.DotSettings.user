@@ -1,12 +1,22 @@
 ﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=45dc0614_002Db2c3_002D4e99_002D9ab6_002D246154822f34/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="test_ConvertInchesToFeet" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=0299b9f7_002D8484_002D4c0f_002Db31a_002D90e27925a058/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="DiceHelperTests" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+  &lt;TestAncestor&gt;&#xD;
+    &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.DiceHelperTests&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.Test_DatabaseHelpers.Test_GetOrderNameFromDB&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.Test_AlignmentHelpers.Test_GetMoralityNameFromDB&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.Test_AlignmentHelpers.GetAlignmentFromOrderAndMorality&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.DiceHelperTests.test_DiceRoller&lt;/TestId&gt;&#xD;
+    &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.ConversionHelpersTests.Test_ConvertStatToBonus&lt;/TestId&gt;&#xD;
+  &lt;/TestAncestor&gt;&#xD;
+&lt;/SessionState&gt;</s:String>
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=45dc0614_002Db2c3_002D4e99_002D9ab6_002D246154822f34/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="test_ConvertInchesToFeet" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.ConversionHelpersTests.test_ConvertInchesToFeet&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.ConversionHelpersTests.Test_ConvertFeetAndInchesToInches&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.DiceHelperTests&lt;/TestId&gt;&#xD;
   &lt;/TestAncestor&gt;&#xD;
 &lt;/SessionState&gt;</s:String>
-	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=57b7c76d_002De581_002D4559_002Db927_002D13ddf128d8c2/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" Name="test_ConvertInchesToFeet #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
+	<s:String x:Key="/Default/Environment/UnitTesting/UnitTestSessionStore/Sessions/=57b7c76d_002De581_002D4559_002Db927_002D13ddf128d8c2/@EntryIndexedValue">&lt;SessionState ContinuousTestingMode="0" IsActive="True" Name="test_ConvertInchesToFeet #2" xmlns="urn:schemas-jetbrains-com:jetbrains-ut-session"&gt;&#xD;
   &lt;TestAncestor&gt;&#xD;
     &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.DiceHelperTests&lt;/TestId&gt;&#xD;
     &lt;TestId&gt;xUnit::0021FCA0-E972-4C40-B725-D6A7E9A31275::net8.0::DnD35EDMToolsTests.Test_DatabaseHelpers.Test_GetOrderNameFromDB&lt;/TestId&gt;&#xD;
