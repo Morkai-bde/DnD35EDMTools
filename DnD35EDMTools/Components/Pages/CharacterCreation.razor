@@ -190,170 +190,49 @@
                     <!--#region-->
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
-                        <div>
-                            <label for="strength">Strength:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="strength" @bind="_characterStrength"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Strength")'>Roll</button>
-                        </div>
-                        <div>
-                            <label for="dexterity">Dexterity:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="dexterity" @bind="_characterDexterity"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Dexterity")'>Roll</button>
-                        </div>
-                        <div>
-                            <label for="constitution">Constitution:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="constitution" @bind="_characterConstitution"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Constitution")'>Roll</button>
-                        </div>
-                        <div>
-                            <label for="intelligence">Intelligence:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="intelligence" @bind="_characterIntelligence"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Intelligence")'>Roll</button>
-                        </div>
-                        <div>
-                            <label for="wisdom">Wisdom:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="wisdom" @bind="_characterWisdom"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Wisdom")'>Roll</button>
-                        </div>
-                        <div>
-                            <label for="charisma">Charisma:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="charisma" @bind="_characterCharisma"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick='() => RollStat(SelectedCampaignStatRollingMethod, "Charisma")'>Roll</button>
-                        </div>
+                        @foreach (var statField in statFields)
+                        {
+                            var statName = statField.Key;
+                            var statValue = GetStatValue(statName);
+                            var rollFunction = () => RollStat(SelectedCampaignStatRollingMethod, statName);
+                            <div>
+                                <label for="@statName">@statName:</label>
+                            </div>
+                            <div>
+                                <input class="cc-input" type="text" id="@statName" @bind="statValue"/>
+                            </div>
+                            <div>
+                                <button class="cc-randomize-button" @onclick="rollFunction">Roll</button>
+                            </div>
+                        }
                     }
                     <!--#endregion-->
                     <!--region-->
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
-                        <div>
-                            &nbsp;
-                        </div>
-                        <div>
-                            &nbsp;
-                        </div>
-                        <div>
-                            &nbsp;
-                        </div>
-                        <div>
-                            <label for="strength">Strength:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="strength" @bind="_characterStrength"/><input class="cc-point-buy-modifier-input" type="text" id="strength-modifier" value="@CalculateModifier(_characterStrength)"/>
-                        </div>
-                        <div>
-                            @foreach (var number in _standardArray)
-                            {
-                                <button class="cc-point-buy-button"
-                                        @onclick='() => SwapStatValues(number, "Strength")'
-                                        disabled="@(_characterStrength == number)">
-                                    @number
-                                </button>
-                            }
-                        </div>
-                        <div>
-                            <label for="dexterity">Dexterity:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="dexterity" @bind="_characterDexterity"/><input class="cc-point-buy-modifier-input" type="text" id="dexterity-modifier" value="@CalculateModifier(_characterDexterity)"/>
-                        </div>
-                        <div>
-                            @foreach (var number in _standardArray)
-                            {
-                                <button class="cc-point-buy-button"
-                                        @onclick='() => SwapStatValues(number, "Dexterity")'
-                                        disabled="@(_characterDexterity == number)">
-                                    @number
-                                </button>
-                            }
-                        </div>
-                        <div>
-                            <label for="constitution">Constitution:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="constitution" @bind="_characterConstitution"/><input class="cc-point-buy-modifier-input" type="text" id="constitution-modifier" value="@CalculateModifier(_characterConstitution)"/>
-                        </div>
-                        <div>
-                            @foreach (var number in _standardArray)
-                            {
-                                <button class="cc-point-buy-button"
-                                        @onclick='() => SwapStatValues(number, "Constitution")'
-                                        disabled="@(_characterConstitution == number)">
-                                    @number
-                                </button>
-                            }
-                        </div>
-                        <div>
-                            <label for="intelligence">Intelligence:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="intelligence" @bind="_characterIntelligence"/><input class="cc-point-buy-modifier-input" type="text" id="intelligence-modifier" value="@CalculateModifier(_characterIntelligence)"/>
-                        </div>
-                        <div>
-                            @foreach (var number in _standardArray)
-                            {
-                                <button class="cc-point-buy-button"
-                                        @onclick='() => SwapStatValues(number, "Intelligence")'
-                                        disabled="@(_characterIntelligence == number)">
-                                    @number
-                                </button>
-                            }
-                        </div>
-                        <div>
-                            <label for="wisdom">Wisdom:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="wisdom" @bind="_characterWisdom"/><input class="cc-point-buy-modifier-input" type="text" id="wisdom-modifier" value="@CalculateModifier(_characterWisdom)"/>
-                        </div>
-                        <div>
-                            @foreach (var number in _standardArray)
-                            {
-                                <button class="cc-point-buy-button"
-                                        @onclick='() => SwapStatValues(number, "Wisdom")'
-                                        disabled="@(_characterWisdom == number)">
-                                    @number
-                                </button>
-                            }
-                        </div>
-                        <div>
-                            <label for="charisma">Charisma:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="charisma" @bind="_characterCharisma"/><input class="cc-point-buy-modifier-input" type="text" id="charisma-modifier" value="@CalculateModifier(_characterCharisma)"/>
-                        </div>
-                        <div>
-                            @foreach (var number in _standardArray)
-                            {
-                                <button class="cc-point-buy-button"
-                                        @onclick='() => SwapStatValues(number, "Charisma")'
-                                        disabled="@(_characterCharisma == number)">
-                                    @number
-                                </button>
-                            }
-                        </div>
+                        @foreach (var statField in statFields)
+                        {
+                            var statName = statField.Key;
+                            var statValue = GetStatValue(statName);
+                            var modifierValue = CalculateModifier(statValue);
+                            <div>
+                                <label for="@statName">@statName:</label>
+                            </div>
+                            <div>
+                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                            </div>
+                            <div>
+                                @foreach (var number in _standardArray)
+                                {
+                                    var onclickAction = () => SwapStatValues(number, statName);
+                                    <button class="cc-point-buy-button"
+                                            @onclick="onclickAction"
+                                            disabled="@((int)statValue == number)">
+                                        @number
+                                    </button>
+                                }
+                            </div>
+                        }
                     }
                     <!--endregion-->
                     <!--region-->
@@ -368,64 +247,27 @@
                         <div>
                             @if (SelectedCampaignStatRollingMethod == "PBR")
                             {
-                                <button class="cc-randomize-button" @onclick='() => RollRandomStatPoints()'>Roll</button>
+                                <button class="cc-randomize-button" @onclick="RollRandomStatPoints">Roll</button>
                             }
                             &nbsp;
                         </div>
-                        <div>
-                            <label for="strength">Strength:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="strength" @bind="_characterStrength"/><input class="cc-point-buy-modifier-input" type="text" id="strength-modifier" value="@CalculateModifier(_characterStrength)"/>
-                        </div>
-                        <div>
-                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Strength")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Strength")'>-</button>
-                        </div>
-                        <div>
-                            <label for="dexterity">Dexterity:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="dexterity" @bind="_characterDexterity"/><input class="cc-point-buy-modifier-input" type="text" id="dexterity-modifier" value="@CalculateModifier(_characterDexterity)"/>
-                        </div>
-                        <div>
-                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Dexterity")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Dexterity")'>-</button>
-                        </div>
-                        <div>
-                            <label for="constitution">Constitution:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="constitution" @bind="_characterConstitution"/><input class="cc-point-buy-modifier-input" type="text" id="constitution-modifier" value="@CalculateModifier(_characterConstitution)"/>
-                        </div>
-                        <div>
-                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Constitution")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Constitution")'>-</button>
-                        </div>
-                        <div>
-                            <label for="intelligence">Intelligence:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="intelligence" @bind="_characterIntelligence"/><input class="cc-point-buy-modifier-input" type="text" id="intelligence-modifier" value="@CalculateModifier(_characterIntelligence)"/>
-                        </div>
-                        <div>
-                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Intelligence")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Intelligence")'>-</button>
-                        </div>
-                        <div>
-                            <label for="wisdom">Wisdom:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="wisdom" @bind="_characterWisdom"/><input class="cc-point-buy-modifier-input" type="text" id="wisdom-modifier" value="@CalculateModifier(_characterWisdom)"/>
-                        </div>
-                        <div>
-                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Wisdom")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Wisdom")'>-</button>
-                        </div>
-                        <div>
-                            <label for="charisma">Charisma:</label>
-                        </div>
-                        <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="charisma" @bind="_characterCharisma"/><input class="cc-point-buy-modifier-input" type="text" id="charisma-modifier" value="@CalculateModifier(_characterCharisma)"/>
-                        </div>
-                        <div>
-                            <button class="cc-point-buy-button" @onclick='() => IncreaseStatValue("Charisma")'>+</button><button class="cc-point-buy-button" @onclick='() => DecreaseStatValue("Charisma")'>-</button>
-                        </div>
+                        @foreach (var statField in statFields)
+                        {
+                            var statName = statField.Key;
+                            var statValue = GetStatValue(statName);
+                            var modifierValue = CalculateModifier(statValue);
+                            var increaseAction = () => IncreaseStatValue(statName);
+                            var decreaseAction = () => DecreaseStatValue(statName);
+                            <div>
+                                <label for="@statName">@statName:</label>
+                            </div>
+                            <div>
+                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                            </div>
+                            <div>
+                                <button class="cc-point-buy-button" @onclick="increaseAction">+</button><button class="cc-point-buy-button" @onclick="decreaseAction">-</button>
+                            </div>
+                        }
                     }
                     <!--endregion-->
                     @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
@@ -503,7 +345,7 @@
         switch (SelectedCampaignStatRollingMethod)
         {
             case "3D6":
-            case "3D5R1":
+            case "3D6R1":
             case "4D6DL":
                 SetStatsToZero();
                 break;
@@ -566,7 +408,9 @@
     private int _characterWisdom;
     private int _characterCharisma;
     private int _characterLuck;
-
+    
+    private Dictionary<string, Action<int>> statFields;
+    
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
@@ -584,6 +428,20 @@
         _classes = await db.Classes.ToListAsync();
         _genders = await db.Genders.ToListAsync();
         _deities = await db.Deities.ToListAsync();
+        InitializeStatFields();
+    }
+    
+    private void InitializeStatFields()
+    {
+        statFields = new Dictionary<string, Action<int>>
+        {
+            { "Strength", val => _characterStrength = val },
+            { "Dexterity", val => _characterDexterity = val },
+            { "Constitution", val => _characterConstitution = val },
+            { "Intelligence", val => _characterIntelligence = val },
+            { "Wisdom", val => _characterWisdom = val },
+            { "Charisma", val => _characterCharisma = val },
+        };
     }
     
     private ColourData GetColourById(int colourId, List<ColourData> colours)
@@ -700,43 +558,19 @@
 
     private void SetStatValue(string stat, int value)
     {
-        switch (stat)
+        if (statFields.TryGetValue(stat, out var setStatValue))
         {
-            case "Strength":
-                _characterStrength = value;
-                break;
-            case "Dexterity":
-                _characterDexterity = value;
-                break;
-            case "Constitution":
-                _characterConstitution = value;
-                break;
-            case "Intelligence":
-                _characterIntelligence = value;
-                break;
-            case "Wisdom":
-                _characterWisdom = value;
-                break;
-            case "Charisma":
-                _characterCharisma = value;
-                break;
-            default:
-                throw new ArgumentException("Invalid stat");
+            setStatValue(value);
+        }
+        else
+        {
+            throw new ArgumentException("Invalid stat");
         }
     }
 
     private void IncreaseStatValue(string stat)
     {
         const int maxStatValue = 18;
-        var statFields = new Dictionary<string, Action<int>>
-        {
-            { "Strength", val => _characterStrength = val },
-            { "Dexterity", val => _characterDexterity = val },
-            { "Constitution", val => _characterConstitution = val },
-            { "Intelligence", val => _characterIntelligence = val },
-            { "Wisdom", val => _characterWisdom = val },
-            { "Charisma", val => _characterCharisma = val },
-        };
 
         if (!statFields.ContainsKey(stat)) return;
 
@@ -754,15 +588,6 @@
     private void DecreaseStatValue(string stat)
     {
         const int minStatValue = 8;
-        var statFields = new Dictionary<string, Action<int>>
-        {
-            { "Strength", val => _characterStrength = val },
-            { "Dexterity", val => _characterDexterity = val },
-            { "Constitution", val => _characterConstitution = val },
-            { "Intelligence", val => _characterIntelligence = val },
-            { "Wisdom", val => _characterWisdom = val },
-            { "Charisma", val => _characterCharisma = val },
-        };
         
         if (!statFields.ContainsKey(stat)) return;
         
@@ -788,15 +613,6 @@
 
     private void SwapStatValues(int selectedNumber, string targetStat)
     {
-        var statFields = new Dictionary<string, Action<int>>
-        {
-            { "Strength", val => _characterStrength = val },
-            { "Dexterity", val => _characterDexterity = val },
-            { "Constitution", val => _characterConstitution = val },
-            { "Intelligence", val => _characterIntelligence = val },
-            { "Wisdom", val => _characterWisdom = val },
-            { "Charisma", val => _characterCharisma = val },
-        };
 
         if (statFields.ContainsKey(targetStat))
         {
@@ -807,15 +623,6 @@
 
     private void SetSecondaryStatValue(int number, int tempStat)
     {
-        var statFields = new Dictionary<string, Action<int>>
-        {
-            { "Strength", val => _characterStrength = val },
-            { "Dexterity", val => _characterDexterity = val },
-            { "Constitution", val => _characterConstitution = val },
-            { "Intelligence", val => _characterIntelligence = val },
-            { "Wisdom", val => _characterWisdom = val },
-            { "Charisma", val => _characterCharisma = val },
-        };
 
         foreach (var statField in statFields)
         {
@@ -889,17 +696,12 @@
 
         if (!skipRollStatsAndLuck)
         {
-            _characterStrength = 0;
+            SetStatsToZero();
             RollStat(SelectedCampaignStatRollingMethod, "Strength");
-            _characterDexterity = 0;
             RollStat(SelectedCampaignStatRollingMethod, "Dexterity");
-            _characterConstitution = 0;
             RollStat(SelectedCampaignStatRollingMethod, "Constitution");
-            _characterWisdom = 0;
             RollStat(SelectedCampaignStatRollingMethod, "Wisdom");
-            _characterIntelligence = 0;
             RollStat(SelectedCampaignStatRollingMethod, "Intelligence");
-            _characterCharisma = 0;
             RollStat(SelectedCampaignStatRollingMethod, "Charisma");
             CalculateLuck();
         }
