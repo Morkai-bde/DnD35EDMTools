@@ -15,7 +15,6 @@ public class CharacterData
     public int Experience { get; set; }
     public int HitPoints { get; set; }
     [MaxLength(20)]
-    public string Alignment { get; set; } = null!;
     public int Order { get; set; }
     public int Morality { get; set; }
     public int? Deity { get; set; }
