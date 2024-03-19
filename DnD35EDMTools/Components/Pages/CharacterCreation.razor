@@ -20,7 +20,6 @@
         <div class="dnd-character-creation-sheet">
             <div class="dnd-cc-top-section">
                 <div class="dnd-cc-top__left">
-                    <!--#region -->
                     <div>
                         <label for="campaign">Campaign</label>
                     </div>
@@ -33,12 +32,17 @@
                         </select>
                     </div>
                     <div>
+                        &nbsp;
+                    </div>
+                    <div>
                         <label for="name">Character Name:</label>
                     </div>
                     <div>
                         <input class="cc-input" type="text" id="name" @bind="_characterName"/>
                     </div>
-
+                    <div>
+                        &nbsp;
+                    </div>
                     <div>
                         <label for="race">Race:</label>
                     </div>
@@ -49,6 +53,9 @@
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
                             }
                         </select>
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                     <div>
                         <label for="gender">Gender:</label>
@@ -62,6 +69,9 @@
                         </select>
                     </div>
                     <div>
+                        &nbsp;
+                    </div>
+                    <div>
                         <label for="order">Order:</label>
                     </div>
                     <div>
@@ -71,6 +81,9 @@
                                 <option value=@order.Id title=@order.Description>@order.Order</option>
                             }
                         </select>
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                     <div>
                         <label for="morality">Morality:</label>
@@ -84,6 +97,9 @@
                         </select>
                     </div>
                     <div>
+                        &nbsp;
+                    </div>
+                    <div>
                         <label for="deity">Deity:</label>
                     </div>
                     <div>
@@ -95,7 +111,10 @@
                         </select>
                     </div>
                     <div>
-                        <label for="morality">Class:</label>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="class">Class:</label>
                     </div>
                     <div>
                         <select class="cc-select" id="class" @bind="_selectedClassId">
@@ -105,10 +124,9 @@
                             }
                         </select>
                     </div>
-                </div>
-                <!--#endregion -->
-                <div class="dnd-cc-top__right">
-                    <!--#region -->
+                    <div>
+                        &nbsp;
+                    </div>
                     <div>
                         &nbsp;
                     </div>
@@ -187,7 +205,15 @@
                     <div>
                         <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
                     </div>
-                    <!--#region-->
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
                         @foreach (var statField in statFields)
@@ -206,8 +232,6 @@
                             </div>
                         }
                     }
-                    <!--#endregion-->
-                    <!--region-->
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
                         @foreach (var statField in statFields)
@@ -234,15 +258,13 @@
                             </div>
                         }
                     }
-                    <!--endregion-->
-                    <!--region-->
                     @if (SelectedCampaignStatRollingMethod is "PBA" or "PBR")
                     {
                         <div>
-                            Points:
+                            <label for="points">Points:</label>
                         </div>
                         <div>
-                            @_characterStatPoints
+                             <input class="cc-point-buy-stat-input" type="text" id="points" value="@_characterStatPoints" readonly/>
                         </div>
                         <div>
                             @if (SelectedCampaignStatRollingMethod == "PBR")
@@ -269,7 +291,6 @@
                             </div>
                         }
                     }
-                    <!--endregion-->
                     @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
                     {
                         <div>
@@ -282,7 +303,20 @@
                             <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
                         </div>
                     }
-                    <!--#endregion -->
+                </div>
+               <div class="dnd-cc-top__middle">
+                   @foreach (var language in FilteredLanguages)
+                   {
+                       var isBonus = language.IsBonus;
+                       <div class="language-item">
+                           <input type="checkbox" id="@language.Name.ToLower()" @onchange="e => ToggleLanguageSelection(language.Id)" checked="@isBonus">
+                           &nbsp;
+                           <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
+                       </div>
+                   }
+               </div>
+                <div class="dnd-cc-top__right">
+                   
                 </div>
             </div>
         </div>
@@ -308,6 +342,8 @@
     private List<GenderData> _genders = new List<GenderData>();
     private List<DeityData> _deities = new List<DeityData>();
     private List<int> _standardArray = new List<int>();
+    private List<LanguageData> _languages = new List<LanguageData>();
+    private List<int> _selectedLanguageIds = new List<int>();
     private List<DeityData> FilteredDeities
     {
         get
@@ -325,6 +361,54 @@
         }
     }
 
+    private List<LanguageData> FilteredLanguages
+    {
+        get
+        {
+            var filteredLanguages = new List<LanguageData>();
+            if (_selectedCampaignId == default || _selectedRaceId == default || _selectedClassId == default)
+            {
+                return filteredLanguages;
+            }
+            
+            var selectedCampaign = _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId);
+            var selectedRace = _races.Single(r => r.Id == _selectedRaceId).Race;
+            var selectedClass = _classes.Single(r => r.Id == _selectedClassId).Name;
+            if (selectedCampaign != null && selectedRace != "Select a Race" && selectedClass != "Select a Class")
+            {
+                var allowedSourceBooks = selectedCampaign.AllowedSources;
+                foreach (var language in _languages)
+                {
+                    foreach (var sourceBook in allowedSourceBooks)
+                    {
+                        var isAllowedBySourceBook = language.Sourcebook == sourceBook.Abbreviation;
+                        var isAllowedByRace = language.RequiredRace == "Any" || language.RequiredRace == selectedRace;
+                        var isAllowedByClass = language.RequiredClass == "Any" || language.RequiredClass == selectedClass;
+                        if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
+                        {
+                            filteredLanguages.Add(language);
+                            break;
+                        }
+                    }
+                }
+            }
+
+            return filteredLanguages;
+        }
+    }
+
+    private void ToggleLanguageSelection(int languageId)
+    {
+        if (_selectedLanguageIds.Contains(languageId))
+        {
+            _selectedLanguageIds.Remove(languageId);
+        }
+        else
+        {
+            _selectedLanguageIds.Add(languageId);
+        }
+    }
+    
     private int _selectedCampaignId = 1;
 
     private int SelectedCampaignId
@@ -428,6 +512,7 @@
         _classes = await db.Classes.ToListAsync();
         _genders = await db.Genders.ToListAsync();
         _deities = await db.Deities.ToListAsync();
+        _languages = await db.Languages.ToListAsync();
         InitializeStatFields();
     }
     
@@ -738,6 +823,7 @@
         newCharacter.Age = Int32.Parse(_characterAge);
         newCharacter.Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight);
         newCharacter.Weight = _characterWeight;
+        newCharacter.Languages = _selectedLanguageIds;
         newCharacter.PlayerName = "Shaun"; // To Be Implemented (get from active account creating the character)
         
         using var db = DbContext;

@@ -453,31 +453,46 @@
 }
 
 .dnd-character-creation-sheet {
-    height : 280px;
-    width: 700px;
+    height : 484px; /*24*/
+    width: 1080px;
     border: 2px solid;
 }
 
 .dnd-cc-top-section {
     display: grid;
-    grid-template-columns: 50% 50%;
+    grid-template-columns: 33% 34% 33%;
     height: 100%;
 }
 
 .dnd-cc-top__left {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
-    grid-template-columns: .5fr 1.5fr;
+    grid-template-rows: 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px;
+    grid-template-columns: 90px 120px 120px;
+}
+
+.dnd-cc-top__middle {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(20px, auto));
+    grid-template-columns: 120px 120px 120px;
+    grid-auto-rows: 20px;
+    grid-auto-flow: column;
+    max-height: 480px;
+    overflow-y: auto;
+}
+
+.language-item {
+    display: flex;
+    align-items: center; /* Aligns checkbox and label */
 }
 
 .dnd-cc-top__right {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr;
-    grid-template-columns: .2fr .8fr 1fr;
+    grid-template-rows: 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px;
+    grid-template-columns: 90px 120px 120px;
 }
-
 
 .cc-select {
     width: 120px;

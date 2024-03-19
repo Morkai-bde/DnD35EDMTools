@@ -32,10 +32,9 @@ public class CharacterData
     public int Wisdom { get; set; }
     public int Intelligence { get; set; }
     public int Charisma { get; set; }
-    
+    public List<int> Languages { get; set; } = [1];
     [MaxLength(100)]
     public string? PlayerName { get; set; }
-    // public List<string> Languages { get; set; }
     // public int PlatinumPieces { get; set; }
     // public int GoldPieces { get; set; }
     // public int SilverPieces { get; set; }
