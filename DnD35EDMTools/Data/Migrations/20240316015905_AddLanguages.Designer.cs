@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240316015905_AddLanguages")]
+    partial class AddLanguages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -249,10 +252,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Intelligence")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Languages")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Morality")
                         .HasColumnType("INTEGER");
 
@@ -470,9 +469,6 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("IsBonus")
-                        .HasColumnType("INTEGER");
-
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasMaxLength(20)
@@ -481,22 +477,14 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Page")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("RequiredClass")
+                    b.Property<string>("Secret")
                         .IsRequired()
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("RequiredRace")
-                        .IsRequired()
+                        .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Sourcebook")
                         .IsRequired()
                         .HasMaxLength(5)
-                        .HasColumnType("TEXT");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
                     b.HasKey("Id");

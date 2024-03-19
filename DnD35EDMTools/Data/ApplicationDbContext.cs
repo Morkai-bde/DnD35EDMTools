@@ -23,6 +23,7 @@ namespace DnD35EDMTools.Data
         public DbSet<OrderData> Orders { get; set; }
         public DbSet<MoralityData> Moralities { get; set; }
         public DbSet<ClassData> Classes { get; set; }
+        public DbSet<LanguageData> Languages { get; set; }
         public DbSet<CampaignData> Campaigns { get; set; }
         public DbSet<SourceBookData> SourceBooks { get; set; }
         
