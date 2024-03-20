@@ -447,7 +447,11 @@
             case "PBA":
             case "PBR":
                 if (SelectedCampaignStatRollingMethod == "PBR")
+                {
                     _characterStatPoints = 0;
+                    _randomPointsRolled = 0;
+                }
+
                 _characterStatPoints = 25;
                 _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 _characterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
