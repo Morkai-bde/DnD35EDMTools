@@ -389,6 +389,12 @@
                         if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
                         {
                             filteredLanguages.Add(language);
+                            
+                            if (language.IsBonus && !_selectedLanguageIds.Contains(language.Id))
+                            {
+                                _selectedLanguageIds.Add(language.Id);
+                            }
+                            
                             break;
                         }
                     }
