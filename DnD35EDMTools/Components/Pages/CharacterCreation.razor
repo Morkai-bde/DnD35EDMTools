@@ -3,7 +3,6 @@
 @using DnD35EDMTools.Data
 @using Microsoft.EntityFrameworkCore
 @using DnD35EDMTools.Helpers
-@using System.Reflection
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
 
 <h3>Character Creation</h3>
@@ -216,11 +215,10 @@
                     </div>
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
-                        @foreach (var statField in statFields)
+                        @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
-                            var rollFunction = () => RollStat(SelectedCampaignStatRollingMethod, statName);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
@@ -228,13 +226,15 @@
                                 <input class="cc-input" type="text" id="@statName" @bind="statValue"/>
                             </div>
                             <div>
-                                <button class="cc-randomize-button" @onclick="rollFunction">Roll</button>
+                                <button class="cc-randomize-button" @onclick="RollFunction">Roll</button>
                             </div>
+                            continue;
+                            void RollFunction() => RollStat(SelectedCampaignStatRollingMethod, statName);
                         }
                     }
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
-                        @foreach (var statField in statFields)
+                        @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
@@ -248,12 +248,13 @@
                             <div>
                                 @foreach (var number in _standardArray)
                                 {
-                                    var onclickAction = () => SwapStatValues(number, statName);
                                     <button class="cc-point-buy-button"
-                                            @onclick="onclickAction"
-                                            disabled="@((int)statValue == number)">
+                                            @onclick="OnclickAction"
+                                            disabled="@(statValue == number)">
                                         @number
                                     </button>
+                                    continue;
+                                    void OnclickAction() => SwapStatValues(number, statName);
                                 }
                             </div>
                         }
@@ -273,13 +274,11 @@
                             }
                             &nbsp;
                         </div>
-                        @foreach (var statField in statFields)
+                        @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
                             var modifierValue = CalculateModifier(statValue);
-                            var increaseAction = () => IncreaseStatValue(statName);
-                            var decreaseAction = () => DecreaseStatValue(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
@@ -287,8 +286,11 @@
                                 <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
                             </div>
                             <div>
-                                <button class="cc-point-buy-button" @onclick="increaseAction">+</button><button class="cc-point-buy-button" @onclick="decreaseAction">-</button>
+                                <button class="cc-point-buy-button" @onclick="IncreaseAction">+</button><button class="cc-point-buy-button" @onclick="DecreaseAction">-</button>
                             </div>
+                            continue;
+                            void DecreaseAction() => DecreaseStatValue(statName);
+                            void IncreaseAction() => IncreaseStatValue(statName);
                         }
                     }
                     @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
@@ -309,7 +311,7 @@
                    {
                        var isBonus = language.IsBonus;
                        <div class="language-item">
-                           <input type="checkbox" id="@language.Name.ToLower()" @onchange="e => ToggleLanguageSelection(language.Id)" checked="@isBonus">
+                           <input type="checkbox" id="@language.Name.ToLower()" @onchange="_ => ToggleLanguageSelection(language.Id)" checked="@isBonus">
                            &nbsp;
                            <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
                        </div>
@@ -334,16 +336,16 @@
 </div>
 @code {
     private bool _dryRun = true;
-    private List<CampaignData> _campaigns = new List<CampaignData>();
-    private List<RaceData> _races = new List<RaceData>();
-    private List<OrderData> _orders = new List<OrderData>();
-    private List<MoralityData> _moralities = new List<MoralityData>();
-    private List<ClassData> _classes = new List<ClassData>();
-    private List<GenderData> _genders = new List<GenderData>();
-    private List<DeityData> _deities = new List<DeityData>();
-    private List<int> _standardArray = new List<int>();
-    private List<LanguageData> _languages = new List<LanguageData>();
-    private List<int> _selectedLanguageIds = new List<int>();
+    private List<CampaignData> _campaigns = [];
+    private List<RaceData> _races = [];
+    private List<OrderData> _orders = [];
+    private List<MoralityData> _moralities = [];
+    private List<ClassData> _classes = [];
+    private List<GenderData> _genders = [];
+    private List<DeityData> _deities = [];
+    private List<int> _standardArray = [];
+    private List<LanguageData> _languages = [];
+    private readonly List<int> _selectedLanguageIds = [];
     private List<DeityData> FilteredDeities
     {
         get
@@ -387,6 +389,12 @@
                         if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
                         {
                             filteredLanguages.Add(language);
+                            
+                            if (language.IsBonus && !_selectedLanguageIds.Contains(language.Id))
+                            {
+                                _selectedLanguageIds.Add(language.Id);
+                            }
+                            
                             break;
                         }
                     }
@@ -413,10 +421,7 @@
 
     private int SelectedCampaignId
     {
-        get
-        {
-            return _selectedCampaignId;
-        }
+        get => _selectedCampaignId;
         set
         {
             _selectedCampaignId = value;
@@ -448,7 +453,11 @@
             case "PBA":
             case "PBR":
                 if (SelectedCampaignStatRollingMethod == "PBR")
+                {
                     _characterStatPoints = 0;
+                    _randomPointsRolled = 0;
+                }
+
                 _characterStatPoints = 25;
                 _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 _characterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
@@ -493,8 +502,8 @@
     private int _characterCharisma;
     private int _characterLuck;
     
-    private Dictionary<string, Action<int>> statFields;
-    
+    private Dictionary<string, Action<int>> _statFields = null!;
+
     protected override async Task OnInitializedAsync()
     {
         await using var db = DbContext;
@@ -518,7 +527,7 @@
     
     private void InitializeStatFields()
     {
-        statFields = new Dictionary<string, Action<int>>
+        _statFields = new Dictionary<string, Action<int>>
         {
             { "Strength", val => _characterStrength = val },
             { "Dexterity", val => _characterDexterity = val },
@@ -583,7 +592,7 @@
 
     private void RandomizeHeight()
     {
-        int baseHeight = 0;
+        int baseHeight;
         string randomHeightDice = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
         _randomHeight = DiceRoller.RollDice(randomHeightDice);
         string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
@@ -596,7 +605,7 @@
 
     private void RandomizeWeight()
     {
-        int baseWeight = 0;
+        int baseWeight;
         string randomWeightDice = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
         int randomWeight = DiceRoller.RollDice(randomWeightDice);
         string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
@@ -643,7 +652,7 @@
 
     private void SetStatValue(string stat, int value)
     {
-        if (statFields.TryGetValue(stat, out var setStatValue))
+        if (_statFields.TryGetValue(stat, out var setStatValue))
         {
             setStatValue(value);
         }
@@ -657,7 +666,7 @@
     {
         const int maxStatValue = 18;
 
-        if (!statFields.ContainsKey(stat)) return;
+        if (!_statFields.ContainsKey(stat)) return;
 
         var currentStatValue = GetStatValue(stat);
         if (currentStatValue >= maxStatValue) return;
@@ -666,7 +675,7 @@
         if (_characterStatPoints - pointsToDeduct >= 0)
         {
             _characterStatPoints -= pointsToDeduct;
-            statFields[stat](currentStatValue + 1);
+            _statFields[stat](currentStatValue + 1);
         }
     }
     
@@ -674,7 +683,7 @@
     {
         const int minStatValue = 8;
         
-        if (!statFields.ContainsKey(stat)) return;
+        if (!_statFields.ContainsKey(stat)) return;
         
         var currentStatValue = GetStatValue(stat);
         if (currentStatValue <= minStatValue) return;
@@ -699,17 +708,17 @@
     private void SwapStatValues(int selectedNumber, string targetStat)
     {
 
-        if (statFields.ContainsKey(targetStat))
+        if (_statFields.ContainsKey(targetStat))
         {
             SetSecondaryStatValue(selectedNumber, GetStatValue(targetStat));
-            statFields[targetStat](selectedNumber);
+            _statFields[targetStat](selectedNumber);
         }
     }
 
     private void SetSecondaryStatValue(int number, int tempStat)
     {
 
-        foreach (var statField in statFields)
+        foreach (var statField in _statFields)
         {
             if (GetStatValue(statField.Key) == number)
             {
@@ -800,32 +809,34 @@
             return;
         }
         
-        var newCharacter = new CharacterData();
-        newCharacter.Name = _characterName;
-        newCharacter.CampaignId = _selectedCampaignId;
-        newCharacter.Class = _classes.Single(c => c.Id == _selectedClassId).Id;
-        newCharacter.Race = _races.Single(r => r.Id == _selectedRaceId).Id;
-        newCharacter.Experience = 0;
-        newCharacter.Strength = _characterStrength;
-        newCharacter.Dexterity = _characterDexterity;
-        newCharacter.Constitution = _characterConstitution;
-        newCharacter.Wisdom = _characterWisdom;
-        newCharacter.Intelligence = _characterIntelligence;
-        newCharacter.Charisma = _characterCharisma;
-        newCharacter.HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == _selectedClassId).HitDice) + CalculateModifier(_characterConstitution);
-        newCharacter.Deity = _deities.Single(d => d.Id == _selectedDeityId).Id;
-        newCharacter.Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint;
-        newCharacter.Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint;
-        newCharacter.Gender = _selectedGenderId;
-        newCharacter.Hair = _characterHair;
-        newCharacter.Eyes = _characterEyes;
-        newCharacter.Skin = _characterSkin;
-        newCharacter.Age = Int32.Parse(_characterAge);
-        newCharacter.Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight);
-        newCharacter.Weight = _characterWeight;
-        newCharacter.Languages = _selectedLanguageIds;
-        newCharacter.PlayerName = "Shaun"; // To Be Implemented (get from active account creating the character)
-        
+        var newCharacter = new CharacterData
+        {
+            Name = _characterName,
+            CampaignId = _selectedCampaignId,
+            Class = _classes.Single(c => c.Id == _selectedClassId).Id,
+            Race = _races.Single(r => r.Id == _selectedRaceId).Id,
+            Experience = 0,
+            Strength = _characterStrength,
+            Dexterity = _characterDexterity,
+            Constitution = _characterConstitution,
+            Wisdom = _characterWisdom,
+            Intelligence = _characterIntelligence,
+            Charisma = _characterCharisma,
+            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == _selectedClassId).HitDice) + CalculateModifier(_characterConstitution),
+            Deity = _deities.Single(d => d.Id == _selectedDeityId).Id,
+            Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint,
+            Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint,
+            Gender = _selectedGenderId,
+            Hair = _characterHair,
+            Eyes = _characterEyes,
+            Skin = _characterSkin,
+            Age = Int32.Parse(_characterAge),
+            Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
+            Weight = _characterWeight,
+            Languages = _selectedLanguageIds,
+            PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
+        };
+
         using var db = DbContext;
 
         db.Characters.Add(newCharacter);
