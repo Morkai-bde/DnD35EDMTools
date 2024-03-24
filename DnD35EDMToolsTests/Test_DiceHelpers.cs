@@ -143,4 +143,40 @@ public class DiceHelperTests
         // Assert
         Assert.Equal(4, result);
     }
+    
+    [Fact]
+    public void test_StartingWealthRandom()
+    {
+        // Arrange
+        var goldDice = "1d6*10";
+
+        // Act
+        var result = RollWealth.StartingWealthRandom(goldDice);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(4, result.Count);
+        Assert.Equal(0, result[0]);
+        Assert.InRange(result[1], 10, 60);
+        Assert.Equal(0, result[2]);
+        Assert.Equal(0, result[3]);
+    }
+    
+    [Fact]
+    public void test_StartingWealthAverage()
+    {
+        // Arrange
+        var goldDice = "1d6*10";
+
+        // Act
+        var result = RollWealth.StartingWealthAverage(goldDice);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Equal(4, result.Count);
+        Assert.Equal(0, result[0]);
+        Assert.Equal(35, result[1]);
+        Assert.Equal(0, result[2]);
+        Assert.Equal(0, result[3]);
+    }
 }

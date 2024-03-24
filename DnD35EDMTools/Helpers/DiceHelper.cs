@@ -248,3 +248,58 @@ public static class RollHp
         return (int)result;
     }
 }
+
+public static class RollWealth
+{
+    public static List<int> StartingWealthRandom(string goldDice)
+    {
+        var parts = goldDice.Split("*");
+        if (parts.Length != 2)
+        {
+            throw new ArgumentException("Invalid goldDice format. Expected format `XdY*Z`", nameof(goldDice));
+        }
+
+        var diceNotation = parts[0];
+        if (!int.TryParse(parts[1], out var multiplier))
+        {
+            throw new ArgumentException("Invalid multiplier in goldDice", nameof(goldDice));
+        }
+
+        const int platinum = 0;
+        var gold = DiceRoller.RollDice(diceNotation) * multiplier;
+        const int silver = 0;
+        const int copper = 0;
+        
+        var totalWealth = new List<int> { platinum, gold, silver, copper };
+
+        return totalWealth;
+    }
+    
+    public static List<int> StartingWealthAverage(string goldDice)
+    {
+        var parts = goldDice.Split("*");
+        if (parts.Length != 2 || !parts[0].Contains('d'))
+        {
+            throw new ArgumentException("Invalid goldDice format. Expected format `XdY*Z`", nameof(goldDice));
+        }
+
+        var diceParts = parts[0].Split('d');
+        if (!int.TryParse(diceParts[0], out var numberOfDice) || !int.TryParse(diceParts[1], out var diceSize) || !int.TryParse(parts[1], out var multiplier))
+        {
+            throw new ArgumentException("Invalid goldDice format", nameof(goldDice));
+        }
+
+        // Calculate the average roll for the dice notation
+        var averageRoll = ((diceSize + 1) / 2.0) * numberOfDice * multiplier;
+
+        // Convert to Platinum, Gold, Silver, and Copper
+        const int platinum = 0;
+        var gold = (int)averageRoll;
+        var silver = (int)((averageRoll - gold) *10);
+        const int copper = 0;
+
+        var totalWealth = new List<int> { platinum, gold, silver, copper };
+
+        return totalWealth;
+    }
+}
