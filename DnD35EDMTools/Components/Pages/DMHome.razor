@@ -83,6 +83,18 @@
                             <label for="allow-luck">Enable custom luck stat.</label>
                         </div>
                         <div>
+                            <input type="checkbox" id="allow-wealth-average" value="@AllowWealthAverage" @bind="AllowWealthAverage"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-average">Allow Starting Wealth, Average</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-wealth-random" value="@AllowWealthRandom" @bind="AllowWealthRandom"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-random">Allow Starting Wealth, Random</label>
+                        </div>
+                        <div>
                             <label for="description">Description</label>
                         </div>
                         <div>
@@ -305,7 +317,63 @@
             }
         }
     }
+    
+    private bool AllowWealthAverage
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.AllowWealthAverage;
+                }
+            }
 
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.AllowWealthAverage = value;
+                }
+            }
+        }
+    }
+    
+    private bool AllowWealthRandom
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.AllowWealthRandom;
+                }
+            }
+
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.AllowWealthRandom = value;
+                }
+            }
+        }
+    }
+    
     private string? Description
     {
         get
@@ -380,6 +448,8 @@
             HideTrainedOnlySkills = HideTrainedOnlySkills,
             AllowAvatarPoints = AllowAvatarPoints,
             AllowLuck = AllowLuck,
+            AllowWealthAverage = AllowWealthAverage,
+            AllowWealthRandom = AllowWealthRandom,
             AllowedSources = new List<SourceBookData>()
         };
 
@@ -450,6 +520,8 @@
         campaignToUpdate.HideTrainedOnlySkills = HideTrainedOnlySkills;
         campaignToUpdate.AllowAvatarPoints = AllowAvatarPoints;
         campaignToUpdate.AllowLuck = AllowLuck;
+        campaignToUpdate.AllowWealthAverage = AllowWealthAverage;
+        campaignToUpdate.AllowWealthRandom = AllowWealthRandom;
 
         var selectedSourceBooks = _sourceBooks.Where(book => _selectedSourceBooks[book.Id]);
 
