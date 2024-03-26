@@ -491,7 +491,7 @@
     border-color: var(--cellbordercolour);
     display: grid;
     grid-template-rows: 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px 20px;
-    grid-template-columns: 90px 120px 120px;
+    grid-template-columns: 110px 120px 40px 80px;
 }
 
 .cc-select {
@@ -539,6 +539,19 @@
 
 .cc-point-buy-button {
     width: 20px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
+.cc-gold-input {
+    width: 40px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+.cc-gold-randomize-button {
+    width: 80px;
     height: 20px;
     border-width: thin;
     border-radius: 3px;

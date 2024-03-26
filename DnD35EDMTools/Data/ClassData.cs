@@ -7,6 +7,7 @@ public class ClassData
     public string HitDice { get; set; }
     public int SkillPoints { get; set; }
     public string AgeCategory { get; set; }
+    public string StartingGold { get; set; }
     public string Description { get; set; }
     public string Source { get; set; }
     public int Page { get; set; }
