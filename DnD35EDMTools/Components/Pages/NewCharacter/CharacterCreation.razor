@@ -49,7 +49,7 @@
                         <label for="race">Race:</label>
                     </div>
                     <div style="width: 150px">
-                        <select class="cc-select" id="race" @bind="_selectedRaceId">
+                        <select class="cc-select" id="race" @bind="SelectedRaceId">
                             @foreach (var race in _races)
                             {
                                 <option value=@race.Id title=@race.Description>@race.Race</option>
@@ -138,79 +138,25 @@
                     <div>
                         &nbsp;
                     </div>
-                    @if (_selectedRaceId > 1 && _selectedGenderId > 1 && SelectedClassId > 1)
+                    @if (SelectedRaceId > 1 && _selectedGenderId > 1 && SelectedClassId > 1)
                     {
-                        <div>
-                            <label for="hair">Hair:</label>
-                        </div>
-                        <div>
-                            <select class="cc-select" id="hair" @bind="_characterHair">
-                                @foreach (var colour in GetRaceHairColours())
-                                {
-                                    <option value="@colour.Id">@colour.Colour</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, GetRaceHairColours()).ColourHexCode)">
-                            &nbsp;
-                        </div>
-                        <div>
-                            <label for="eyes">Eyes:</label>
-                        </div>
-                        <div>
-                            <select class="cc-select" id="eyes" @bind="_characterEyes">
-                                @foreach (var colour in GetRaceEyeColours())
-                                {
-                                    <option value="@colour.Id">@colour.Colour</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, GetRaceEyeColours()).ColourHexCode)">
-                            &nbsp;
-                        </div>
-                        <div>
-                            <label for="skin">Skin:</label>
-                        </div>
-                        <div>
-                            <select class="cc-select" id="skin" @bind="_characterSkin">
-                                @foreach (var colour in GetRaceSkinColours())
-                                {
-                                    <option value="@colour.Id">@colour.Colour</option>
-                                }
-                            </select>
-                        </div>
-                        <div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, GetRaceSkinColours()).ColourHexCode)">
-                            &nbsp;
-                        </div>
-                        <div>
-                            <label for="age">Age:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
-                        </div>
-                        <div>
-                            <label for="height">Height:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
-                        </div>
-                        <div>
-                            <label for="weight">Weight:</label>
-                        </div>
-                        <div>
-                            <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
-                        </div>
-                        <div>
-                            <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
-                        </div>
+                        <PhysicalAttributes _selectedRaceId="@_selectedRaceId"
+                                            _characterHair="@_characterHair"
+                                            _characterEyes="@_characterEyes"
+                                            _characterSkin="@_characterSkin"
+                                            _characterAge="@_characterAge"
+                                            _characterHeight="@_characterHeight"
+                                            _characterWeight="@_characterWeight"
+                                            _races="@_races"
+                                            _genders="@_genders"
+                                            _selectedGenderId="@_selectedGenderId"
+                                            _classes="@_classes"
+                                            SelectedClassId="@SelectedClassId"
+                                            _raceStartingAge="@_raceStartingAge"
+                                            _classAgeCategory="@_classAgeCategory"
+                                            _ageTypeDice="@_ageTypeDice">
+                        </PhysicalAttributes>
                     }
-
                     <div>
                         &nbsp;
                     </div>
@@ -220,7 +166,7 @@
                     <div>
                         &nbsp;
                     </div>
-                    @if (_selectedRaceId > 1)
+                    @if (SelectedRaceId > 1)
                     {
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
@@ -305,7 +251,7 @@
                     @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
                     {
                         <div>
-                            <label for="weight">Luck:</label>
+                            <label for="luck">Luck:</label>
                         </div>
                         <div>
                             <input class="cc-input" type="text" id="luck" @bind="_characterLuck"/>
@@ -386,7 +332,7 @@
     private List<int> _standardArray = [];
     private List<LanguageData> _languages = [];
     private readonly List<int> _selectedLanguageIds = [];
-    private List<StartingEquipment> _startingEquipmentMethods = [];
+    private readonly List<StartingEquipment> _startingEquipmentMethods = [];
     private List<DeityData> FilteredDeities
     {
         get
@@ -409,13 +355,13 @@
         get
         {
             var filteredLanguages = new List<LanguageData>();
-            if (_selectedCampaignId == default || _selectedRaceId == default || SelectedClassId == default)
+            if (_selectedCampaignId == default || SelectedRaceId == default || SelectedClassId == default)
             {
                 return filteredLanguages;
             }
             
             var selectedCampaign = _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId);
-            var selectedRace = _races.Single(r => r.Id == _selectedRaceId).Race;
+            var selectedRace = _races.Single(r => r.Id == SelectedRaceId).Race;
             var selectedClass = _classes.Single(r => r.Id == SelectedClassId).Name;
             if (selectedCampaign != null && selectedRace != "Select a Race" && selectedClass != "Select a Class")
             {
@@ -471,6 +417,22 @@
         }
     }
 
+    private int SelectedRaceId
+    {
+        get => _selectedRaceId;
+        set
+        {
+            _selectedRaceId = value;
+            _raceStartingAge = _races.Single(r => r.Id == SelectedRaceId).AdulthoodAge;
+            if (SelectedRaceId > 1 && _selectedClassId > 1)
+            {
+                GetAgeDiceType();
+            }
+
+            PopulateStartingEquipmentMethods();
+        }
+    }
+    
     private void InitializeCharacterStatsBasedOnCampaign()
     {
         switch (SelectedCampaignStatRollingMethod)
@@ -568,10 +530,13 @@
     private int _randomHeight;
     private int _characterWeight;
     private int _selectedRaceId;
+    private int _raceStartingAge;
     private int _characterEyes;
     private int _characterHair;
     private int _characterSkin;
     private int _selectedClassId;
+    private string _classAgeCategory;
+    private string _ageTypeDice;
     private int _selectedOrderId;
     private int _selectedMoralityId;
     private int _selectedDeityId;
@@ -629,82 +594,11 @@
         };
     }
     
-    private ColourData GetColourById(int colourId, List<ColourData> colours)
-    {
-        var defaultColour = new ColourData
-        {
-            Colour = "None",
-            ColourHexCode = "#00000000"
-        };
-        return colours.FirstOrDefault(c => c.Id == colourId)  ?? defaultColour;
-    }
-    
-    private List<ColourData> GetRaceHairColours()
-    {
-        if (_selectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == _selectedRaceId).HairColours.ToList();
-    }
-
-    private List<ColourData> GetRaceEyeColours()
-    {
-        if (_selectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == _selectedRaceId).EyeColours.ToList();
-    }
-
-    private List<ColourData> GetRaceSkinColours()
-    {
-        if (_selectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == _selectedRaceId).SkinColours.ToList();
-    }
-    
     private List<GenderData> GetRaceGenders()
     {
-        if (_selectedRaceId == 0)
+        if (SelectedRaceId == 0)
             return new List<GenderData>();
-        return _races.Single(r => r.Id == _selectedRaceId).Genders.ToList();
-    }
-
-    private void RandomizeAge()
-    {
-        int startingAge = _races.Single(r => r.Id == _selectedRaceId).AdulthoodAge;
-        string ageCategory = _classes.Single(c => c.Id == SelectedClassId).AgeCategory;
-        string ageTypeDice = "";
-        if (ageCategory == "Simple") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).SimpleDice;
-        else if (ageCategory == "Moderate") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).ModerateDice;
-        else if (ageCategory == "Complex") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).ComplexDice;
-
-        int result = startingAge + DiceRoller.RollDice(ageTypeDice);
-
-        _characterAge = result.ToString();
-    }
-
-    private void RandomizeHeight()
-    {
-        int baseHeight;
-        string randomHeightDice = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
-        _randomHeight = DiceRoller.RollDice(randomHeightDice);
-        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
-        if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-        else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
-        else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
-        
-         _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
-    }
-
-    private void RandomizeWeight()
-    {
-        int baseWeight;
-        string randomWeightDice = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
-        int randomWeight = DiceRoller.RollDice(randomWeightDice);
-        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
-        if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
-        else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
-        else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
-
-        _characterWeight = baseWeight + (_randomHeight * randomWeight);
+        return _races.Single(r => r.Id == SelectedRaceId).Genders.ToList();
     }
 
     private void SetStatsToZero()
@@ -868,6 +762,11 @@
             if (_selectedClassId != value)
             {
                 _selectedClassId = value;
+                _classAgeCategory = _classes.Single(c => c.Id == SelectedClassId).AgeCategory;
+                if (SelectedRaceId > 1 && _selectedClassId > 1)
+                {
+                    GetAgeDiceType();
+                }
                 SetWealthToZero();
             }
         }
@@ -881,6 +780,17 @@
         _copperPieces = 0;
     }
 
+    private void GetAgeDiceType()
+    {
+        string ageTypeDice = "";
+        
+        if (_classAgeCategory == "Simple") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).SimpleDice;
+        else if (_classAgeCategory == "Moderate") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).ModerateDice;
+        else if (_classAgeCategory == "Complex") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).ComplexDice;
+
+        _ageTypeDice = ageTypeDice;
+    }
+    
     private void GenerateRandomCharacter()
     {
         bool skipRollStatsAndLuck = false;
@@ -892,7 +802,7 @@
         
         var rand = new Random();
         _characterName = "Random Jo";
-        _selectedRaceId = rand.Next(2, _races.Count +1);
+        SelectedRaceId = rand.Next(2, _races.Count +1);
         
         var raceEyes = GetRaceEyeColours();
         var randomRaceEyesIndex = rand.Next(2, raceEyes.Count);
@@ -908,7 +818,7 @@
 
         SelectedClassId = rand.Next(2, _classes.Count +1);
         
-        RandomizeAge();
+        _characterAge = RandomCharacterHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
         
         _selectedOrderId = rand.Next(1, _orders.Count +1);
         _selectedMoralityId = rand.Next(1, _moralities.Count +1);
@@ -958,7 +868,7 @@
             Name = _characterName,
             CampaignId = _selectedCampaignId,
             Class = _classes.Single(c => c.Id == SelectedClassId).Id,
-            Race = _races.Single(r => r.Id == _selectedRaceId).Id,
+            Race = _races.Single(r => r.Id == SelectedRaceId).Id,
             Experience = 0,
             Strength = _characterStrength,
             Dexterity = _characterDexterity,
@@ -997,6 +907,53 @@
             Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
         }
     
+    }
+    
+    private List<ColourData> GetRaceHairColours()
+    {
+        if (SelectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
+    }
+
+    private List<ColourData> GetRaceEyeColours()
+    {
+        if (SelectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
+    }
+
+    private List<ColourData> GetRaceSkinColours()
+    {
+        if (SelectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
+    }
+    
+    private void RandomizeHeight()
+    {
+        int baseHeight;
+        string randomHeightDice = _races.Single(r => r.Id == SelectedRaceId).HeightDice;
+        _randomHeight = DiceRoller.RollDice(randomHeightDice);
+        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        if (gender == "Male") baseHeight = _races.Single(r => r.Id == SelectedRaceId).MaleHeight;
+        else if (gender == "Female") baseHeight = _races.Single(r => r.Id == SelectedRaceId).FemaleHeight;
+        else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == SelectedRaceId).FemaleHeight) / 2;
+        
+        _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
+    }
+
+    private void RandomizeWeight()
+    {
+        int baseWeight;
+        string randomWeightDice = _races.Single(r => r.Id == SelectedRaceId).WeightDice;
+        int randomWeight = DiceRoller.RollDice(randomWeightDice);
+        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        if (gender == "Male") baseWeight = _races.Single(r => r.Id == SelectedRaceId).MaleWeight;
+        else if (gender == "Female") baseWeight = _races.Single(r => r.Id == SelectedRaceId).FemaleWeight;
+        else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == SelectedRaceId).FemaleWeight) / 2;
+
+        _characterWeight = baseWeight + (_randomHeight * randomWeight);
     }
 
 }

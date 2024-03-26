@@ -1,0 +1,153 @@
+﻿@using DnD35EDMTools.Data
+@using DnD35EDMTools.Helpers
+<div>
+    <label for="hair">Hair:</label>
+</div>
+<div>
+    <select class="cc-select" id="hair" @bind="_characterHair">
+        @foreach (var colour in GetRaceHairColours())
+        {
+            <option value="@colour.Id">@colour.Colour</option>
+        }
+    </select>
+</div>
+<div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, GetRaceHairColours()).ColourHexCode)">
+    &nbsp;
+</div>
+<div>
+    <label for="eyes">Eyes:</label>
+</div>
+<div>
+    <select class="cc-select" id="eyes" @bind="_characterEyes">
+        @foreach (var colour in GetRaceEyeColours())
+        {
+            <option value="@colour.Id">@colour.Colour</option>
+        }
+    </select>
+</div>
+<div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, GetRaceEyeColours()).ColourHexCode)">
+    &nbsp;
+</div>
+<div>
+    <label for="skin">Skin:</label>
+</div>
+<div>
+    <select class="cc-select" id="skin" @bind="_characterSkin">
+        @foreach (var colour in GetRaceSkinColours())
+        {
+            <option value="@colour.Id">@colour.Colour</option>
+        }
+    </select>
+</div>
+<div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, GetRaceSkinColours()).ColourHexCode)">
+    &nbsp;
+</div>
+<div>
+    <label for="age">Age:</label>
+</div>
+<div>
+    <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
+</div>
+<div>
+    <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
+</div>
+<div>
+    <label for="height">Height:</label>
+</div>
+<div>
+    <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
+</div>
+<div>
+    <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
+</div>
+<div>
+    <label for="weight">Weight:</label>
+</div>
+<div>
+    <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
+</div>
+<div>
+    <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
+</div>
+
+@code {
+
+    [Parameter] public int _selectedRaceId { get; set; }
+    [Parameter] public int _characterHair { get; set; }
+    [Parameter] public int _characterEyes { get; set; }
+    [Parameter] public int _characterSkin { get; set; }
+    [Parameter] public string _characterAge { get; set; }
+    [Parameter] public string _characterHeight { get; set; }
+    [Parameter] public int _characterWeight { get; set; }
+    [Parameter] public List<RaceData> _races { get; set; }
+    [Parameter] public List<GenderData> _genders { get; set; }
+    [Parameter] public int _selectedGenderId { get; set; }
+    [Parameter] public List<ClassData> _classes { get; set; }
+    [Parameter] public int SelectedClassId { get; set; }
+    [Parameter] public int _raceStartingAge { get; set; }
+    [Parameter] public string _classAgeCategory { get; set; }
+    [Parameter] public string _ageTypeDice { get; set; }
+    
+    private int _randomHeight;
+    
+    private ColourData GetColourById(int colourId, List<ColourData> colours)
+    {
+        var defaultColour = new ColourData
+        {
+            Colour = "None",
+            ColourHexCode = "#00000000"
+        };
+        return colours.FirstOrDefault(c => c.Id == colourId)  ?? defaultColour;
+    }
+    private List<ColourData> GetRaceHairColours()
+    {
+        if (_selectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == _selectedRaceId).HairColours.ToList();
+    }
+
+    private List<ColourData> GetRaceEyeColours()
+    {
+        if (_selectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == _selectedRaceId).EyeColours.ToList();
+    }
+
+    private List<ColourData> GetRaceSkinColours()
+    {
+        if (_selectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == _selectedRaceId).SkinColours.ToList();
+    }
+    
+    private void RandomizeAge()
+    {
+        _characterAge = RandomCharacterHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+    }
+    
+    private void RandomizeHeight()
+    {
+        int baseHeight;
+        string randomHeightDice = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
+        _randomHeight = DiceRoller.RollDice(randomHeightDice);
+        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
+        else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
+        else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
+        
+        _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
+    }
+
+    private void RandomizeWeight()
+    {
+        int baseWeight;
+        string randomWeightDice = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
+        int randomWeight = DiceRoller.RollDice(randomWeightDice);
+        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
+        else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
+        else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
+
+        _characterWeight = baseWeight + (_randomHeight * randomWeight);
+    }
+}
