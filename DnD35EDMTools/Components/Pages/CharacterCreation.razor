@@ -1,6 +1,7 @@
 ﻿@page "/CharacterCreation"
 
 @using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Lists
 @using Microsoft.EntityFrameworkCore
 @using DnD35EDMTools.Helpers
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
@@ -30,9 +31,11 @@
                             }
                         </select>
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                <div>
+                    &nbsp;
+                </div>
+                @if (_selectedCampaignId != 1)
+                {
                     <div>
                         <label for="name">Character Name:</label>
                     </div>
@@ -116,7 +119,7 @@
                         <label for="class">Class:</label>
                     </div>
                     <div>
-                        <select class="cc-select" id="class" @bind="_selectedClassId">
+                        <select class="cc-select" id="class" @bind="SelectedClassId">
                             @foreach (var name in _classes)
                             {
                                 <option value=@name.Id title=@name.Description>@name.Name</option>
@@ -135,84 +138,90 @@
                     <div>
                         &nbsp;
                     </div>
-                    <div>
-                        <label for="hair">Hair:</label>
-                    </div>
-                    <div>
-                        <select class="cc-select" id="hair" @bind="_characterHair">
-                            @foreach (var colour in GetRaceHairColours())
-                            {
-                                <option value="@colour.Id">@colour.Colour</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, GetRaceHairColours()).ColourHexCode)">
-                        &nbsp;
-                    </div>
-                    <div>
-                        <label for="eyes">Eyes:</label>
-                    </div>
-                    <div>
-                        <select class="cc-select" id="eyes" @bind="_characterEyes">
-                            @foreach (var colour in GetRaceEyeColours())
-                            {
-                                <option value="@colour.Id">@colour.Colour</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, GetRaceEyeColours()).ColourHexCode)">
-                        &nbsp;
-                    </div>
-                    <div>
-                        <label for="skin">Skin:</label>
-                    </div>
-                    <div>
-                        <select class="cc-select" id="skin" @bind="_characterSkin">
-                            @foreach (var colour in GetRaceSkinColours())
-                            {
-                                <option value="@colour.Id">@colour.Colour</option>
-                            }
-                        </select>
-                    </div>
-                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, GetRaceSkinColours()).ColourHexCode)">
-                        &nbsp;
-                    </div>
-                    <div>
-                        <label for="age">Age:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
-                    </div>
-                    <div>
-                        <label for="height">Height:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
-                    </div>
-                    <div>
-                        <label for="weight">Weight:</label>
-                    </div>
-                    <div>
-                        <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
-                    </div>
-                    <div>
-                        <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    @if (_selectedRaceId > 1 && _selectedGenderId > 1 && SelectedClassId > 1)
+                    {
+                        <div>
+                            <label for="hair">Hair:</label>
+                        </div>
+                        <div>
+                            <select class="cc-select" id="hair" @bind="_characterHair">
+                                @foreach (var colour in GetRaceHairColours())
+                                {
+                                    <option value="@colour.Id">@colour.Colour</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, GetRaceHairColours()).ColourHexCode)">
+                            &nbsp;
+                        </div>
+                        <div>
+                            <label for="eyes">Eyes:</label>
+                        </div>
+                        <div>
+                            <select class="cc-select" id="eyes" @bind="_characterEyes">
+                                @foreach (var colour in GetRaceEyeColours())
+                                {
+                                    <option value="@colour.Id">@colour.Colour</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, GetRaceEyeColours()).ColourHexCode)">
+                            &nbsp;
+                        </div>
+                        <div>
+                            <label for="skin">Skin:</label>
+                        </div>
+                        <div>
+                            <select class="cc-select" id="skin" @bind="_characterSkin">
+                                @foreach (var colour in GetRaceSkinColours())
+                                {
+                                    <option value="@colour.Id">@colour.Colour</option>
+                                }
+                            </select>
+                        </div>
+                        <div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, GetRaceSkinColours()).ColourHexCode)">
+                            &nbsp;
+                        </div>
+                        <div>
+                            <label for="age">Age:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
+                        </div>
+                        <div>
+                            <label for="height">Height:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
+                        </div>
+                        <div>
+                            <label for="weight">Weight:</label>
+                        </div>
+                        <div>
+                            <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
+                        </div>
+                        <div>
+                            <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
+                        </div>
+                    }
+
                     <div>
                         &nbsp;
                     </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    @if (_selectedRaceId > 1)
+                    {
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
                         @foreach (var statField in _statFields)
@@ -305,6 +314,8 @@
                             <button class="cc-randomize-button" @onclick="CalculateLuck">Calculate</button>
                         </div>
                     }
+                    }
+                }
                 </div>
                <div class="dnd-cc-top__middle">
                    @foreach (var language in FilteredLanguages)
@@ -318,7 +329,36 @@
                    }
                </div>
                 <div class="dnd-cc-top__right">
-                   
+                    @if (SelectedClassId > 1)
+                    {
+                        <div>
+                            <label for="starting-equipment-method">Starting Equipment:</label>
+                        </div>
+                        <select class="cc-select" id="starting-equipment-method" name="starting-equipment-method" @bind="_selectedStartingEquipment">
+                            @foreach (var id in _startingEquipmentMethods)
+                            {
+                                <option value="@id.Id" title="@id.Description">@id.Name</option>
+                            }
+                        </select>
+                        @if (_selectedStartingEquipment < 3)
+                        {
+                            <div>
+                                <input class="cc-gold-input" type="text" id="starting-gold" @bind="_goldPieces" readonly/>
+                            </div>
+                            <div>
+                                <button class="cc-gold-randomize-button" @onclick="GetStartingEquipment">Roll</button>
+                            </div>
+                        }
+                        @if (_selectedStartingEquipment == 3)
+                        {
+                            <div>
+                                &nbsp;
+                            </div>
+                            <div>
+                                <button class="cc-gold-randomize-button" @onclick="GetStartingEquipment">Customize</button>
+                            </div>
+                        }
+                    }
                 </div>
             </div>
         </div>
@@ -346,6 +386,7 @@
     private List<int> _standardArray = [];
     private List<LanguageData> _languages = [];
     private readonly List<int> _selectedLanguageIds = [];
+    private List<StartingEquipment> _startingEquipmentMethods = [];
     private List<DeityData> FilteredDeities
     {
         get
@@ -368,14 +409,14 @@
         get
         {
             var filteredLanguages = new List<LanguageData>();
-            if (_selectedCampaignId == default || _selectedRaceId == default || _selectedClassId == default)
+            if (_selectedCampaignId == default || _selectedRaceId == default || SelectedClassId == default)
             {
                 return filteredLanguages;
             }
             
             var selectedCampaign = _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId);
             var selectedRace = _races.Single(r => r.Id == _selectedRaceId).Race;
-            var selectedClass = _classes.Single(r => r.Id == _selectedClassId).Name;
+            var selectedClass = _classes.Single(r => r.Id == SelectedClassId).Name;
             if (selectedCampaign != null && selectedRace != "Select a Race" && selectedClass != "Select a Class")
             {
                 var allowedSourceBooks = selectedCampaign.AllowedSources;
@@ -426,6 +467,7 @@
         {
             _selectedCampaignId = value;
             InitializeCharacterStatsBasedOnCampaign();
+            PopulateStartingEquipmentMethods();
         }
     }
 
@@ -473,7 +515,50 @@
     {
         get
         {
-            return _campaigns.Single(c =>c.Id == _selectedCampaignId).StatRollingMethod;
+            return _campaigns.Single(c => c.Id == _selectedCampaignId).StatRollingMethod;
+        }
+    }
+
+    private string SelectedClassStartingGold
+    {
+        get
+        {
+            return _classes.Single(c => c.Id == SelectedClassId).StartingGold;
+        }
+    }
+    
+    private void PopulateStartingEquipmentMethods()
+    {
+        _startingEquipmentMethods.Clear();
+
+        if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowWealthAverage)
+        {
+            _startingEquipmentMethods.Add(new StartingEquipment
+            {
+                Id = 1,
+                Name = "Wealth Average",
+                Description = "Roll starting wealth using class average values"
+            });
+        }
+
+        if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowWealthRandom)
+        {
+            _startingEquipmentMethods.Add(new StartingEquipment
+            {
+                Id = 2,
+                Name = "Wealth Random",
+                Description = "Roll starting wealth using class random values"
+            });
+        }
+
+        if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowStartingEquipment)
+        {
+            _startingEquipmentMethods.Add(new StartingEquipment
+            {
+                Id = 3,
+                Name = "Equipment Pack",
+                Description = "Customize starting equipment"
+            });
         }
     }
     
@@ -501,6 +586,12 @@
     private int _characterWisdom;
     private int _characterCharisma;
     private int _characterLuck;
+    
+    private int _selectedStartingEquipment;
+    private int _platinumPieces;
+    private int _goldPieces;
+    private int _silverPieces;
+    private int _copperPieces;
     
     private Dictionary<string, Action<int>> _statFields = null!;
 
@@ -579,7 +670,7 @@
     private void RandomizeAge()
     {
         int startingAge = _races.Single(r => r.Id == _selectedRaceId).AdulthoodAge;
-        string ageCategory = _classes.Single(c => c.Id == _selectedClassId).AgeCategory;
+        string ageCategory = _classes.Single(c => c.Id == SelectedClassId).AgeCategory;
         string ageTypeDice = "";
         if (ageCategory == "Simple") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).SimpleDice;
         else if (ageCategory == "Moderate") ageTypeDice = _races.Single(r => r.Id == _selectedRaceId).ModerateDice;
@@ -625,6 +716,7 @@
         _characterWisdom = 0;
         _characterCharisma = 0;
     }
+    
     private void RollStat(string rollingMethod, string stat)
     {
         int statValue = GetStatValue(stat);
@@ -739,6 +831,56 @@
         _characterLuck = (_characterStrength + _characterDexterity + _characterConstitution + _characterIntelligence + _characterWisdom + _characterCharisma) / 6;
     }
 
+    private void GetStartingEquipment()
+    {
+        if(_selectedStartingEquipment == 1)
+        {
+        if (_goldPieces != 0) return;
+        var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+        
+        _platinumPieces = startingWealth[0];
+        _goldPieces = startingWealth[1];
+        _silverPieces = startingWealth[2];
+        _copperPieces = startingWealth[3];
+        }
+        
+        if(_selectedStartingEquipment == 2)
+        {
+            if (_goldPieces != 0) return;
+            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+        
+            _platinumPieces = startingWealth[0];
+            _goldPieces = startingWealth[1];
+            _silverPieces = startingWealth[2];
+            _copperPieces = startingWealth[3];
+        }
+        if(_selectedStartingEquipment == 3)
+        {
+            Console.WriteLine("Equipment Packs not Implemented");
+        }
+    }
+
+    private int SelectedClassId
+    {
+        get => _selectedClassId;
+        set
+        {
+            if (_selectedClassId != value)
+            {
+                _selectedClassId = value;
+                SetWealthToZero();
+            }
+        }
+    }
+
+    private void SetWealthToZero()
+    {
+        _platinumPieces = 0;
+        _goldPieces = 0;
+        _silverPieces = 0;
+        _copperPieces = 0;
+    }
+
     private void GenerateRandomCharacter()
     {
         bool skipRollStatsAndLuck = false;
@@ -764,7 +906,7 @@
         var randomRaceSkinIndex = rand.Next(2, raceSkin.Count);
         _characterSkin = raceSkin[randomRaceSkinIndex].Id;
 
-        _selectedClassId = rand.Next(2, _classes.Count +1);
+        SelectedClassId = rand.Next(2, _classes.Count +1);
         
         RandomizeAge();
         
@@ -799,8 +941,10 @@
             RollStat(SelectedCampaignStatRollingMethod, "Charisma");
             CalculateLuck();
         }
-    }
 
+        SetWealthToZero();
+    }
+    
     private void CreateNewCharacter()
     {
         if (_selectedCampaignId == 1)
@@ -813,7 +957,7 @@
         {
             Name = _characterName,
             CampaignId = _selectedCampaignId,
-            Class = _classes.Single(c => c.Id == _selectedClassId).Id,
+            Class = _classes.Single(c => c.Id == SelectedClassId).Id,
             Race = _races.Single(r => r.Id == _selectedRaceId).Id,
             Experience = 0,
             Strength = _characterStrength,
@@ -822,7 +966,7 @@
             Wisdom = _characterWisdom,
             Intelligence = _characterIntelligence,
             Charisma = _characterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == _selectedClassId).HitDice) + CalculateModifier(_characterConstitution),
+            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == SelectedClassId).HitDice) + CalculateModifier(_characterConstitution),
             Deity = _deities.Single(d => d.Id == _selectedDeityId).Id,
             Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint,
             Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint,
@@ -834,6 +978,10 @@
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
             Languages = _selectedLanguageIds,
+            PlatinumPieces = _platinumPieces,
+            GoldPieces = _goldPieces,
+            SilverPieces = _silverPieces,
+            CopperPieces = _copperPieces,
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 

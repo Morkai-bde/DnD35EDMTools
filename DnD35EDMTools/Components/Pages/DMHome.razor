@@ -95,6 +95,18 @@
                             <label for="allow-wealth-random">Allow Starting Wealth, Random</label>
                         </div>
                         <div>
+                            <input type="checkbox" id="allow-wealth-average" value="@AllowStartingEquipment" @bind="AllowStartingEquipment"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-average">Allow Starting Equipment</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-wealth-average" value="@AllowStartingEquipmentCustomization" @bind="AllowStartingEquipmentCustomization"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-average">Allow Starting Equipment Customization</label>
+                        </div>
+                        <div>
                             <label for="description">Description</label>
                         </div>
                         <div>
@@ -374,6 +386,62 @@
         }
     }
     
+    private bool AllowStartingEquipment
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.AllowStartingEquipment;
+                }
+            }
+
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.AllowStartingEquipment = value;
+                }
+            }
+        }
+    }
+    
+    private bool AllowStartingEquipmentCustomization
+    {
+        get
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    return selectedCampaign.AllowStartingEquipmentCustomization;
+                }
+            }
+
+            return false;
+        }
+        set
+        {
+            if (_selectedCampaignId != 0)
+            {
+                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
+                if (selectedCampaign != null)
+                {
+                    selectedCampaign.AllowStartingEquipmentCustomization = value;
+                }
+            }
+        }
+    }
+    
     private string? Description
     {
         get
@@ -450,6 +518,8 @@
             AllowLuck = AllowLuck,
             AllowWealthAverage = AllowWealthAverage,
             AllowWealthRandom = AllowWealthRandom,
+            AllowStartingEquipment = AllowStartingEquipment,
+            AllowStartingEquipmentCustomization = AllowStartingEquipmentCustomization,
             AllowedSources = new List<SourceBookData>()
         };
 
@@ -522,6 +592,8 @@
         campaignToUpdate.AllowLuck = AllowLuck;
         campaignToUpdate.AllowWealthAverage = AllowWealthAverage;
         campaignToUpdate.AllowWealthRandom = AllowWealthRandom;
+        campaignToUpdate.AllowStartingEquipment = AllowStartingEquipment;
+        campaignToUpdate.AllowStartingEquipmentCustomization = AllowStartingEquipmentCustomization;
 
         var selectedSourceBooks = _sourceBooks.Where(book => _selectedSourceBooks[book.Id]);
 
