@@ -141,8 +141,11 @@
                     @if (SelectedRaceId > 1 && SelectedGenderId > 1 && SelectedClassId > 1)
                     {
                         <PhysicalAttributes _selectedRaceId="@_selectedRaceId"
+                                            _raceHairColours="@_raceHairColours"
                                             _characterHair="@_characterHair"
+                                            _raceEyeColours="@_raceEyeColours"
                                             _characterEyes="@_characterEyes"
+                                            _raceSkinColours="@_raceSkinColours"
                                             _characterSkin="@_characterSkin"
                                             _characterAge="@_characterAge"
                                             _characterHeight="@_characterHeight"
@@ -329,6 +332,9 @@
     private bool _dryRun = true;
     private List<CampaignData> _campaigns = [];
     private List<RaceData> _races = [];
+    private List<ColourData> _raceHairColours = [];
+    private List<ColourData> _raceEyeColours = [];
+    private List<ColourData> _raceSkinColours = [];
     private List<OrderData> _orders = [];
     private List<MoralityData> _moralities = [];
     private List<ClassData> _classes = [];
@@ -409,27 +415,6 @@
         }
     }
     
-    private List<ColourData> GetRaceHairColours()
-    {
-        if (SelectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
-    }
-
-    private List<ColourData> GetRaceEyeColours()
-    {
-        if (SelectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
-    }
-
-    private List<ColourData> GetRaceSkinColours()
-    {
-        if (SelectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
-    }
-    
     private int _selectedCampaignId = 1;
 
     private int SelectedCampaignId
@@ -455,6 +440,20 @@
                 GetAgeDiceType();
             }
             PopulateStartingEquipmentMethods();
+            if (_selectedRaceId != 0)
+            {
+                _raceHairColours = _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
+                _raceEyeColours = _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
+                _raceSkinColours = _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
+            }
+            else
+            {
+                {
+                    _raceHairColours = [];
+                    _raceEyeColours = [];
+                    _raceSkinColours = [];
+                }
+            }
         }
     }
 
@@ -868,17 +867,14 @@
         _characterName = "Random Jo";
         SelectedRaceId = rand.Next(2, _races.Count +1);
         
-        var raceEyes = GetRaceEyeColours();
-        var randomRaceEyesIndex = rand.Next(2, raceEyes.Count);
-        _characterEyes = raceEyes[randomRaceEyesIndex].Id;
+        var randomRaceHairIndex = rand.Next(2, _raceHairColours.Count);
+        _characterHair = _raceHairColours[randomRaceHairIndex].Id;
         
-        var raceHair = GetRaceHairColours();
-        var randomRaceHairIndex = rand.Next(2, raceHair.Count);
-        _characterHair = raceHair[randomRaceHairIndex].Id;
+        var randomRaceEyesIndex = rand.Next(2, _raceEyeColours.Count);
+        _characterEyes = _raceEyeColours[randomRaceEyesIndex].Id;
         
-        var raceSkin = GetRaceSkinColours();
-        var randomRaceSkinIndex = rand.Next(2, raceSkin.Count);
-        _characterSkin = raceSkin[randomRaceSkinIndex].Id;
+        var randomRaceSkinIndex = rand.Next(2, _raceSkinColours.Count);
+        _characterSkin = _raceSkinColours[randomRaceSkinIndex].Id;
 
         SelectedClassId = rand.Next(2, _classes.Count +1);
         
