@@ -9,20 +9,12 @@ public static class RandomCharacterHelpers
 
         return result.ToString();
     }
-     
-    
-    // private void RandomizeHeight()
-    // {
-    //     int baseHeight;
-    //     string randomHeightDice = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
-    //     _randomHeight = DiceRoller.RollDice(randomHeightDice);
-    //     string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
-    //     if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-    //     else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
-    //     else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
-    //     
-    //     _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
-    // }
+
+    public static string RandomizeHeight(int baseHeight, string randomHeightDice)
+    {
+        var result = baseHeight + DiceRoller.RollDice(randomHeightDice);
+        return ConversionHelper.ConvertInchesToFeetAndInches(result);
+    }
 
     // private void RandomizeWeight()
     // {

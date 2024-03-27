@@ -49,7 +49,7 @@
     <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
 </div>
 <div>
-    <button class="cc-randomize-button" @onclick="RandomizeAge">Random</button>
+    <button class="cc-randomize-button" @onclick="RollRandomAge">Random</button>
 </div>
 <div>
     <label for="height">Height:</label>
@@ -58,7 +58,7 @@
     <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
 </div>
 <div>
-    <button class="cc-randomize-button" @onclick="RandomizeHeight">Random</button>
+    <button class="cc-randomize-button" @onclick="RollRandomHeight">Random</button>
 </div>
 <div>
     <label for="weight">Weight:</label>
@@ -81,12 +81,14 @@
     [Parameter] public int _characterWeight { get; set; }
     [Parameter] public List<RaceData> _races { get; set; }
     [Parameter] public List<GenderData> _genders { get; set; }
-    [Parameter] public int _selectedGenderId { get; set; }
+    [Parameter] public int SelectedGenderId { get; set; }
     [Parameter] public List<ClassData> _classes { get; set; }
     [Parameter] public int SelectedClassId { get; set; }
     [Parameter] public int _raceStartingAge { get; set; }
     [Parameter] public string _classAgeCategory { get; set; }
     [Parameter] public string _ageTypeDice { get; set; }
+    [Parameter] public int _raceBaseHeight { get; set; }
+    [Parameter] public string _raceRandomHeight { get; set; }
     
     private int _randomHeight;
     
@@ -120,22 +122,14 @@
         return _races.Single(r => r.Id == _selectedRaceId).SkinColours.ToList();
     }
     
-    private void RandomizeAge()
+    private void RollRandomAge()
     {
         _characterAge = RandomCharacterHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
     }
-    
-    private void RandomizeHeight()
+
+    private void RollRandomHeight()
     {
-        int baseHeight;
-        string randomHeightDice = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
-        _randomHeight = DiceRoller.RollDice(randomHeightDice);
-        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
-        if (gender == "Male") baseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-        else if (gender == "Female") baseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
-        else baseHeight = (_races.Single(r => r.Id == _selectedGenderId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
-        
-        _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(baseHeight + _randomHeight);
+        _characterHeight = RandomCharacterHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
     }
 
     private void RandomizeWeight()
@@ -143,10 +137,10 @@
         int baseWeight;
         string randomWeightDice = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
         int randomWeight = DiceRoller.RollDice(randomWeightDice);
-        string gender = _genders.Single(g => g.Id == _selectedGenderId).Gender;
+        string gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
         if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
         else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
-        else baseWeight = (_races.Single(r => r.Id == _selectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
+        else baseWeight = (_races.Single(r => r.Id == SelectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
 
         _characterWeight = baseWeight + (_randomHeight * randomWeight);
     }
