@@ -67,7 +67,7 @@
     <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
 </div>
 <div>
-    <button class="cc-randomize-button" @onclick="RandomizeWeight">Random</button>
+    <button class="cc-randomize-button" @onclick="RollRandomWeight">Random</button>
 </div>
 
 @code {
@@ -89,6 +89,8 @@
     [Parameter] public string _ageTypeDice { get; set; }
     [Parameter] public int _raceBaseHeight { get; set; }
     [Parameter] public string _raceRandomHeight { get; set; }
+    [Parameter] public int _raceBaseWeight { get; set; }
+    [Parameter] public string _raceRandomWeight { get; set; }
     
     private int _randomHeight;
     
@@ -124,24 +126,16 @@
     
     private void RollRandomAge()
     {
-        _characterAge = RandomCharacterHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
     }
 
     private void RollRandomHeight()
     {
-        _characterHeight = RandomCharacterHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
+        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
     }
 
-    private void RandomizeWeight()
+    private void RollRandomWeight()
     {
-        int baseWeight;
-        string randomWeightDice = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
-        int randomWeight = DiceRoller.RollDice(randomWeightDice);
-        string gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
-        if (gender == "Male") baseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
-        else if (gender == "Female") baseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
-        else baseWeight = (_races.Single(r => r.Id == SelectedGenderId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
-
-        _characterWeight = baseWeight + (_randomHeight * randomWeight);
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight,_raceRandomWeight,ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
     }
 }

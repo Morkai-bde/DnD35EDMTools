@@ -156,7 +156,9 @@
                                             _classAgeCategory="@_classAgeCategory"
                                             _ageTypeDice="@_ageTypeDice"
                                             _raceBaseHeight="@_raceBaseHeight"
-                                            _raceRandomHeight="@_raceRandomHeight">
+                                            _raceRandomHeight="@_raceRandomHeight"
+                                            _raceBaseWeight="@_raceBaseWeight"
+                                            _raceRandomWeight="@_raceRandomWeight">
                             
                         </PhysicalAttributes>
                     }
@@ -407,6 +409,27 @@
         }
     }
     
+    private List<ColourData> GetRaceHairColours()
+    {
+        if (SelectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
+    }
+
+    private List<ColourData> GetRaceEyeColours()
+    {
+        if (SelectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
+    }
+
+    private List<ColourData> GetRaceSkinColours()
+    {
+        if (SelectedRaceId == 0)
+            return new List<ColourData>();
+        return _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
+    }
+    
     private int _selectedCampaignId = 1;
 
     private int SelectedCampaignId
@@ -442,7 +465,7 @@
         {
             _selectedGenderId = value;
             if (_selectedGenderId >1)
-                GetRaceHeight();
+                GetRaceHeightAndWeight();
         }
     }
     
@@ -540,12 +563,13 @@
     private string _characterName = "";
     private string _characterAge = "";
     private string _characterHeight = "";
-    private int _randomHeight;
     private int _characterWeight;
     private int _selectedRaceId;
     private int _raceStartingAge;
-    private int _raceBaseHeight = 0;
+    private int _raceBaseHeight;
     private string _raceRandomHeight = "0d0";
+    private int _raceBaseWeight;
+    private string _raceRandomWeight = "0d0";
     private int _characterEyes;
     private int _characterHair;
     private int _characterSkin;
@@ -806,14 +830,28 @@
         _ageTypeDice = ageTypeDice;
     }
 
-    private void GetRaceHeight()
+    private void GetRaceHeightAndWeight()
     {
             _raceRandomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
-        
-            string gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
-            if (gender == "Male") _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-            else if (gender == "Female") _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
-            else _raceBaseHeight = (_races.Single(r => r.Id == SelectedRaceId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
+            _raceRandomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
+            
+            var gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
+
+            if (gender == "Male")
+            {
+                _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
+                _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
+            }
+            else if (gender == "Female")
+            {
+                _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
+                _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
+            }
+            else
+            {
+                _raceBaseHeight = (_races.Single(r => r.Id == SelectedRaceId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
+                _raceBaseWeight = (_races.Single(r => r.Id == SelectedRaceId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
+            }
         
     }
     
@@ -844,7 +882,7 @@
 
         SelectedClassId = rand.Next(2, _classes.Count +1);
         
-        _characterAge = RandomCharacterHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
         
         _selectedOrderId = rand.Next(1, _orders.Count +1);
         _selectedMoralityId = rand.Next(1, _moralities.Count +1);
@@ -857,8 +895,9 @@
         var randomGenderIndex = rand.Next(2, raceGenders.Count);
         SelectedGenderId = raceGenders[randomGenderIndex].Id;
         
-        _characterHeight = RandomCharacterHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
-        RandomizeWeight();
+        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
+        
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight,_raceRandomWeight,ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
         
         var notAllowedMethods = new[] { "PBA", "BPR", "SAL", "SAA", "SAH" };
         if (notAllowedMethods.Contains(SelectedCampaignStatRollingMethod))
@@ -935,38 +974,4 @@
     
     }
     
-    private List<ColourData> GetRaceHairColours()
-    {
-        if (SelectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
-    }
-
-    private List<ColourData> GetRaceEyeColours()
-    {
-        if (SelectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
-    }
-
-    private List<ColourData> GetRaceSkinColours()
-    {
-        if (SelectedRaceId == 0)
-            return new List<ColourData>();
-        return _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
-    }
-
-    private void RandomizeWeight()
-    {
-        int baseWeight;
-        string randomWeightDice = _races.Single(r => r.Id == SelectedRaceId).WeightDice;
-        int randomWeight = DiceRoller.RollDice(randomWeightDice);
-        string gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
-        if (gender == "Male") baseWeight = _races.Single(r => r.Id == SelectedRaceId).MaleWeight;
-        else if (gender == "Female") baseWeight = _races.Single(r => r.Id == SelectedRaceId).FemaleWeight;
-        else baseWeight = (_races.Single(r => r.Id == SelectedGenderId).MaleWeight + _races.Single(r => r.Id == SelectedRaceId).FemaleWeight) / 2;
-
-        _characterWeight = baseWeight + (_randomHeight * randomWeight);
-    }
-
 }
