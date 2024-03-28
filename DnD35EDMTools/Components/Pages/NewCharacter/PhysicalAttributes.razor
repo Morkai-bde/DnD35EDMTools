@@ -1,0 +1,124 @@
+﻿@using DnD35EDMTools.Data
+@using DnD35EDMTools.Helpers
+<div>
+    <label for="hair">Hair:</label>
+</div>
+<div>
+    <select class="cc-select" id="hair" @bind="_characterHair">
+        @foreach (var colour in _raceHairColours)
+        {
+            <option value="@colour.Id">@colour.Colour</option>
+        }
+    </select>
+</div>
+<div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, _raceHairColours).ColourHexCode)">
+    &nbsp;
+</div>
+<div>
+    <label for="eyes">Eyes:</label>
+</div>
+<div>
+    <select class="cc-select" id="eyes" @bind="_characterEyes">
+        @foreach (var colour in _raceEyeColours)
+        {
+            <option value="@colour.Id">@colour.Colour</option>
+        }
+    </select>
+</div>
+<div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, _raceEyeColours).ColourHexCode)">
+    &nbsp;
+</div>
+<div>
+    <label for="skin">Skin:</label>
+</div>
+<div>
+    <select class="cc-select" id="skin" @bind="_characterSkin">
+        @foreach (var colour in _raceSkinColours)
+        {
+            <option value="@colour.Id">@colour.Colour</option>
+        }
+    </select>
+</div>
+<div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, _raceSkinColours).ColourHexCode)">
+    &nbsp;
+</div>
+<div>
+    <label for="age">Age:</label>
+</div>
+<div>
+    <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
+</div>
+<div>
+    <button class="cc-randomize-button" @onclick="RollRandomAge">Random</button>
+</div>
+<div>
+    <label for="height">Height:</label>
+</div>
+<div>
+    <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
+</div>
+<div>
+    <button class="cc-randomize-button" @onclick="RollRandomHeight">Random</button>
+</div>
+<div>
+    <label for="weight">Weight:</label>
+</div>
+<div>
+    <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
+</div>
+<div>
+    <button class="cc-randomize-button" @onclick="RollRandomWeight">Random</button>
+</div>
+
+@code {
+
+    [Parameter] public int _selectedRaceId { get; set; }
+    [Parameter] public List<ColourData> _raceHairColours { get; set; }
+    [Parameter] public int _characterHair { get; set; }
+    [Parameter] public List<ColourData> _raceEyeColours { get; set; }
+    [Parameter] public int _characterEyes { get; set; }
+    [Parameter] public List<ColourData> _raceSkinColours { get; set; }
+    [Parameter] public int _characterSkin { get; set; }
+    [Parameter] public string _characterAge { get; set; }
+    [Parameter] public string _characterHeight { get; set; }
+    [Parameter] public int _characterWeight { get; set; }
+    [Parameter] public List<RaceData> _races { get; set; }
+    [Parameter] public List<GenderData> _genders { get; set; }
+    [Parameter] public int SelectedGenderId { get; set; }
+    [Parameter] public List<ClassData> _classes { get; set; }
+    [Parameter] public int SelectedClassId { get; set; }
+    [Parameter] public int _raceStartingAge { get; set; }
+    [Parameter] public string _classAgeCategory { get; set; }
+    [Parameter] public string _ageTypeDice { get; set; }
+    [Parameter] public int _raceBaseHeight { get; set; }
+    [Parameter] public string _raceRandomHeight { get; set; }
+    [Parameter] public int _raceBaseWeight { get; set; }
+    [Parameter] public string _raceRandomWeight { get; set; }
+    
+    private int _randomHeight;
+    
+    private ColourData GetColourById(int colourId, List<ColourData> colours)
+    {
+        var defaultColour = new ColourData
+        {
+            Colour = "None",
+            ColourHexCode = "#00000000"
+        };
+        return colours.FirstOrDefault(c => c.Id == colourId)  ?? defaultColour;
+    }
+    
+    private void RollRandomAge()
+    {
+        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+    }
+
+    private void RollRandomHeight()
+    {
+        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
+    }
+
+    private void RollRandomWeight()
+    {
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight,_raceRandomWeight,ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
+    }
+}
