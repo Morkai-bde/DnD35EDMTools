@@ -168,7 +168,7 @@
                                     {
                                         var statName = statField.Key;
                                         var statValue = GetStatValue(statName);
-                                        var modifierValue = CalculateModifier(statValue);
+                                        var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
                                         <div>
                                             <label for="@statName">@statName:</label>
                                         </div>
@@ -210,7 +210,7 @@
                                     {
                                         var statName = statField.Key;
                                         var statValue = GetStatValue(statName);
-                                        var modifierValue = CalculateModifier(statValue);
+                                        var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
                                         <div>
                                             <label for="@statName">@statName:</label>
                                         </div>
@@ -232,7 +232,7 @@
                                         <label for="luck">Luck:</label>
                                     </div>
                                     <div>
-                                        <input class="cc-input" type="text" id="luck" @bind="_characterLuck"/>
+                                        <input class="cc-point-buy-stat-input" type="text" id="luck" @bind="_characterLuck"/><input class="cc-point-buy-stat-input" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)"/>
                                     </div>
                                     <div>
                                         <button class="cc-pb-randomize-button" @onclick="CalculateLuck">Calculate</button>
@@ -710,7 +710,7 @@
         var currentStatValue = GetStatValue(stat);
         if (currentStatValue >= maxStatValue) return;
 
-        var pointsToDeduct = currentStatValue < 13 ? 1 : CalculateModifier(currentStatValue);
+        var pointsToDeduct = currentStatValue < 13 ? 1 : ConversionHelper.ConvertStatToBonus(currentStatValue);
         if (_characterStatPoints - pointsToDeduct >= 0)
         {
             _characterStatPoints -= pointsToDeduct;
@@ -730,7 +730,7 @@
         var pointsToAdd = 1;
         if (currentStatValue >= 13)
         {
-            pointsToAdd = CalculateModifier(currentStatValue) - (CalculateModifier(currentStatValue - 1) == CalculateModifier(currentStatValue) ? 0 : 1);
+            pointsToAdd = ConversionHelper.ConvertStatToBonus(currentStatValue) - (ConversionHelper.ConvertStatToBonus(currentStatValue - 1) == ConversionHelper.ConvertStatToBonus(currentStatValue) ? 0 : 1);
         }
 
         _characterStatPoints += pointsToAdd;
@@ -765,11 +765,6 @@
                 break;
             }
         }
-    }
-    
-    private int CalculateModifier(int stat)
-    {
-        return (int)Math.Floor((stat - 10) / 2.0);
     }
     
     private void CalculateLuck()
@@ -952,7 +947,7 @@
             Wisdom = _characterWisdom,
             Intelligence = _characterIntelligence,
             Charisma = _characterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == SelectedClassId).HitDice) + CalculateModifier(_characterConstitution),
+            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == SelectedClassId).HitDice) + ConversionHelper.ConvertStatToBonus(_characterConstitution),
             Deity = _deities.Single(d => d.Id == _selectedDeityId).Id,
             Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint,
             Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint,
