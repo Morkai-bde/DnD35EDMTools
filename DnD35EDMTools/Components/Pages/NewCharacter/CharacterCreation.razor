@@ -238,6 +238,42 @@
                                         <button class="cc-pb-randomize-button" @onclick="CalculateLuck">Calculate</button>
                                     </div>
                                 }
+                                <div>
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    <label for="fortitude">Fortitude</label>
+                                </div>
+                                <div>
+                                    <input class="cc-point-buy-stat-input" type="text" id="fortitude" @bind="_calculatedBaseFortitude">
+                                </div>
+                                <div>
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    <label for="reflex">Reflex</label>
+                                </div>
+                                <div>
+                                    <input class="cc-point-buy-stat-input" type="text" id="reflex" @bind="_calculatedBaseReflex">
+                                </div>
+                                <div>
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    <label for="will">Will</label>
+                                </div>
+                                <div>
+                                    <input class="cc-point-buy-stat-input" type="text" id="will" @bind="_calculatedBaseWill">
+                                </div>
+                                <div>
+                                    &nbsp;
+                                </div>
                             }
                         </div>
                     }
@@ -514,10 +550,10 @@
 
                 _characterStatPoints = 25;
                 _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 break;
         }
@@ -605,7 +641,43 @@
     private int _characterCharisma;
     private int _characterLuck;
     
+    private int CharacterDexterity
+    {
+        get => _characterDexterity;
+        set
+        {
+            if (_characterDexterity == value) return;
+            _characterDexterity = value;
+            CalculatedBaseReflex();
+        }
+    }
+    
+    private int CharacterConstitution
+    {
+        get => _characterConstitution;
+        set
+        {
+            if (_characterConstitution == value) return;
+            _characterConstitution = value;
+            CalculatedBaseFortitude();
+        }
+    }
+    
+    private int CharacterWisdom
+    {
+        get => _characterWisdom;
+        set
+        {
+            if (_characterWisdom == value) return;
+            _characterWisdom = value;
+            CalculatedBaseWill();
+        }
+    }
+    
     private int _selectedStartingEquipment;
+    private decimal _calculatedBaseFortitude;
+    private decimal _calculatedBaseReflex;
+    private decimal _calculatedBaseWill;
     private int _platinumPieces;
     private int _goldPieces;
     private int _silverPieces;
@@ -639,10 +711,10 @@
         _statFields = new Dictionary<string, Action<int>>
         {
             { "Strength", val => _characterStrength = val },
-            { "Dexterity", val => _characterDexterity = val },
-            { "Constitution", val => _characterConstitution = val },
+            { "Dexterity", val => CharacterDexterity = val },
+            { "Constitution", val => CharacterConstitution = val },
             { "Intelligence", val => _characterIntelligence = val },
-            { "Wisdom", val => _characterWisdom = val },
+            { "Wisdom", val => CharacterWisdom = val },
             { "Charisma", val => _characterCharisma = val },
         };
     }
@@ -657,10 +729,10 @@
     private void SetStatsToZero()
     {
         _characterStrength = 0;
-        _characterDexterity = 0;
-        _characterConstitution = 0;
+        CharacterDexterity = 0;
+        CharacterConstitution = 0;
         _characterIntelligence = 0;
-        _characterWisdom = 0;
+        CharacterWisdom = 0;
         _characterCharisma = 0;
     }
     
@@ -680,10 +752,10 @@
         return stat switch
         {
             "Strength" => _characterStrength,
-            "Dexterity" => _characterDexterity,
-            "Constitution" => _characterConstitution,
+            "Dexterity" => CharacterDexterity,
+            "Constitution" => CharacterConstitution,
             "Intelligence" => _characterIntelligence,
-            "Wisdom" => _characterWisdom,
+            "Wisdom" => CharacterWisdom,
             "Charisma" => _characterCharisma,
             _ => throw new ArgumentException("Invalid stat name", nameof(stat)),
         };
@@ -769,10 +841,55 @@
     
     private void CalculateLuck()
     {
-        if (_characterStrength != 0 && _characterDexterity != 0 && _characterConstitution != 0 && _characterIntelligence != 0 && _characterWisdom != 0 && _characterCharisma !=0)
-        _characterLuck = (_characterStrength + _characterDexterity + _characterConstitution + _characterIntelligence + _characterWisdom + _characterCharisma) / 6;
+        if (_characterStrength != 0 && CharacterDexterity != 0 && CharacterConstitution != 0 && _characterIntelligence != 0 && CharacterWisdom != 0 && _characterCharisma !=0)
+        _characterLuck = (_characterStrength + CharacterDexterity + CharacterConstitution + _characterIntelligence + CharacterWisdom + _characterCharisma) / 6;
     }
 
+    private void CalculatedBaseFortitude()
+    {
+        if (SelectedClassId <= 1) return;
+        var fortitudePerLevel = _classes.Single(c => c.Id == SelectedClassId).FortitudeSavePerLevel;
+        var baseFortitude = 0.0m;
+        if (fortitudePerLevel == 0.5m)
+        {
+            baseFortitude = 2.0m;
+        }
+        var constitutionModifier = ConversionHelper.ConvertStatToBonus(CharacterConstitution);
+        baseFortitude += fortitudePerLevel + constitutionModifier;
+        
+        _calculatedBaseFortitude =  Math.Floor(baseFortitude);
+    }
+    
+    private void CalculatedBaseReflex()
+    {
+        if (SelectedClassId <= 1) return;
+        var reflexPerLevel = _classes.Single(c => c.Id == SelectedClassId).ReflexSavePerLevel;
+        var baseReflex = 0.0m;
+        if (reflexPerLevel == 0.5m)
+        {
+            baseReflex = 2.0m;
+        }
+        var dexterityModifier = ConversionHelper.ConvertStatToBonus(CharacterDexterity);
+        baseReflex += reflexPerLevel + dexterityModifier;
+        
+        _calculatedBaseReflex =  Math.Floor(baseReflex);
+    }
+    
+    private void CalculatedBaseWill()
+    {
+        if (SelectedClassId <= 1) return;
+        var willPerLevel = _classes.Single(c => c.Id == SelectedClassId).WillSavePerLevel;
+        var baseWill = 0.0m;
+        if (willPerLevel == 0.5m)
+        {
+            baseWill = 2.0m;
+        }
+        var wisdomModifier = ConversionHelper.ConvertStatToBonus(CharacterWisdom);
+        baseWill += willPerLevel + wisdomModifier;
+        
+        _calculatedBaseWill =  Math.Floor(baseWill);
+    }
+    
     private void GetStartingEquipment()
     {
         if(_selectedStartingEquipment == 1)
@@ -942,12 +1059,12 @@
             Race = _races.Single(r => r.Id == SelectedRaceId).Id,
             Experience = 0,
             Strength = _characterStrength,
-            Dexterity = _characterDexterity,
-            Constitution = _characterConstitution,
-            Wisdom = _characterWisdom,
+            Dexterity = CharacterDexterity,
+            Constitution = CharacterConstitution,
+            Wisdom = CharacterWisdom,
             Intelligence = _characterIntelligence,
             Charisma = _characterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == SelectedClassId).HitDice) + ConversionHelper.ConvertStatToBonus(_characterConstitution),
+            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == SelectedClassId).HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
             Deity = _deities.Single(d => d.Id == _selectedDeityId).Id,
             Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint,
             Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint,
@@ -959,6 +1076,9 @@
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
             Languages = _selectedLanguageIds,
+            BaseFortitudeSave = _calculatedBaseFortitude,
+            BaseReflexSave = _calculatedBaseReflex,
+            BaseWillSave = _calculatedBaseWill,
             PlatinumPieces = _platinumPieces,
             GoldPieces = _goldPieces,
             SilverPieces = _silverPieces,
