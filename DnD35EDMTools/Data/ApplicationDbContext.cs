@@ -13,6 +13,7 @@ namespace DnD35EDMTools.Data
 
         // Define DbSet properties for your entities
         public DbSet<CharacterData> Characters { get; set; }
+        public DbSet<CarryingCapacityData> CarryingCapacity { get; set; } 
         public DbSet<RaceData> Races { get; set; }
         public DbSet<ColourData> Colours { get; set; }
         public DbSet<FeatsTraitsData> FeatsTraits { get; set; }

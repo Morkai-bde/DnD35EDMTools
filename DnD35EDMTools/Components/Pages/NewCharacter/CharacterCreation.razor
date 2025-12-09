@@ -493,9 +493,11 @@
             PopulateStartingEquipmentMethods();
             if (_selectedRaceId != 0)
             {
+                var selectedRace = _races.Single(r => r.Id == SelectedRaceId);
                 _raceHairColours = _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
                 _raceEyeColours = _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
                 _raceSkinColours = _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
+                _raceSize = selectedRace.Size;
             }
             else
             {
@@ -620,6 +622,7 @@
     private string _raceRandomHeight = "0d0";
     private int _raceBaseWeight;
     private string _raceRandomWeight = "0d0";
+    private string _raceSize = "medium";
     private int _characterEyes;
     private int _characterHair;
     private int _characterSkin;
@@ -682,6 +685,12 @@
     private int _goldPieces;
     private int _silverPieces;
     private int _copperPieces;
+    private int _lightLoad;
+    private int _mediumLoad;
+    private int _heavyLoad;
+    private int _liftOffGround;
+    private int _liftOverHead;
+    private int _pushOrDrag;
     
     private Dictionary<string, Action<int>> _statFields = null!;
 
@@ -981,6 +990,33 @@
         
     }
     
+    private async Task GetCarryingCapacityForStrengthAsync()
+    {
+        if (_characterStrength <= 0)
+        {
+            Console.Write($"Strength not set {_characterStrength}");
+            return;
+        }
+
+        await using var db = DbContext;
+
+        var cc = await db.CarryingCapacity
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == _characterStrength);
+
+        if (cc is null)
+        {
+            Console.WriteLine("Unable to load Carrying Capacity Data");
+            return;
+        }
+            _lightLoad = WeightHelper.GetWeight(cc.LightLoad, _raceSize);
+            _mediumLoad = WeightHelper.GetWeight(cc.MediumLoad, _raceSize);
+            _heavyLoad = WeightHelper.GetWeight(cc.HeavyLoad, _raceSize);
+            _liftOverHead = WeightHelper.GetWeight(cc.LiftOverHead, _raceSize);
+            _liftOffGround = WeightHelper.GetWeight(cc.LiftOffGround, _raceSize);
+            _pushOrDrag = WeightHelper.GetWeight(cc.PushOrDrag, _raceSize);
+    }
+    
     private void GenerateRandomCharacter()
     {
         bool skipRollStatsAndLuck = false;
@@ -1050,7 +1086,9 @@
             Console.WriteLine("No Campaign Selected");
             return;
         }
-        
+
+        GetCarryingCapacityForStrengthAsync().GetAwaiter().GetResult();
+
         var newCharacter = new CharacterData
         {
             Name = _characterName,
@@ -1083,6 +1121,12 @@
             GoldPieces = _goldPieces,
             SilverPieces = _silverPieces,
             CopperPieces = _copperPieces,
+            LightLoad = _lightLoad,
+            MediumLoad = _mediumLoad,
+            HeavyLoad = _heavyLoad,
+            LiftOverHead = _liftOverHead,
+            LiftOffGround = _liftOffGround,
+            PushOrDrag = _pushOrDrag,
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 

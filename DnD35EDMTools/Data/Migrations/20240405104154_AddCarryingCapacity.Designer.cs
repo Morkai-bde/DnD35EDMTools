@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20240405104154_AddCarryingCapacity")]
+    partial class AddCarryingCapacity
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -219,19 +222,10 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("HeavyLoad")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("LiftOffGround")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LiftOverHead")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("LightLoad")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MediumLoad")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("PushOrDrag")
                         .HasColumnType("INTEGER");
 
                     b.HasKey("Id");
@@ -294,9 +288,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Hair")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("HeavyLoad")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("Height")
                         .HasColumnType("INTEGER");
 
@@ -309,18 +300,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<string>("Languages")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("LiftOffGround")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LiftOverHead")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("LightLoad")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("MediumLoad")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Morality")
                         .HasColumnType("INTEGER");
@@ -340,9 +319,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<string>("PlayerName")
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("PushOrDrag")
-                        .HasColumnType("INTEGER");
 
                     b.Property<int>("Race")
                         .HasColumnType("INTEGER");

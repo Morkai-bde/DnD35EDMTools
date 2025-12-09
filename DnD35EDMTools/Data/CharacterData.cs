@@ -39,17 +39,17 @@ public class CharacterData
     public int GoldPieces { get; set; }
     public int SilverPieces { get; set; }
     public int CopperPieces { get; set; }
+    public int LightLoad { get; set; }
+    public int MediumLoad { get; set; }
+    public int HeavyLoad { get; set; }
+    public int LiftOverHead { get; set; }
+    public int LiftOffGround { get; set; }
+    public int PushOrDrag { get; set; }
     [MaxLength(100)]
     public string? PlayerName { get; set; }
     // public int WeightCarried { get; set; }
     // public int MovementSpeed { get; set; }
     // public int Initiative { get; set; }
-    // public int LightLoad { get; set; }
-    // public int MediumLoad { get; set; }
-    // public int HeavyLoad { get; set; }
-    // public int LiftOverHead { get; set; }
-    // public int LiftOffGround { get; set; }
-    // public int PushOrDrag { get; set; }
     // public int ArcaneSpellFailure { get; set; }
     // public int BaseAttackBonus { get; set; }
     // public int SpellResistance { get; set; }
