@@ -21,8 +21,8 @@ public static class WeightHelper
         }
     }
     
-    public static int GetWeight(int weight, string size)
+    public static double GetWeight(double weight, string size)
     {
-        return (int)(weight * GetMultiplier(size));
+        return (double)(weight * GetMultiplier(size));
     }
 }
