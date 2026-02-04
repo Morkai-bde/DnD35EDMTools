@@ -282,30 +282,75 @@
                         <div class="dnd-cc-tab-appearance">
                             @if (SelectedRaceId > 1 && SelectedGenderId > 1 && SelectedClassId > 1)
                             {
-                                <PhysicalAttributes _selectedRaceId="@_selectedRaceId"
-                                                    _raceHairColours="@_raceHairColours"
-                                                    _characterHair="@_characterHair"
-                                                    _raceEyeColours="@_raceEyeColours"
-                                                    _characterEyes="@_characterEyes"
-                                                    _raceSkinColours="@_raceSkinColours"
-                                                    _characterSkin="@_characterSkin"
-                                                    _characterAge="@_characterAge"
-                                                    _characterHeight="@_characterHeight"
-                                                    _characterWeight="@_characterWeight"
-                                                    _races="@_races"
-                                                    _genders="@_genders"
-                                                    SelectedGenderId="@SelectedGenderId"
-                                                    _classes="@_classes"
-                                                    SelectedClassId="@SelectedClassId"
-                                                    _raceStartingAge="@_raceStartingAge"
-                                                    _classAgeCategory="@_classAgeCategory"
-                                                    _ageTypeDice="@_ageTypeDice"
-                                                    _raceBaseHeight="@_raceBaseHeight"
-                                                    _raceRandomHeight="@_raceRandomHeight"
-                                                    _raceBaseWeight="@_raceBaseWeight"
-                                                    _raceRandomWeight="@_raceRandomWeight">
-
-                                </PhysicalAttributes>
+                                <div>
+                                    <label for="hair">Hair:</label>
+                                </div>
+                                <div>
+                                    <select class="cc-select" id="hair" @bind="_characterHair">
+                                        @foreach (var colour in _raceHairColours)
+                                        {
+                                            <option value="@colour.Id">@colour.Colour</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, _raceHairColours).ColourHexCode)">
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    <label for="eyes">Eyes:</label>
+                                </div>
+                                <div>
+                                    <select class="cc-select" id="eyes" @bind="_characterEyes">
+                                        @foreach (var colour in _raceEyeColours)
+                                        {
+                                            <option value="@colour.Id">@colour.Colour</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, _raceEyeColours).ColourHexCode)">
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    <label for="skin">Skin:</label>
+                                </div>
+                                <div>
+                                    <select class="cc-select" id="skin" @bind="_characterSkin">
+                                        @foreach (var colour in _raceSkinColours)
+                                        {
+                                            <option value="@colour.Id">@colour.Colour</option>
+                                        }
+                                    </select>
+                                </div>
+                                <div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, _raceSkinColours).ColourHexCode)">
+                                    &nbsp;
+                                </div>
+                                <div>
+                                    <label for="age">Age:</label>
+                                </div>
+                                <div>
+                                    <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
+                                </div>
+                                <div>
+                                    <button class="cc-randomize-button" @onclick="RollRandomAge">Random</button>
+                                </div>
+                                <div>
+                                    <label for="height">Height:</label>
+                                </div>
+                                <div>
+                                    <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
+                                </div>
+                                <div>
+                                    <button class="cc-randomize-button" @onclick="RollRandomHeight">Random</button>
+                                </div>
+                                <div>
+                                    <label for="weight">Weight:</label>
+                                </div>
+                                <div>
+                                    <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
+                                </div>
+                                <div>
+                                    <button class="cc-randomize-button" @onclick="RollRandomWeight">Random</button>
+                                </div>
                             }
                         </div>
                     }
@@ -519,6 +564,31 @@
             if (_selectedGenderId >1)
                 GetRaceHeightAndWeight();
         }
+    }
+    
+    private ColourData GetColourById(int colourId, List<ColourData> colours)
+    {
+        var defaultColour = new ColourData
+        {
+            Colour = "None",
+            ColourHexCode = "#00000000"
+        };
+        return colours.FirstOrDefault(c => c.Id == colourId)  ?? defaultColour;
+    }
+    
+    private void RollRandomAge()
+    {
+        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+    }
+
+    private void RollRandomHeight()
+    {
+        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
+    }
+
+    private void RollRandomWeight()
+    {
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight,_raceRandomWeight,ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
     }
     
     private void InitializeCharacterStatsBasedOnCampaign()
