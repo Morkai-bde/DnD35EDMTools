@@ -22,347 +22,393 @@
     <button class="cch-button @((_selectedTab == 4) ? "cch-button-selected" : "")" @onclick="() => SelectTab(4)">Equipment</button>
 </div>
 <div class="dnd-character-creation-container">
-    <div class="dnd-character-main-content">
-        <div class="dnd-character-creation-sheet">
-            <div class="dnd-cc-top-section">
-                    @if (_selectedTab == 0)
-                    {
-                        <div class="dnd-cc-tab-main">
-                            <div>
-                                <label for="campaign">Campaign:</label>
-                            </div>
-                            <div>
-                                <select class="cc-select" id="campaign" name="campaign" @bind="SelectedCampaignId">
-                                    @foreach (var id in _campaigns)
-                                    {
-                                        <option value="@id.Id" title="@id.Description">@id.Name</option>
-                                    }
-                                </select>
-                            </div>
-                            <div>
-                                &nbsp;
-                            </div>
-                            @if (_selectedCampaignId != 1)
-                            {
-                                <div>
-                                    <label for="name">Name:</label>
-                                </div>
-                                <div>
-                                    <input class="cc-input" type="text" id="name" @bind="_characterName"/>
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="race">Race:</label>
-                                </div>
-                                <div style="width: 150px">
-                                    <select class="cc-select" id="race" @bind="SelectedRaceId">
-                                        @foreach (var race in _races)
-                                        {
-                                            <option value=@race.Id title=@race.Description>@race.Race</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="gender">Gender:</label>
-                                </div>
-                                <div>
-                                    <select class="cc-select" id="gender" @bind="SelectedGenderId">
-                                        @foreach (var gender in GetRaceGenders())
-                                        {
-                                            <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="order">Order:</label>
-                                </div>
-                                <div>
-                                    <select class="cc-select" id="order" @bind="_selectedOrderId">
-                                        @foreach (var order in _orders)
-                                        {
-                                            <option value=@order.Id title=@order.Description>@order.Order</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="morality">Morality:</label>
-                                </div>
-                                <div>
-                                    <select class="cc-select" id="morality" @bind="_selectedMoralityId">
-                                        @foreach (var morality in _moralities)
-                                        {
-                                            <option value=@morality.Id title=@morality.Description>@morality.Morality</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="deity">Deity:</label>
-                                </div>
-                                <div>
-                                    <select class="cc-select" id="deity" @bind="_selectedDeityId">
-                                        @foreach (var name in FilteredDeities)
-                                        {
-                                            <option value=@name.Id title=@name.Description>@name.Name</option>
-                                        }
-                                    </select>
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="class">Class:</label>
-                                </div>
-                                <div>
-                                    <select class="cc-select" id="class" @bind="SelectedClassId">
-                                        @foreach (var name in _classes)
-                                        {
-                                            <option value=@name.Id title=@name.Description>@name.Name</option>
-                                        }
-                                    </select>
-                                </div>
-                            }
-                        </div>
-                    }
-                    @if (_selectedTab == 1)
-                    {
-                        <div class="dnd-cc-tab-stats">
-                            @if (SelectedRaceId > 1)
-                            {
-                                @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
-                                {
-                                    @foreach (var statField in _statFields)
-                                    {
-                                        var statName = statField.Key;
-                                        var statValue = GetStatValue(statName);
-                                        <div>
-                                            <label for="@statName">@statName:</label>
-                                        </div>
-                                        <div>
-                                            <input class="cc-input" type="text" id="@statName" @bind="statValue"/>
-                                        </div>
-                                        <div>
-                                            <button class="cc-randomize-button" @onclick="RollFunction">Roll</button>
-                                        </div>
-                                        continue;
-                                        void RollFunction() => RollStat(SelectedCampaignStatRollingMethod, statName);
-                                    }
-                                }
-
-                                @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
-                                {
-                                    @foreach (var statField in _statFields)
-                                    {
-                                        var statName = statField.Key;
-                                        var statValue = GetStatValue(statName);
-                                        var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
-                                        <div>
-                                            <label for="@statName">@statName:</label>
-                                        </div>
-                                        <div>
-                                            <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
-                                        </div>
-                                        <div>
-                                            @foreach (var number in _standardArray)
-                                            {
-                                                <button class="cc-point-buy-button"
-                                                        @onclick="OnclickAction"
-                                                        disabled="@(statValue == number)">
-                                                    @number
-                                                </button>
-                                                continue;
-                                                void OnclickAction() => SwapStatValues(number, statName);
-                                            }
-                                        </div>
-                                    }
-                                }
-
-                                @if (SelectedCampaignStatRollingMethod is "PBA" or "PBR")
-                                {
-                                    <div>
-                                        <label for="points">Points:</label>
-                                    </div>
-                                    <div>
-                                        <input class="cc-point-buy-stat-input" type="text" id="points" value="@_characterStatPoints" readonly/>
-                                        @if (SelectedCampaignStatRollingMethod == "PBR")
-                                        {
-                                            <button class="cc-pb-randomize-button" @onclick="RollRandomStatPoints">Roll</button>
-                                        }
-                                        &nbsp;
-                                    </div>
-                                    <div>
-                                        &nbsp;
-                                    </div>
-                                    @foreach (var statField in _statFields)
-                                    {
-                                        var statName = statField.Key;
-                                        var statValue = GetStatValue(statName);
-                                        var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
-                                        <div>
-                                            <label for="@statName">@statName:</label>
-                                        </div>
-                                        <div>
-                                            <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
-                                        </div>
-                                        <div>
-                                            <button class="cc-point-buy-button" @onclick="IncreaseAction">+</button><button class="cc-point-buy-button" @onclick="DecreaseAction">-</button>
-                                        </div>
-                                        continue;
-                                        void DecreaseAction() => DecreaseStatValue(statName);
-                                        void IncreaseAction() => IncreaseStatValue(statName);
-                                    }
-                                }
-
-                                @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
-                                {
-                                    <div>
-                                        <label for="luck">Luck:</label>
-                                    </div>
-                                    <div>
-                                        <input class="cc-point-buy-stat-input" type="text" id="luck" @bind="_characterLuck"/><input class="cc-point-buy-stat-input" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)"/>
-                                    </div>
-                                    <div>
-                                        <button class="cc-pb-randomize-button" @onclick="CalculateLuck">Calculate</button>
-                                    </div>
-                                }
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="fortitude">Fortitude</label>
-                                </div>
-                                <div>
-                                    <input class="cc-point-buy-stat-input" type="text" id="fortitude" @bind="_calculatedBaseFortitude">
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="reflex">Reflex</label>
-                                </div>
-                                <div>
-                                    <input class="cc-point-buy-stat-input" type="text" id="reflex" @bind="_calculatedBaseReflex">
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                                <div>
-                                    <label for="will">Will</label>
-                                </div>
-                                <div>
-                                    <input class="cc-point-buy-stat-input" type="text" id="will" @bind="_calculatedBaseWill">
-                                </div>
-                                <div>
-                                    &nbsp;
-                                </div>
-                            }
-                        </div>
-                    }
-                    @if (_selectedTab == 2)
-                    {
-                        <div class="dnd-cc-tab-appearance">
-                            @if (SelectedRaceId > 1 && SelectedGenderId > 1 && SelectedClassId > 1)
-                            {
-                                <PhysicalAttributes _selectedRaceId="@_selectedRaceId"
-                                                    _raceHairColours="@_raceHairColours"
-                                                    _characterHair="@_characterHair"
-                                                    _raceEyeColours="@_raceEyeColours"
-                                                    _characterEyes="@_characterEyes"
-                                                    _raceSkinColours="@_raceSkinColours"
-                                                    _characterSkin="@_characterSkin"
-                                                    _characterAge="@_characterAge"
-                                                    _characterHeight="@_characterHeight"
-                                                    _characterWeight="@_characterWeight"
-                                                    _races="@_races"
-                                                    _genders="@_genders"
-                                                    SelectedGenderId="@SelectedGenderId"
-                                                    _classes="@_classes"
-                                                    SelectedClassId="@SelectedClassId"
-                                                    _raceStartingAge="@_raceStartingAge"
-                                                    _classAgeCategory="@_classAgeCategory"
-                                                    _ageTypeDice="@_ageTypeDice"
-                                                    _raceBaseHeight="@_raceBaseHeight"
-                                                    _raceRandomHeight="@_raceRandomHeight"
-                                                    _raceBaseWeight="@_raceBaseWeight"
-                                                    _raceRandomWeight="@_raceRandomWeight">
-
-                                </PhysicalAttributes>
-                            }
-                        </div>
-                    }
-                    @if (_selectedTab == 3)
-                    {
-                        <div class="dnd-cc-tab-languages">
-                            @foreach (var language in FilteredLanguages)
-                            {
-                                var isBonus = language.IsBonus;
-                                <div class="language-item">
-                                    <input type="checkbox" id="@language.Name.ToLower()" @onchange="_ => ToggleLanguageSelection(language.Id)" checked="@isBonus">
-                                    &nbsp;
-                                    <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
-                                </div>
-                            }
-                        </div>
-                    }
-                    @if (_selectedTab == 4)
-                    {
-                        <div class="dnd-cc-tab-equipment">
-                            @if (SelectedClassId > 1)
-                            {
-                                <div>
-                                    <label for="starting-equipment-method">Starting Equipment:</label>
-                                </div>
-                                <select class="cc-select" id="starting-equipment-method" name="starting-equipment-method" @bind="_selectedStartingEquipment">
-                                    @foreach (var id in _startingEquipmentMethods)
-                                    {
-                                        <option value="@id.Id" title="@id.Description">@id.Name</option>
-                                    }
-                                </select>
-                                @if (_selectedStartingEquipment < 3)
-                                {
-                                    <div>
-                                        <input class="cc-gold-input" type="text" id="starting-gold" @bind="_goldPieces" readonly/>
-                                    </div>
-                                    <div>
-                                        <button class="cc-gold-randomize-button" @onclick="GetStartingEquipment">Roll</button>
-                                    </div>
-                                }
-
-                                @if (_selectedStartingEquipment == 3)
-                                {
-                                    <div>
-                                        &nbsp;
-                                    </div>
-                                    <div>
-                                        <button class="cc-gold-randomize-button" @onclick="GetStartingEquipment">Customize</button>
-                                    </div>
-                                }
-                            }
-                        </div>
-                    }
+<div class="dnd-character-main-content">
+<div class="dnd-character-creation-sheet">
+    <div class="dnd-cc-top-section">
+        @if (_selectedTab == 0)
+        {
+            <div class="dnd-cc-tab-main">
+                <div>
+                    <label for="campaign">Campaign:</label>
                 </div>
+                <div>
+                    <select class="cc-select" id="campaign" name="campaign" @bind="SelectedCampaignId">
+                        @foreach (var id in _campaigns)
+                        {
+                            <option value="@id.Id" title="@id.Description">@id.Name</option>
+                        }
+                    </select>
+                </div>
+                <div>
+                    &nbsp;
+                </div>
+                @if (_selectedCampaignId != 1)
+                {
+                    <div>
+                        <label for="name">Name:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="name" @bind="_characterName"/>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="race">Race:</label>
+                    </div>
+                    <div style="width: 150px">
+                        <select class="cc-select" id="race" @bind="SelectedRaceId">
+                            @foreach (var race in _races)
+                            {
+                                <option value=@race.Id title=@race.Description>@race.Race</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="gender">Gender:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="gender" @bind="SelectedGenderId">
+                            @foreach (var gender in GetRaceGenders())
+                            {
+                                <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="order">Order:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="order" @bind="_selectedOrderId">
+                            @foreach (var order in _orders)
+                            {
+                                <option value=@order.Id title=@order.Description>@order.Order</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="morality">Morality:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="morality" @bind="_selectedMoralityId">
+                            @foreach (var morality in _moralities)
+                            {
+                                <option value=@morality.Id title=@morality.Description>@morality.Morality</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="deity">Deity:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="deity" @bind="_selectedDeityId">
+                            @foreach (var name in FilteredDeities)
+                            {
+                                <option value=@name.Id title=@name.Description>@name.Name</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="class">Class:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="class" @bind="SelectedClassId">
+                            @foreach (var name in _classes)
+                            {
+                                <option value=@name.Id title=@name.Description>@name.Name</option>
+                            }
+                        </select>
+                    </div>
+                }
             </div>
-        </div>
+        }
+        @if (_selectedTab == 1)
+        {
+            <div class="dnd-cc-tab-stats">
+                @if (SelectedRaceId > 1)
+                {
+                    @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
+                    {
+                        @foreach (var statField in _statFields)
+                        {
+                            var statName = statField.Key;
+                            var statValue = GetStatValue(statName);
+                            <div>
+                                <label for="@statName">@statName:</label>
+                            </div>
+                            <div>
+                                <input class="cc-input" type="text" id="@statName" @bind="statValue"/>
+                            </div>
+                            <div>
+                                <button class="cc-randomize-button" @onclick="RollFunction">Roll</button>
+                            </div>
+                            continue;
+                            void RollFunction() => RollStat(SelectedCampaignStatRollingMethod, statName);
+                        }
+                    }
+
+                    @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
+                    {
+                        @foreach (var statField in _statFields)
+                        {
+                            var statName = statField.Key;
+                            var statValue = GetStatValue(statName);
+                            var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
+                            <div>
+                                <label for="@statName">@statName:</label>
+                            </div>
+                            <div>
+                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                            </div>
+                            <div>
+                                @foreach (var number in _standardArray)
+                                {
+                                    <button class="cc-point-buy-button"
+                                            @onclick="OnclickAction"
+                                            disabled="@(statValue == number)">
+                                        @number
+                                    </button>
+                                    continue;
+                                    void OnclickAction() => SwapStatValues(number, statName);
+                                }
+                            </div>
+                        }
+                    }
+
+                    @if (SelectedCampaignStatRollingMethod is "PBA" or "PBR")
+                    {
+                        <div>
+                            <label for="points">Points:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="points" value="@_characterStatPoints" readonly/>
+                            @if (SelectedCampaignStatRollingMethod == "PBR")
+                            {
+                                <button class="cc-pb-randomize-button" @onclick="RollRandomStatPoints">Roll</button>
+                            }
+                            &nbsp;
+                        </div>
+                        <div>
+                            &nbsp;
+                        </div>
+                        @foreach (var statField in _statFields)
+                        {
+                            var statName = statField.Key;
+                            var statValue = GetStatValue(statName);
+                            var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
+                            <div>
+                                <label for="@statName">@statName:</label>
+                            </div>
+                            <div>
+                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                            </div>
+                            <div>
+                                <button class="cc-point-buy-button" @onclick="IncreaseAction">+</button><button class="cc-point-buy-button" @onclick="DecreaseAction">-</button>
+                            </div>
+                            continue;
+                            void DecreaseAction() => DecreaseStatValue(statName);
+                            void IncreaseAction() => IncreaseStatValue(statName);
+                        }
+                    }
+
+                    @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
+                    {
+                        <div>
+                            <label for="luck">Luck:</label>
+                        </div>
+                        <div>
+                            <input class="cc-point-buy-stat-input" type="text" id="luck" @bind="_characterLuck"/><input class="cc-point-buy-stat-input" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)"/>
+                        </div>
+                        <div>
+                            <button class="cc-pb-randomize-button" @onclick="CalculateLuck">Calculate</button>
+                        </div>
+                    }
+
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="fortitude">Fortitude</label>
+                    </div>
+                    <div>
+                        <input class="cc-point-buy-stat-input" type="text" id="fortitude" @bind="_calculatedBaseFortitude">
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="reflex">Reflex</label>
+                    </div>
+                    <div>
+                        <input class="cc-point-buy-stat-input" type="text" id="reflex" @bind="_calculatedBaseReflex">
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="will">Will</label>
+                    </div>
+                    <div>
+                        <input class="cc-point-buy-stat-input" type="text" id="will" @bind="_calculatedBaseWill">
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                }
+            </div>
+        }
+        @if (_selectedTab == 2)
+        {
+            <div class="dnd-cc-tab-appearance">
+                @if (SelectedRaceId > 1 && SelectedGenderId > 1 && SelectedClassId > 1)
+                {
+                    <div>
+                        <label for="hair">Hair:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="hair" @bind="_characterHair">
+                            @foreach (var colour in _raceHairColours)
+                            {
+                                <option value="@colour.Id">@colour.Colour</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterHair, _raceHairColours).ColourHexCode)">
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="eyes">Eyes:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="eyes" @bind="_characterEyes">
+                            @foreach (var colour in _raceEyeColours)
+                            {
+                                <option value="@colour.Id">@colour.Colour</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterEyes, _raceEyeColours).ColourHexCode)">
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="skin">Skin:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="skin" @bind="_characterSkin">
+                            @foreach (var colour in _raceSkinColours)
+                            {
+                                <option value="@colour.Id">@colour.Colour</option>
+                            }
+                        </select>
+                    </div>
+                    <div class="cc-colour-box" style="background-color: @(GetColourById(_characterSkin, _raceSkinColours).ColourHexCode)">
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="age">Age:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="RollRandomAge">Random</button>
+                    </div>
+                    <div>
+                        <label for="height">Height:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="height" @bind="_characterHeight"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="RollRandomHeight">Random</button>
+                    </div>
+                    <div>
+                        <label for="weight">Weight:</label>
+                    </div>
+                    <div>
+                        <input class="cc-input" type="text" id="weight" @bind="_characterWeight"/>
+                    </div>
+                    <div>
+                        <button class="cc-randomize-button" @onclick="RollRandomWeight">Random</button>
+                    </div>
+                }
+            </div>
+        }
+        @if (_selectedTab == 3)
+        {
+            <div class="dnd-cc-tab-languages">
+                @foreach (var language in FilteredLanguages)
+                {
+                    var isBonus = language.IsBonus;
+                    <div class="language-item">
+                        <input type="checkbox" id="@language.Name.ToLower()" @onchange="_ => ToggleLanguageSelection(language.Id)" checked="@isBonus">
+                        &nbsp;
+                        <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
+                    </div>
+                }
+            </div>
+        }
+        @if (_selectedTab == 4)
+        {
+            <div class="dnd-cc-tab-equipment">
+                @if (SelectedClassId > 1)
+                {
+                    <div>
+                        <label for="starting-equipment-method">Starting Equipment:</label>
+                    </div>
+                    <select class="cc-select" id="starting-equipment-method" name="starting-equipment-method" @bind="_selectedStartingEquipment">
+                        @foreach (var id in _startingEquipmentMethods)
+                        {
+                            <option value="@id.Id" title="@id.Description">@id.Name</option>
+                        }
+                    </select>
+                    @if (_selectedStartingEquipment < 3)
+                    {
+                        <div>
+                            <input class="cc-gold-input" type="text" id="starting-gold" @bind="_goldPieces" readonly/>
+                        </div>
+                        <div>
+                            <button class="cc-gold-randomize-button" @onclick="GetStartingEquipment">Roll</button>
+                        </div>
+                    }
+
+                    @if (_selectedStartingEquipment == 3)
+                    {
+                        <div>
+                            &nbsp;
+                        </div>
+                        <div>
+                            <button class="cc-gold-randomize-button" @onclick="GetStartingEquipment">Customize</button>
+                        </div>
+                    }
+                }
+            </div>
+        }
     </div>
+</div>
+</div>
+</div>
 <div>
     &nbsp;
 </div>
@@ -373,6 +419,7 @@
     Is a Dry Run?
     <input type="checkbox" @bind="_dryRun"/>
 </div>
+
 @code {
     private bool _dryRun = true;
     private int _selectedTab;
@@ -390,6 +437,7 @@
     private List<LanguageData> _languages = [];
     private readonly List<int> _selectedLanguageIds = [];
     private readonly List<StartingEquipment> _startingEquipmentMethods = [];
+
     private List<DeityData> FilteredDeities
     {
         get
@@ -416,7 +464,7 @@
             {
                 return filteredLanguages;
             }
-            
+
             var selectedCampaign = _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId);
             var selectedRace = _races.Single(r => r.Id == SelectedRaceId).Race;
             var selectedClass = _classes.Single(r => r.Id == SelectedClassId).Name;
@@ -433,12 +481,12 @@
                         if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
                         {
                             filteredLanguages.Add(language);
-                            
+
                             if (language.IsBonus && !_selectedLanguageIds.Contains(language.Id))
                             {
                                 _selectedLanguageIds.Add(language.Id);
                             }
-                            
+
                             break;
                         }
                     }
@@ -448,7 +496,7 @@
             return filteredLanguages;
         }
     }
-    
+
     private void SelectTab(int tabNumber)
     {
         _selectedTab = tabNumber;
@@ -465,7 +513,7 @@
             _selectedLanguageIds.Add(languageId);
         }
     }
-    
+
     private int _selectedCampaignId = 1;
 
     private int SelectedCampaignId
@@ -490,6 +538,7 @@
             {
                 GetAgeDiceType();
             }
+
             PopulateStartingEquipmentMethods();
             if (_selectedRaceId != 0)
             {
@@ -516,11 +565,36 @@
         set
         {
             _selectedGenderId = value;
-            if (_selectedGenderId >1)
+            if (_selectedGenderId > 1)
                 GetRaceHeightAndWeight();
         }
     }
-    
+
+    private ColourData GetColourById(int colourId, List<ColourData> colours)
+    {
+        var defaultColour = new ColourData
+        {
+            Colour = "None",
+            ColourHexCode = "#00000000"
+        };
+        return colours.FirstOrDefault(c => c.Id == colourId) ?? defaultColour;
+    }
+
+    private void RollRandomAge()
+    {
+        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+    }
+
+    private void RollRandomHeight()
+    {
+        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
+    }
+
+    private void RollRandomWeight()
+    {
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
+    }
+
     private void InitializeCharacterStatsBasedOnCampaign()
     {
         switch (SelectedCampaignStatRollingMethod)
@@ -563,20 +637,14 @@
 
     private string SelectedCampaignStatRollingMethod
     {
-        get
-        {
-            return _campaigns.Single(c => c.Id == _selectedCampaignId).StatRollingMethod;
-        }
+        get { return _campaigns.Single(c => c.Id == _selectedCampaignId).StatRollingMethod; }
     }
 
     private string SelectedClassStartingGold
     {
-        get
-        {
-            return _classes.Single(c => c.Id == SelectedClassId).StartingGold;
-        }
+        get { return _classes.Single(c => c.Id == SelectedClassId).StartingGold; }
     }
-    
+
     private void PopulateStartingEquipmentMethods()
     {
         _startingEquipmentMethods.Clear();
@@ -611,7 +679,7 @@
             });
         }
     }
-    
+
     private string _characterName = "";
     private string _characterAge = "";
     private string _characterHeight = "";
@@ -643,7 +711,7 @@
     private int _characterWisdom;
     private int _characterCharisma;
     private int _characterLuck;
-    
+
     private int CharacterDexterity
     {
         get => _characterDexterity;
@@ -654,7 +722,7 @@
             CalculatedBaseReflex();
         }
     }
-    
+
     private int CharacterConstitution
     {
         get => _characterConstitution;
@@ -665,7 +733,7 @@
             CalculatedBaseFortitude();
         }
     }
-    
+
     private int CharacterWisdom
     {
         get => _characterWisdom;
@@ -676,7 +744,7 @@
             CalculatedBaseWill();
         }
     }
-    
+
     private int _selectedStartingEquipment;
     private decimal _calculatedBaseFortitude;
     private decimal _calculatedBaseReflex;
@@ -691,7 +759,7 @@
     private double _liftOffGround;
     private double _liftOverHead;
     private double _pushOrDrag;
-    
+
     private Dictionary<string, Action<int>> _statFields = null!;
 
     protected override async Task OnInitializedAsync()
@@ -714,7 +782,7 @@
         _languages = await db.Languages.ToListAsync();
         InitializeStatFields();
     }
-    
+
     private void InitializeStatFields()
     {
         _statFields = new Dictionary<string, Action<int>>
@@ -727,7 +795,7 @@
             { "Charisma", val => _characterCharisma = val },
         };
     }
-    
+
     private List<GenderData> GetRaceGenders()
     {
         if (SelectedRaceId == 0)
@@ -744,7 +812,7 @@
         CharacterWisdom = 0;
         _characterCharisma = 0;
     }
-    
+
     private void RollStat(string rollingMethod, string stat)
     {
         int statValue = GetStatValue(stat);
@@ -753,6 +821,7 @@
             if (statValue <= 7)
                 statValue = RollStats.RollStatBasedOnMethod(rollingMethod);
         } while (statValue <= 7);
+
         SetStatValue(stat, statValue);
     }
 
@@ -798,13 +867,13 @@
             _statFields[stat](currentStatValue + 1);
         }
     }
-    
+
     private void DecreaseStatValue(string stat)
     {
         const int minStatValue = 8;
-        
+
         if (!_statFields.ContainsKey(stat)) return;
-        
+
         var currentStatValue = GetStatValue(stat);
         if (currentStatValue <= minStatValue) return;
 
@@ -827,7 +896,6 @@
 
     private void SwapStatValues(int selectedNumber, string targetStat)
     {
-
         if (_statFields.ContainsKey(targetStat))
         {
             SetSecondaryStatValue(selectedNumber, GetStatValue(targetStat));
@@ -837,7 +905,6 @@
 
     private void SetSecondaryStatValue(int number, int tempStat)
     {
-
         foreach (var statField in _statFields)
         {
             if (GetStatValue(statField.Key) == number)
@@ -847,11 +914,11 @@
             }
         }
     }
-    
+
     private void CalculateLuck()
     {
-        if (_characterStrength != 0 && CharacterDexterity != 0 && CharacterConstitution != 0 && _characterIntelligence != 0 && CharacterWisdom != 0 && _characterCharisma !=0)
-        _characterLuck = (_characterStrength + CharacterDexterity + CharacterConstitution + _characterIntelligence + CharacterWisdom + _characterCharisma) / 6;
+        if (_characterStrength != 0 && CharacterDexterity != 0 && CharacterConstitution != 0 && _characterIntelligence != 0 && CharacterWisdom != 0 && _characterCharisma != 0)
+            _characterLuck = (_characterStrength + CharacterDexterity + CharacterConstitution + _characterIntelligence + CharacterWisdom + _characterCharisma) / 6;
     }
 
     private void CalculatedBaseFortitude()
@@ -863,10 +930,11 @@
         {
             baseFortitude = 2.0m;
         }
+
         var constitutionModifier = ConversionHelper.ConvertStatToBonus(CharacterConstitution);
         baseFortitude += fortitudePerLevel + constitutionModifier;
-        
-        _calculatedBaseFortitude =  Math.Floor(baseFortitude);
+
+        _calculatedBaseFortitude = Math.Floor(baseFortitude);
     }
 
     private void CalculatedBaseReflex()
@@ -878,10 +946,11 @@
         {
             baseReflex = 2.0m;
         }
+
         var dexterityModifier = ConversionHelper.ConvertStatToBonus(CharacterDexterity);
         baseReflex += reflexPerLevel + dexterityModifier;
-        
-        _calculatedBaseReflex =  Math.Floor(baseReflex);
+
+        _calculatedBaseReflex = Math.Floor(baseReflex);
     }
 
     private void CalculatedBaseWill()
@@ -893,36 +962,38 @@
         {
             baseWill = 2.0m;
         }
+
         var wisdomModifier = ConversionHelper.ConvertStatToBonus(CharacterWisdom);
         baseWill += willPerLevel + wisdomModifier;
-        
-        _calculatedBaseWill =  Math.Floor(baseWill);
+
+        _calculatedBaseWill = Math.Floor(baseWill);
     }
 
     private void GetStartingEquipment()
     {
-        if(_selectedStartingEquipment == 1)
-        {
-        if (_goldPieces != 0) return;
-        var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
-        
-        _platinumPieces = startingWealth[0];
-        _goldPieces = startingWealth[1];
-        _silverPieces = startingWealth[2];
-        _copperPieces = startingWealth[3];
-        }
-        
-        if(_selectedStartingEquipment == 2)
+        if (_selectedStartingEquipment == 1)
         {
             if (_goldPieces != 0) return;
             var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
-        
+
             _platinumPieces = startingWealth[0];
             _goldPieces = startingWealth[1];
             _silverPieces = startingWealth[2];
             _copperPieces = startingWealth[3];
         }
-        if(_selectedStartingEquipment == 3)
+
+        if (_selectedStartingEquipment == 2)
+        {
+            if (_goldPieces != 0) return;
+            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+
+            _platinumPieces = startingWealth[0];
+            _goldPieces = startingWealth[1];
+            _silverPieces = startingWealth[2];
+            _copperPieces = startingWealth[3];
+        }
+
+        if (_selectedStartingEquipment == 3)
         {
             Console.WriteLine("Equipment Packs not Implemented");
         }
@@ -941,6 +1012,7 @@
                 {
                     GetAgeDiceType();
                 }
+
                 SetWealthToZero();
             }
         }
@@ -957,7 +1029,7 @@
     private void GetAgeDiceType()
     {
         string ageTypeDice = "";
-        
+
         if (_classAgeCategory == "Simple") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).SimpleDice;
         else if (_classAgeCategory == "Moderate") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).ModerateDice;
         else if (_classAgeCategory == "Complex") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).ComplexDice;
@@ -967,29 +1039,28 @@
 
     private void GetRaceHeightAndWeight()
     {
-            _raceRandomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
-            _raceRandomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
-            
-            var gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
+        _raceRandomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
+        _raceRandomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
 
-            if (gender == "Male")
-            {
-                _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-                _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
-            }
-            else if (gender == "Female")
-            {
-                _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
-                _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
-            }
-            else
-            {
-                _raceBaseHeight = (_races.Single(r => r.Id == SelectedRaceId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
-                _raceBaseWeight = (_races.Single(r => r.Id == SelectedRaceId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
-            }
-        
+        var gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
+
+        if (gender == "Male")
+        {
+            _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
+            _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
+        }
+        else if (gender == "Female")
+        {
+            _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
+            _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
+        }
+        else
+        {
+            _raceBaseHeight = (_races.Single(r => r.Id == SelectedRaceId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
+            _raceBaseWeight = (_races.Single(r => r.Id == SelectedRaceId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
+        }
     }
-    
+
     private async Task GetCarryingCapacityForStrengthAsync()
     {
         if (_characterStrength <= 0)
@@ -1009,14 +1080,15 @@
             Console.WriteLine("Unable to load Carrying Capacity Data");
             return;
         }
-            _lightLoad = WeightHelper.GetWeight(cc.LightLoad, _raceSize);
-            _mediumLoad = WeightHelper.GetWeight(cc.MediumLoad, _raceSize);
-            _heavyLoad = WeightHelper.GetWeight(cc.HeavyLoad, _raceSize);
-            _liftOverHead = WeightHelper.GetWeight(cc.LiftOverHead, _raceSize);
-            _liftOffGround = WeightHelper.GetWeight(cc.LiftOffGround, _raceSize);
-            _pushOrDrag = WeightHelper.GetWeight(cc.PushOrDrag, _raceSize);
+
+        _lightLoad = WeightHelper.GetWeight(cc.LightLoad, _raceSize);
+        _mediumLoad = WeightHelper.GetWeight(cc.MediumLoad, _raceSize);
+        _heavyLoad = WeightHelper.GetWeight(cc.HeavyLoad, _raceSize);
+        _liftOverHead = WeightHelper.GetWeight(cc.LiftOverHead, _raceSize);
+        _liftOffGround = WeightHelper.GetWeight(cc.LiftOffGround, _raceSize);
+        _pushOrDrag = WeightHelper.GetWeight(cc.PushOrDrag, _raceSize);
     }
-    
+
     private void GenerateRandomCharacter()
     {
         bool skipRollStatsAndLuck = false;
@@ -1025,39 +1097,39 @@
             Console.WriteLine("No Campaign Selected");
             return;
         }
-        
+
         var rand = new Random();
         _characterName = "Random Jo";
-        SelectedRaceId = rand.Next(2, _races.Count +1);
-        
+        SelectedRaceId = rand.Next(2, _races.Count + 1);
+
         var randomRaceHairIndex = rand.Next(2, _raceHairColours.Count);
         _characterHair = _raceHairColours[randomRaceHairIndex].Id;
-        
+
         var randomRaceEyesIndex = rand.Next(2, _raceEyeColours.Count);
         _characterEyes = _raceEyeColours[randomRaceEyesIndex].Id;
-        
+
         var randomRaceSkinIndex = rand.Next(2, _raceSkinColours.Count);
         _characterSkin = _raceSkinColours[randomRaceSkinIndex].Id;
 
-        SelectedClassId = rand.Next(2, _classes.Count +1);
-        
+        SelectedClassId = rand.Next(2, _classes.Count + 1);
+
         _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
-        
-        _selectedOrderId = rand.Next(1, _orders.Count +1);
-        _selectedMoralityId = rand.Next(1, _moralities.Count +1);
+
+        _selectedOrderId = rand.Next(1, _orders.Count + 1);
+        _selectedMoralityId = rand.Next(1, _moralities.Count + 1);
 
         var deity = FilteredDeities;
         var randomDeityIndex = rand.Next(2, FilteredDeities.Count);
         _selectedDeityId = deity[randomDeityIndex].Id;
-        
+
         var raceGenders = GetRaceGenders();
         var randomGenderIndex = rand.Next(2, raceGenders.Count);
         SelectedGenderId = raceGenders[randomGenderIndex].Id;
-        
+
         _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
-        
-        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight,_raceRandomWeight,ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
-        
+
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
+
         var notAllowedMethods = new[] { "PBA", "BPR", "SAL", "SAA", "SAH" };
         if (notAllowedMethods.Contains(SelectedCampaignStatRollingMethod))
         {
@@ -1078,7 +1150,7 @@
 
         SetWealthToZero();
     }
-    
+
     private void CreateNewCharacter()
     {
         if (_selectedCampaignId == 1)
@@ -1133,15 +1205,14 @@
         using var db = DbContext;
 
         db.Characters.Add(newCharacter);
-        
+
         if (!_dryRun)
             db.SaveChanges();
-        
+
         foreach (var property in newCharacter.GetType().GetProperties())
         {
             Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
         }
-    
     }
-    
+
 }
