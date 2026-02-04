@@ -1,6 +1,9 @@
 ﻿@page "/CharacterTemplate"
+
 @using DnD35EDMTools.Data
 @using DnD35EDMTools.Helpers
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
 
 <head>
     <meta charset="UTF-8"/>
@@ -11,449 +14,569 @@
 
 <div class="dnd-container">
 <div class="dnd-main-content">
-@if (model != null)
-{
-    <h3>@(model.Name) </h3>
-    <div class="dnd-character-sheet">
-    <div class="dnd-cs-top-section">
-    <div class="dnd-cs-top__left">
-    <div class="attributes-row">
-        <div class="attributes-row-header">Attributes</div>
-        <div class="attributes-row-content">
-            <div class="dnd-cs-image-container">
-                <img src="images/Portrait_Blank.jpg" alt="Character Portrait">
+<div>
+    <select class="cc-select" id="character-id" name="character" @bind="SelectedCharacterId">
+        @foreach (var id in _characters)
+        {
+            <option value="@id.Id" titme="@id.Name">@id.Name</option>
+        }
+    </select>
+    <button
+        @onclick="() => LoadCharacterAsync(SelectedCharacterId)">
+        Load
+    </button>
+</div>
+
+<h3>@(_characterName) </h3>
+<div class="dnd-character-sheet">
+<div class="dnd-cs-top-section">
+<div class="dnd-cs-top__left">
+<div class="attributes-row">
+    <div class="attributes-row-header">Attributes</div>
+    <div class="attributes-row-content">
+        <div class="dnd-cs-image-container">
+            <img src="images/Portrait_Blank.jpg" alt="Character Portrait">
+        </div>
+        <div class="attributes-content">
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Class</div>
+                <div class="attribute-list__content"> @_characterClass</div>
             </div>
-            <div class="attributes-content">
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Class</div>
-                    <div class="attribute-list__content"> @model.Class</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Race</div>
-                    <div class="attribute-list__content"> @model.Race</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Experience</div>
-                    <div class="attribute-list__content"> @model.Experience</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Hitpoints</div>
-                    <div class="attribute-list__content"> @model.HitPoints</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Alignment</div>
-                    @* <div class="attribute-list__content"> @model.Alignment</div> *@
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Deity</div>
-                    <div class="attribute-list__content"> @model.Deity</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Age</div>
-                    <div class="attribute-list__content"> @model.Age</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Gender</div>
-                    <div class="attribute-list__content"> @model.Gender</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Eyes</div>
-                    <div class="attribute-list__content"> @model.Eyes</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Hair</div>
-                    <div class="attribute-list__content"> @model.Hair</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Skin</div>
-                    <div class="attribute-list__content"> @model.Skin</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Weight</div>
-                    <div class="attribute-list__content"> @model.Weight</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Height</div>
-                    @* <div class="attribute-list__content"> @model.Height</div> *@
-                    <div class="attribute-list__content"> @ConversionHelper.ConvertInchesToFeetAndInches(model.Height)</div>
-                </div>
-                <div class="attribute-list">
-                    <div class="attribute-list-row-header">Player</div>
-                    <div class="attribute-list__content"> @model.PlayerName</div>
-                </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Race</div>
+                <div class="attribute-list__content"> @_characterRace</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Experience</div>
+                <div class="attribute-list__content"> @_characterExperience</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Hitpoints</div>
+                <div class="attribute-list__content"> @_characterHitPoints</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Alignment</div>
+                <div class="attribute-list__content"> @_characterAlignment</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Deity</div>
+                <div class="attribute-list__content"> @_characterDeity</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Age</div>
+                <div class="attribute-list__content"> @_characterAge</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Gender</div>
+                <div class="attribute-list__content"> @_characterGender</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Eyes</div>
+                <div class="attribute-list__content"> @_characterEyes</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Hair</div>
+                <div class="attribute-list__content"> @_characterHair</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Skin</div>
+                <div class="attribute-list__content"> @_characterSkin</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Weight</div>
+                <div class="attribute-list__content"> @_characterWeight</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Height</div>
+                <div class="attribute-list__content"> @_characterHeight</div>
+            </div>
+            <div class="attribute-list">
+                <div class="attribute-list-row-header">Player</div>
+                <div class="attribute-list__content"> @_characterPlayerName</div>
             </div>
         </div>
     </div>
-    <div class="languages-row">
-        <div class="languages-row-header">Languages</div>
+</div>
+<div class="languages-row">
+    <div class="languages-row-header">Languages</div>
+    @for (int row = 0; row < 7; row++)
+    {
         <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
+            @for (int col = 0; col < 3; col++)
+            {
+                int index = row * 3 + col;
+                <div class="languages-list-row-content">@_characterLanguages[index]</div>
+            }
         </div>
-        <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-        </div>
-        <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-        </div>
-        <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-        </div>
-        <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-        </div>
-        <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-        </div>
-        <div class="languages-list">
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-            <div class="languages-list-row-content"></div>
-        </div>
+    }
+</div>
+<div class="wealth-row">
+    <div class="wealth-row-header">Wealth</div>
+    <div class="wealth-list">
+        <div class="wealth-list-row-header">PP</div>
+        <div class="wealth-list-row-header">GP</div>
+        <div class="wealth-list-row-header">SP</div>
+        <div class="wealth-list-row-header">CP</div>
+        <div class="wealth-list-row-header">Bank</div>
+        <div class="wealth-list-row-header">Interest</div>
     </div>
-    <div class="wealth-row">
-        <div class="wealth-row-header">Wealth</div>
-        <div class="wealth-list">
-            <div class="wealth-list-row-header">PP</div>
-            <div class="wealth-list-row-header">GP</div>
-            <div class="wealth-list-row-header">SP</div>
-            <div class="wealth-list-row-header">CP</div>
-            <div class="wealth-list-row-header">Bank</div>
-            <div class="wealth-list-row-header">Interest</div>
-        </div>
-        <div class="wealth-list">
-            <div class="wealth-list-row-content"></div>
-            <div class="wealth-list-row-content"></div>
-            <div class="wealth-list-row-content"></div>
-            <div class="wealth-list-row-content"></div>
-            <div class="wealth-list-row-content"></div>
-            <div class="wealth-list-row-content"></div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-header">Weight Carried</div>
-            <div class="load-speed-list-row-header">Speed</div>
-            <div class="load-speed-list-row-header">Initiative</div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-header">Light Load</div>
-            <div class="load-speed-list-row-header">Lift Over Head</div>
-            <div class="load-speed-list-row-header">Arcane Spell Failure</div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-header">Medium Load</div>
-            <div class="load-speed-list-row-header">Lift off Ground</div>
-            <div class="load-speed-list-row-header">Base Attack Bonus</div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-header">Heavy Load</div>
-            <div class="load-speed-list-row-header">Push or Drag</div>
-            <div class="load-speed-list-row-header">Spell Resistance</div>
-        </div>
-        <div class="load-speed-list">
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-            <div class="load-speed-list-row-content"></div>
-        </div>
+    <div class="wealth-list">
+        <div class="wealth-list-row-content">@_characterPlatinum</div>
+        <div class="wealth-list-row-content">@_characterGold</div>
+        <div class="wealth-list-row-content">@_characterSilver</div>
+        <div class="wealth-list-row-content">@_characterCopper</div>
+        <div class="wealth-list-row-content"></div>
+        <div class="wealth-list-row-content"></div>
     </div>
-    <div class="abilities-row">
-        <div class="abilities-list">
-            <div class="abilities-row-header">Abilities</div>
-            <div class="abilities-row-header">Score</div>
-            <div class="abilities-row-header">Modifier</div>
-            <div class="abilities-row-header">Saves</div>
-            <div class="abilities-row-header">Total</div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">STR</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Fortitude</div>
-            <div class="abilities-list-row-content"></div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">DEX</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Reflex</div>
-            <div class="abilities-list-row-content"></div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">CON</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Will</div>
-            <div class="abilities-list-row-content"></div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">INT</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Other Stats</div>
-            <div class="abilities-list-row-header">Total</div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">WIS</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Avatar Points</div>
-            <div class="abilities-list-row-content"></div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">CHA</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Essentia Points</div>
-            <div class="abilities-list-row-content"></div>
-        </div>
-        <div class="abilities-list">
-            <div class="abilities-list-row-header">LCK</div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-content"></div>
-            <div class="abilities-list-row-header">Reputation</div>
-            <div class="abilities-list-row-content"></div>
-        </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-header">Weight Carried</div>
+        <div class="load-speed-list-row-header">Speed</div>
+        <div class="load-speed-list-row-header">Initiative</div>
     </div>
-    <div class="dr-immunities-row">
-        <div class="dr-immunities-list-row-header">Damage Reduction</div>
-        <div class="dr-immunities-list-row-content"></div>
-        <div class="dr-immunities-list-row-header">Immunities</div>
-        <div class="dr-immunities-list-row-content"></div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content"></div>
     </div>
-    <div class="worn-armour-row">
-        <div class="worn-armour-list">
-            <div class="worn-armour-row-header">Worn Armour</div>
-            <div class="worn-armour-row-header">AC</div>
-            <div class="worn-armour-row-header">Check</div>
-            <div class="worn-armour-row-header">Type</div>
-            <div class="worn-armour-row-header">Max Dex</div>
-        </div>
-        <div class="worn-armour-list">
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-        </div>
-        <div class="worn-armour-list">
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-            <div class="worn-armour-list-row-content"></div>
-        </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-header">Light Load</div>
+        <div class="load-speed-list-row-header">Lift Over Head</div>
+        <div class="load-speed-list-row-header">Arcane Spell Failure</div>
     </div>
-    <div class="armour-row">
-        <div class="armour-list">
-            <div class="armour-row-header">Armour</div>
-            <div class="armour-row-header">Total</div>
-            <div class="armour-row-header"></div>
-            <div class="armour-row-header">Base</div>
-            <div class="armour-row-header">AC</div>
-            <div class="armour-row-header">Ability</div>
-            <div class="armour-row-header">Nat</div>
-            <div class="armour-row-header">Other</div>
-        </div>
-        <div class="armour-list">
-            <div class="armour-row-header">Armour Class</div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-row-header">=</div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-        </div>
-        <div class="armour-list">
-            <div class="armour-row-header">Flat Footed</div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-row-header">=</div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-        </div>
-        <div class="armour-list">
-            <div class="armour-row-header">Touch</div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-row-header">=</div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-            <div class="armour-list-row-content"></div>
-        </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-content">@_characterLightLoad</div>
+        <div class="load-speed-list-row-content">@_characterLiftOverHead</div>
+        <div class="load-speed-list-row-content"></div>
+    </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-header">Medium Load</div>
+        <div class="load-speed-list-row-header">Lift off Ground</div>
+        <div class="load-speed-list-row-header">Base Attack Bonus</div>
+    </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-content">@_characterMediumLoad</div>
+        <div class="load-speed-list-row-content">@_characterLiftOffGround</div>
+        <div class="load-speed-list-row-content"></div>
+    </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-header">Heavy Load</div>
+        <div class="load-speed-list-row-header">Push or Drag</div>
+        <div class="load-speed-list-row-header">Spell Resistance</div>
+    </div>
+    <div class="load-speed-list">
+        <div class="load-speed-list-row-content">@_characterHeavyLoad</div>
+        <div class="load-speed-list-row-content">@_characterPushOrDrag</div>
+        <div class="load-speed-list-row-content"></div>
+    </div>
+</div>
+<div class="abilities-row">
+    <div class="abilities-list">
+        <div class="abilities-row-header">Abilities</div>
+        <div class="abilities-row-header">Score</div>
+        <div class="abilities-row-header">Modifier</div>
+        <div class="abilities-row-header">Saves</div>
+        <div class="abilities-row-header">Total</div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">STR</div>
+        <div class="abilities-list-row-content">@_characterStrength</div>
+        <div class="abilities-list-row-content">@_characterStrengthMod</div>
+        <div class="abilities-list-row-header">Fortitude</div>
+        <div class="abilities-list-row-content">@_characterFortSave</div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">DEX</div>
+        <div class="abilities-list-row-content">@_characterDexterity</div>
+        <div class="abilities-list-row-content">@_characterDexterityMod</div>
+        <div class="abilities-list-row-header">Reflex</div>
+        <div class="abilities-list-row-content">@_characterRefSave</div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">CON</div>
+        <div class="abilities-list-row-content">@_characterConstitution</div>
+        <div class="abilities-list-row-content">@_characterConstitutionMod</div>
+        <div class="abilities-list-row-header">Will</div>
+        <div class="abilities-list-row-content">@_characterWillSave</div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">INT</div>
+        <div class="abilities-list-row-content">@_characterIntelligence</div>
+        <div class="abilities-list-row-content">@_characterIntelligenceMod</div>
+        <div class="abilities-list-row-header">Other Stats</div>
+        <div class="abilities-list-row-header">Total</div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">WIS</div>
+        <div class="abilities-list-row-content">@_characterWisdom</div>
+        <div class="abilities-list-row-content">@_characterWisdomMod</div>
+        <div class="abilities-list-row-header">Avatar Points</div>
+        <div class="abilities-list-row-content"></div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">CHA</div>
+        <div class="abilities-list-row-content">@_characterCharisma</div>
+        <div class="abilities-list-row-content">@_characterCharismaMod</div>
+        <div class="abilities-list-row-header">Essentia Points</div>
+        <div class="abilities-list-row-content"></div>
+    </div>
+    <div class="abilities-list">
+        <div class="abilities-list-row-header">LCK</div>
+        <div class="abilities-list-row-content">@_characterLuck</div>
+        <div class="abilities-list-row-content">@_characterLuckMod</div>
+        <div class="abilities-list-row-header">Reputation</div>
+        <div class="abilities-list-row-content"></div>
+    </div>
+</div>
+<div class="dr-immunities-row">
+    <div class="dr-immunities-list-row-header">Damage Reduction</div>
+    <div class="dr-immunities-list-row-content"></div>
+    <div class="dr-immunities-list-row-header">Immunities</div>
+    <div class="dr-immunities-list-row-content"></div>
+</div>
+<div class="worn-armour-row">
+    <div class="worn-armour-list">
+        <div class="worn-armour-row-header">Worn Armour</div>
+        <div class="worn-armour-row-header">AC</div>
+        <div class="worn-armour-row-header">Check</div>
+        <div class="worn-armour-row-header">Type</div>
+        <div class="worn-armour-row-header">Max Dex</div>
+    </div>
+    <div class="worn-armour-list">
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+    </div>
+    <div class="worn-armour-list">
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content"></div>
+    </div>
+</div>
+<div class="armour-row">
+    <div class="armour-list">
+        <div class="armour-row-header">Armour</div>
+        <div class="armour-row-header">Total</div>
+        <div class="armour-row-header"></div>
+        <div class="armour-row-header">Base</div>
+        <div class="armour-row-header">AC</div>
+        <div class="armour-row-header">Ability</div>
+        <div class="armour-row-header">Nat</div>
+        <div class="armour-row-header">Other</div>
+    </div>
+    <div class="armour-list">
+        <div class="armour-row-header">Armour Class</div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-row-header">=</div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+    </div>
+    <div class="armour-list">
+        <div class="armour-row-header">Flat Footed</div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-row-header">=</div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+    </div>
+    <div class="armour-list">
+        <div class="armour-row-header">Touch</div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-row-header">=</div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content"></div>
+    </div>
+</div>
+<div class="weapon-row">
+    <div class="weapon-list-left">
+        <div class="weapon-row-header">Weapon</div>
+        <div class="weapon-row-header">Full Attack</div>
+        <div class="weapon-row-header">Damage</div>
+    </div>
+    <div class="weapon-list-left">
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+    </div>
+    <div class="weapon-list-left">
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+    </div>
+    <div class="weapon-list-left">
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+    </div>
+    <div class="weapon-list-left">
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+    </div>
+    <div class="weapon-list-left">
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+    </div>
+    <div class="weapon-list-left">
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+        <div class="weapon-list-row-content"></div>
+    </div>
+</div>
+</div>
+<div class="dnd-cs-top__right">
+    <div class="skills-row">
+        <div class="skills-row-header">Skills</div>
+        <div class="skills-row-header">Ranks</div>
+        <div class="skills-row-header">Modifier</div>
+        @for (int i = 0; i < 52; i++)
+        {
+            <Skill Row="@i"></Skill>
+        }
+        @* @foreach (var skill in Skills) *@
+        @* { *@
+        @*     <div class="skill-item">@skill</div> *@
+        @* } *@
     </div>
     <div class="weapon-row">
-        <div class="weapon-list-left">
-            <div class="weapon-row-header">Weapon</div>
-            <div class="weapon-row-header">Full Attack</div>
-            <div class="weapon-row-header">Damage</div>
+        <div class="weapon-list-right">
+            <div class="weapon-row-header">Critical</div>
+            <div class="weapon-row-header">Type</div>
+            <div class="weapon-row-header">Range</div>
+            <div class="weapon-row-header">Notes</div>
         </div>
-        <div class="weapon-list-left">
+        <div class="weapon-list-right">
             <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-left">
             <div class="weapon-list-row-content"></div>
             <div class="weapon-list-row-content"></div>
             <div class="weapon-list-row-content"></div>
         </div>
-        <div class="weapon-list-left">
+        <div class="weapon-list-right">
             <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-left">
             <div class="weapon-list-row-content"></div>
             <div class="weapon-list-row-content"></div>
             <div class="weapon-list-row-content"></div>
         </div>
-        <div class="weapon-list-left">
+        <div class="weapon-list-right">
             <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-left">
             <div class="weapon-list-row-content"></div>
             <div class="weapon-list-row-content"></div>
             <div class="weapon-list-row-content"></div>
         </div>
-    </div>
-    </div>
-    <div class="dnd-cs-top__right">
-        <div class="skills-row">
-            <div class="skills-row-header">Skills</div>
-            <div class="skills-row-header">Ranks</div>
-            <div class="skills-row-header">Modifier</div>
-            @for (int i = 0; i < 52; i++)
-            {
-                <Skill Row="@i"></Skill>
-            }
-            @* @foreach (var skill in Skills) *@
-            @* { *@
-            @*     <div class="skill-item">@skill</div> *@
-            @* } *@
+        <div class="weapon-list-right">
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
         </div>
-        <div class="weapon-row">
-            <div class="weapon-list-right">
-                <div class="weapon-row-header">Critical</div>
-                <div class="weapon-row-header">Type</div>
-                <div class="weapon-row-header">Range</div>
-                <div class="weapon-row-header">Notes</div>
-            </div>
-            <div class="weapon-list-right">
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-            </div>
-            <div class="weapon-list-right">
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-            </div>
-            <div class="weapon-list-right">
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-            </div>
-            <div class="weapon-list-right">
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-            </div>
-            <div class="weapon-list-right">
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-            </div>
-            <div class="weapon-list-right">
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-                <div class="weapon-list-row-content"></div>
-            </div>
+        <div class="weapon-list-right">
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+        </div>
+        <div class="weapon-list-right">
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
+            <div class="weapon-list-row-content"></div>
         </div>
     </div>
-    </div>
-    <div class="bottom-section"></div>
-    </div>
-}
-else
-{
-    <div>Loading...</div>
-}
+</div>
+</div>
+<div class="bottom-section"></div>
+</div>
 </div>
 </div>
 
 @code {
-    CharacterData model;
-    RaceData raceModel;
 
-    [Parameter] public int Row { get; set; } = 0;
+    [Parameter] public int Row { get; set; }
+
+    private List<OrderData> _orders = [];
+    private List<MoralityData> _moralities = [];
+    private List<CharacterData> _characters = [];
+
+    private string _characterName = string.Empty;
+    private string _characterClass = string.Empty;
+    private string _characterRace = string.Empty;
+    private string _characterExperience = string.Empty;
+    private int? _characterHitPoints;
+    private string _characterAlignment = string.Empty;
+    private string _characterDeity = string.Empty;
+
+    private int? _characterAge;
+    private string _characterGender = string.Empty;
+    private string _characterEyes = string.Empty;
+    private string _characterHair = string.Empty;
+    private string _characterSkin = string.Empty;
+    private string _characterWeight = string.Empty;
+    private string _characterHeight = string.Empty;
+    private string _characterPlayerName = string.Empty;
+
+    private string[] _characterLanguages = new string[21];
+
+    private double? _characterLightLoad;
+    private double? _characterMediumLoad;
+    private double? _characterHeavyLoad;
+    private double? _characterLiftOverHead;
+    private double? _characterLiftOffGround;
+    private double? _characterPushOrDrag;
+
+    private int? _characterStrength;
+    private int? _characterStrengthMod;
+    private int? _characterDexterity;
+    private int? _characterDexterityMod;
+    private int? _characterConstitution;
+    private int? _characterConstitutionMod;
+    private int? _characterIntelligence;
+    private int? _characterIntelligenceMod;
+    private int? _characterWisdom;
+    private int? _characterWisdomMod;
+    private int? _characterCharisma;
+    private int? _characterCharismaMod;
+    private int? _characterLuck;
+    private int? _characterLuckMod;
+
+    private decimal? _characterFortSave;
+    private decimal? _characterRefSave;
+    private decimal? _characterWillSave;
+
+    private int? _characterPlatinum;
+    private int? _characterGold;
+    private int? _characterSilver;
+    private int? _characterCopper;
+
 //[Parameter] public List<string> Skills { get; set; } = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
+        await using var db = DbContext;
+        _characters = await db.Characters
+            .ToListAsync();
+
+        _orders = await db.Orders.ToListAsync();
+        _moralities = await db.Moralities.ToListAsync();
+
         await base.OnInitializedAsync(
-            );
-        raceModel = new RaceData
+        );
+    }
+
+    private int SelectedCharacterId { get; set; }
+
+    private async Task LoadCharacterAsync(int characterId)
+    {
+        await using var db = DbContext;
+        var character = await db.Characters
+            .AsNoTracking()
+            .FirstOrDefaultAsync(c => c.Id == characterId);
+
+        if (character is null)
+            return;
+
+        var colorIds = new[] { character.Eyes, character.Hair, character.Skin };
+        var colors = await db.Colours
+            .Where(c => colorIds.Contains(c.Id))
+            .ToDictionaryAsync(c => c.Id, c => c.Colour);
+
+        _characterEyes = colors.GetValueOrDefault(character.Eyes) ?? "";
+        _characterHair = colors.GetValueOrDefault(character.Hair) ?? "";
+        _characterSkin = colors.GetValueOrDefault(character.Skin) ?? "";
+
+        var classTask = db.Classes.Where(c => c.Id == character.Class).Select(c => c.Name).FirstOrDefaultAsync();
+        var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
+        var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
+        var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
+        var languagesTask = db.Languages.Where(l => character.Languages.Contains(l.Id)).Select(l => l.Name).ToListAsync();
+
+        await Task.WhenAll(classTask, raceTask, deityTask, genderTask, languagesTask);
+
+        _characterClass = await classTask ?? "";
+        _characterRace = await raceTask ?? "";
+        _characterDeity = await deityTask ?? "";
+        _characterGender = await genderTask ?? "";
+        var characterLanguageNames = await languagesTask;
+
+        for (var i = 0; i < 21; i++)
         {
-            Race = "Half-Elf",
-            Size = "Medium",
-            BaseSpeed = 30
-        };
-        
-        model = new CharacterData
+            _characterLanguages[i] = i < characterLanguageNames.Count
+                ? characterLanguageNames[i]
+                : string.Empty;
+        }
+
+        _characterName = character.Name;
+        _characterExperience = $"{character.Experience}/";
+        _characterHitPoints = character.HitPoints;
+        _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
+        _characterAge = character.Age;
+        _characterWeight = $"{character.Weight} lbs.";
+        _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
+        _characterPlayerName = character.PlayerName ?? string.Empty;
+
+        _characterLightLoad = character.LightLoad;
+        _characterMediumLoad = character.MediumLoad;
+        _characterHeavyLoad = character.HeavyLoad;
+        _characterLiftOverHead = character.LiftOverHead;
+        _characterLiftOffGround = character.LiftOffGround;
+        _characterPushOrDrag = character.PushOrDrag;
+
+        _characterStrength = character.Strength;
+        _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength);
+        _characterDexterity = character.Dexterity;
+        _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity);
+        _characterConstitution = character.Constitution;
+        _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution);
+        _characterIntelligence = character.Intelligence;
+        _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence);
+        _characterWisdom = character.Wisdom;
+        _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom);
+        _characterCharisma = character.Charisma;
+        _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma);
+
+        CalculateLuck();
+
+        _characterFortSave = character.BaseFortitudeSave;
+        _characterRefSave = character.BaseReflexSave;
+        _characterWillSave = character.BaseWillSave;
+
+        _characterPlatinum = character.PlatinumPieces;
+        _characterGold = character.GoldPieces;
+        _characterSilver = character.SilverPieces;
+        _characterCopper = character.CopperPieces;
+
+        StateHasChanged();
+    }
+
+    private void CalculateLuck()
+    {
+        if (_characterStrength.HasValue &&
+            _characterDexterity.HasValue &&
+            _characterConstitution.HasValue &&
+            _characterIntelligence.HasValue &&
+            _characterWisdom.HasValue &&
+            _characterCharisma.HasValue)
         {
-            Name = "New Character Template",
-            // Class = 2,
-            // Race = raceModel.Race,
-            Experience = 0,
-            HitPoints = 12,
-            // Alignment = "Neutral Good",
-            Deity = 0,
-            Age = 25,
-            // Gender = "Female",
-            // Eyes = "Gold",
-            // Hair = "White",
-            // Skin = "Pale White",
-            Weight = 32,
-            Height = 66,
-            PlayerName = ""
-        };
+            _characterLuck = (_characterStrength +
+                              _characterDexterity +
+                              _characterConstitution +
+                              _characterIntelligence +
+                              _characterWisdom +
+                              _characterCharisma) / 6;
+
+            _characterLuckMod = ConversionHelper.ConvertStatToBonus(_characterLuck.Value);
+        }
     }
 
 }
