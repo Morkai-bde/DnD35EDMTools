@@ -1165,7 +1165,7 @@
             return;
         }
 
-        if (!string.IsNullOrEmpty(_characterHeight))
+        if (string.IsNullOrEmpty(_characterHeight))
         {
             Console.WriteLine("Height is required");
             return;
