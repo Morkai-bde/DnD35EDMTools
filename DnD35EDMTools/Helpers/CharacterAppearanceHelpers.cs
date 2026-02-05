@@ -2,12 +2,12 @@
 
 public static class CharacterAppearanceHelpers
 {
-     public static string RandomizeAge(int startingAge, string ageTypeDice)
+     public static int RandomizeAge(int startingAge, string ageTypeDice)
     {
 
         var result = startingAge + DiceRoller.RollDice(ageTypeDice);
 
-        return result.ToString();
+        return result;
     }
 
     public static string RandomizeHeight(int baseHeight, string randomHeightDice)

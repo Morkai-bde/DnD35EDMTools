@@ -329,7 +329,7 @@
                         <label for="age">Age:</label>
                     </div>
                     <div>
-                        <input class="cc-input" type="text" id="age" @bind="_characterAge"/>
+                        <input class="cc-input" type="number" id="age" min="0" @bind="_characterAge"/>
                     </div>
                     <div>
                         <button class="cc-randomize-button" @onclick="RollRandomAge">Random</button>
@@ -681,7 +681,7 @@
     }
 
     private string _characterName = "";
-    private string _characterAge = "";
+    private int? _characterAge;
     private string _characterHeight = "";
     private int _characterWeight;
     private int _selectedRaceId;
@@ -1159,6 +1159,18 @@
             return;
         }
 
+        if (!_characterAge.HasValue)
+        {
+            Console.WriteLine("Age is required");
+            return;
+        }
+
+        if (!string.IsNullOrEmpty(_characterHeight))
+        {
+            Console.WriteLine("Height is required");
+            return;
+        }
+        
         GetCarryingCapacityForStrengthAsync().GetAwaiter().GetResult();
 
         var newCharacter = new CharacterData
@@ -1182,7 +1194,7 @@
             Hair = _characterHair,
             Eyes = _characterEyes,
             Skin = _characterSkin,
-            Age = Int32.Parse(_characterAge),
+            Age = _characterAge.Value,
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
             Languages = _selectedLanguageIds,
