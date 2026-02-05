@@ -226,7 +226,7 @@
                         }
                     }
 
-                    @if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowLuck)
+                    @if (SelectedCampaign?.AllowLuck == true)
                     {
                         <div>
                             <label for="luck">Luck:</label>
@@ -448,8 +448,8 @@
             }
 
             var selectedAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities,
-                _orders.Single(m => m.Id == _selectedOrderId).Midpoint,
-                _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint);
+                SelectedOrder.Midpoint,
+                SelectedMorality.Midpoint);
 
             return _deities.Where(d => d.Alignment == selectedAlignment || d.Alignment == "Any").ToList();
         }
@@ -465,9 +465,9 @@
                 return filteredLanguages;
             }
 
-            var selectedCampaign = _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId);
-            var selectedRace = _races.Single(r => r.Id == SelectedRaceId).Race;
-            var selectedClass = _classes.Single(r => r.Id == SelectedClassId).Name;
+            var selectedCampaign = SelectedCampaign;
+            var selectedRace = SelectedRace.Race;
+            var selectedClass = SelectedClass.Name;
             if (selectedCampaign != null && selectedRace != "Select a Race" && selectedClass != "Select a Class")
             {
                 var allowedSourceBooks = selectedCampaign.AllowedSources;
@@ -533,7 +533,7 @@
         set
         {
             _selectedRaceId = value;
-            _raceStartingAge = _races.Single(r => r.Id == SelectedRaceId).AdulthoodAge;
+            _raceStartingAge = SelectedRace.AdulthoodAge;
             if (SelectedRaceId > 1 && _selectedClassId > 1)
             {
                 GetAgeDiceType();
@@ -542,11 +542,10 @@
             PopulateStartingEquipmentMethods();
             if (_selectedRaceId != 0)
             {
-                var selectedRace = _races.Single(r => r.Id == SelectedRaceId);
-                _raceHairColours = _races.Single(r => r.Id == SelectedRaceId).HairColours.ToList();
-                _raceEyeColours = _races.Single(r => r.Id == SelectedRaceId).EyeColours.ToList();
-                _raceSkinColours = _races.Single(r => r.Id == SelectedRaceId).SkinColours.ToList();
-                _raceSize = selectedRace.Size;
+                _raceHairColours = SelectedRace.HairColours.ToList();
+                _raceEyeColours = SelectedRace.EyeColours.ToList();
+                _raceSkinColours = SelectedRace.SkinColours.ToList();
+                _raceSize = SelectedRace.Size;
             }
             else
             {
@@ -579,6 +578,31 @@
         };
         return colours.FirstOrDefault(c => c.Id == colourId) ?? defaultColour;
     }
+
+    #region Cached Selected Objects
+
+    private CampaignData? SelectedCampaign =>
+        _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+
+    private RaceData? SelectedRace =>
+        SelectedRaceId > 0 ? _races.SingleOrDefault(r => r.Id == SelectedRaceId) : null;
+
+    private ClassData? SelectedClass =>
+        SelectedClassId > 0 ? _classes.SingleOrDefault(c => c.Id == SelectedClassId) : null;
+
+    private GenderData? SelectedGender =>
+        SelectedGenderId > 0 ? _genders.SingleOrDefault(g => g.Id == SelectedGenderId) : null;
+
+    private DeityData? SelectedDeity =>
+        _selectedDeityId > 0 ? _deities.SingleOrDefault(d => d.Id == _selectedDeityId) : null;
+
+    private OrderData? SelectedOrder =>
+        _selectedOrderId > 0 ? _orders.SingleOrDefault(o => o.Id == _selectedOrderId) : null;
+
+    private MoralityData? SelectedMorality =>
+        _selectedMoralityId > 0 ? _moralities.SingleOrDefault(m => m.Id == _selectedMoralityId) : null;
+
+    #endregion
 
     private void RollRandomAge()
     {
@@ -635,21 +659,17 @@
         }
     }
 
-    private string SelectedCampaignStatRollingMethod
-    {
-        get { return _campaigns.Single(c => c.Id == _selectedCampaignId).StatRollingMethod; }
-    }
+    private string SelectedCampaignStatRollingMethod =>
+        SelectedCampaign?.StatRollingMethod ?? "";
 
-    private string SelectedClassStartingGold
-    {
-        get { return _classes.Single(c => c.Id == SelectedClassId).StartingGold; }
-    }
+    private string SelectedClassStartingGold =>
+        SelectedClass?.StartingGold ?? "";
 
     private void PopulateStartingEquipmentMethods()
     {
         _startingEquipmentMethods.Clear();
 
-        if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowWealthAverage)
+        if (SelectedCampaign?.AllowWealthAverage == true)
         {
             _startingEquipmentMethods.Add(new StartingEquipment
             {
@@ -659,7 +679,7 @@
             });
         }
 
-        if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowWealthRandom)
+        if (SelectedCampaign?.AllowWealthRandom == true)
         {
             _startingEquipmentMethods.Add(new StartingEquipment
             {
@@ -669,7 +689,7 @@
             });
         }
 
-        if (_campaigns.Single(c => c.Id == _selectedCampaignId).AllowStartingEquipment)
+        if (SelectedCampaign?.AllowStartingEquipment == true)
         {
             _startingEquipmentMethods.Add(new StartingEquipment
             {
@@ -800,7 +820,7 @@
     {
         if (SelectedRaceId == 0)
             return new List<GenderData>();
-        return _races.Single(r => r.Id == SelectedRaceId).Genders.ToList();
+        return SelectedRace?.Genders.ToList() ?? new List<GenderData>();
     }
 
     private void SetStatsToZero()
@@ -924,7 +944,7 @@
     private void CalculatedBaseFortitude()
     {
         if (SelectedClassId <= 1) return;
-        var fortitudePerLevel = _classes.Single(c => c.Id == SelectedClassId).FortitudeSavePerLevel;
+        var fortitudePerLevel = SelectedClass.FortitudeSavePerLevel;
         var baseFortitude = 0.0m;
         if (fortitudePerLevel == 0.5m)
         {
@@ -940,7 +960,7 @@
     private void CalculatedBaseReflex()
     {
         if (SelectedClassId <= 1) return;
-        var reflexPerLevel = _classes.Single(c => c.Id == SelectedClassId).ReflexSavePerLevel;
+        var reflexPerLevel = SelectedClass.ReflexSavePerLevel;
         var baseReflex = 0.0m;
         if (reflexPerLevel == 0.5m)
         {
@@ -956,7 +976,7 @@
     private void CalculatedBaseWill()
     {
         if (SelectedClassId <= 1) return;
-        var willPerLevel = _classes.Single(c => c.Id == SelectedClassId).WillSavePerLevel;
+        var willPerLevel = SelectedClass.WillSavePerLevel;
         var baseWill = 0.0m;
         if (willPerLevel == 0.5m)
         {
@@ -1007,7 +1027,7 @@
             if (_selectedClassId != value)
             {
                 _selectedClassId = value;
-                _classAgeCategory = _classes.Single(c => c.Id == SelectedClassId).AgeCategory;
+                _classAgeCategory = SelectedClass.AgeCategory;
                 if (SelectedRaceId > 1 && _selectedClassId > 1)
                 {
                     GetAgeDiceType();
@@ -1028,36 +1048,36 @@
 
     private void GetAgeDiceType()
     {
-        string ageTypeDice = "";
-
-        if (_classAgeCategory == "Simple") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).SimpleDice;
-        else if (_classAgeCategory == "Moderate") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).ModerateDice;
-        else if (_classAgeCategory == "Complex") ageTypeDice = _races.Single(r => r.Id == SelectedRaceId).ComplexDice;
-
-        _ageTypeDice = ageTypeDice;
+        _ageTypeDice = _classAgeCategory switch
+        {
+            "Simple" => SelectedRace?.SimpleDice ?? "0d0",
+            "Moderate" => SelectedRace?.ModerateDice ?? "0d0",
+            "Complex" => SelectedRace?.ComplexDice ?? "0d0",
+            _ => "0d0"
+        };
     }
 
     private void GetRaceHeightAndWeight()
     {
-        _raceRandomHeight = _races.Single(r => r.Id == _selectedRaceId).HeightDice;
-        _raceRandomWeight = _races.Single(r => r.Id == _selectedRaceId).WeightDice;
+        _raceRandomHeight = SelectedRace.HeightDice;
+        _raceRandomWeight = SelectedRace.WeightDice;
 
-        var gender = _genders.Single(g => g.Id == SelectedGenderId).Gender;
+        var gender = SelectedGender?.Gender;
 
         if (gender == "Male")
         {
-            _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).MaleHeight;
-            _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).MaleWeight;
+            _raceBaseHeight = SelectedRace.MaleHeight;
+            _raceBaseWeight = SelectedRace.MaleWeight;
         }
         else if (gender == "Female")
         {
-            _raceBaseHeight = _races.Single(r => r.Id == _selectedRaceId).FemaleHeight;
-            _raceBaseWeight = _races.Single(r => r.Id == _selectedRaceId).FemaleWeight;
+            _raceBaseHeight = SelectedRace.FemaleHeight;
+            _raceBaseWeight = SelectedRace.FemaleWeight;
         }
         else
         {
-            _raceBaseHeight = (_races.Single(r => r.Id == SelectedRaceId).MaleHeight + _races.Single(r => r.Id == _selectedRaceId).FemaleHeight) / 2;
-            _raceBaseWeight = (_races.Single(r => r.Id == SelectedRaceId).MaleWeight + _races.Single(r => r.Id == _selectedRaceId).FemaleWeight) / 2;
+            _raceBaseHeight = (SelectedRace.MaleHeight + SelectedRace.FemaleHeight) / 2;
+            _raceBaseWeight = (SelectedRace.MaleWeight + SelectedRace.FemaleWeight) / 2;
         }
     }
 
@@ -1170,15 +1190,15 @@
             Console.WriteLine("Height is required");
             return;
         }
-        
+
         await GetCarryingCapacityForStrengthAsync();
 
         var newCharacter = new CharacterData
         {
             Name = _characterName,
             CampaignId = _selectedCampaignId,
-            Class = _classes.Single(c => c.Id == SelectedClassId).Id,
-            Race = _races.Single(r => r.Id == SelectedRaceId).Id,
+            Class = SelectedClass.Id,
+            Race = SelectedRace.Id,
             Experience = 0,
             Strength = _characterStrength,
             Dexterity = CharacterDexterity,
@@ -1186,10 +1206,10 @@
             Wisdom = CharacterWisdom,
             Intelligence = _characterIntelligence,
             Charisma = _characterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(_classes.Single(r => r.Id == SelectedClassId).HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
-            Deity = _deities.Single(d => d.Id == _selectedDeityId).Id,
-            Order = _orders.Single(o => o.Id == _selectedOrderId).Midpoint,
-            Morality = _moralities.Single(m => m.Id == _selectedMoralityId).Midpoint,
+            HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
+            Deity = SelectedDeity.Id,
+            Order = SelectedOrder.Midpoint,
+            Morality = SelectedMorality.Midpoint,
             Gender = SelectedGenderId,
             Hair = _characterHair,
             Eyes = _characterEyes,
