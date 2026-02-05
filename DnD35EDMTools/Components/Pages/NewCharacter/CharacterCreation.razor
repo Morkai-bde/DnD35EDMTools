@@ -447,6 +447,11 @@
                 return _deities;
             }
 
+            if (SelectedOrder == null || SelectedMorality == null)
+            {
+                return _deities;
+            }
+
             var selectedAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities,
                 SelectedOrder.Midpoint,
                 SelectedMorality.Midpoint);
@@ -466,9 +471,15 @@
             }
 
             var selectedCampaign = SelectedCampaign;
+
+            if (selectedCampaign is null || SelectedRace is null || SelectedClass is null)
+            {
+                return filteredLanguages;
+            }
+
             var selectedRace = SelectedRace.Race;
             var selectedClass = SelectedClass.Name;
-            if (selectedCampaign != null && selectedRace != "Select a Race" && selectedClass != "Select a Class")
+            if (selectedRace != "Select a Race" && selectedClass != "Select a Class")
             {
                 var allowedSourceBooks = selectedCampaign.AllowedSources;
                 foreach (var language in _languages)
@@ -533,27 +544,30 @@
         set
         {
             _selectedRaceId = value;
-            _raceStartingAge = SelectedRace.AdulthoodAge;
-            if (SelectedRaceId > 1 && _selectedClassId > 1)
-            {
-                GetAgeDiceType();
-            }
 
-            PopulateStartingEquipmentMethods();
-            if (_selectedRaceId != 0)
+            if (SelectedRace != null)
             {
-                _raceHairColours = SelectedRace.HairColours.ToList();
-                _raceEyeColours = SelectedRace.EyeColours.ToList();
-                _raceSkinColours = SelectedRace.SkinColours.ToList();
-                _raceSize = SelectedRace.Size;
-            }
-            else
-            {
+                if (_selectedRaceId != 0)
+                {
+                    _raceStartingAge = SelectedRace.AdulthoodAge;
+                    _raceHairColours = SelectedRace.HairColours.ToList();
+                    _raceEyeColours = SelectedRace.EyeColours.ToList();
+                    _raceSkinColours = SelectedRace.SkinColours.ToList();
+                    _raceSize = SelectedRace.Size;
+                }
+                else
                 {
                     _raceHairColours = [];
                     _raceEyeColours = [];
                     _raceSkinColours = [];
                 }
+
+                if (SelectedRaceId > 1 && _selectedClassId > 1)
+                {
+                    GetAgeDiceType();
+                }
+
+                PopulateStartingEquipmentMethods();
             }
         }
     }
@@ -943,7 +957,7 @@
 
     private void CalculatedBaseFortitude()
     {
-        if (SelectedClassId <= 1) return;
+        if (SelectedClassId <= 1 || SelectedClass == null) return;
         var fortitudePerLevel = SelectedClass.FortitudeSavePerLevel;
         var baseFortitude = 0.0m;
         if (fortitudePerLevel == 0.5m)
@@ -959,7 +973,7 @@
 
     private void CalculatedBaseReflex()
     {
-        if (SelectedClassId <= 1) return;
+        if (SelectedClassId <= 1 || SelectedClass == null) return;
         var reflexPerLevel = SelectedClass.ReflexSavePerLevel;
         var baseReflex = 0.0m;
         if (reflexPerLevel == 0.5m)
@@ -975,7 +989,7 @@
 
     private void CalculatedBaseWill()
     {
-        if (SelectedClassId <= 1) return;
+        if (SelectedClassId <= 1 || SelectedClass == null) return;
         var willPerLevel = SelectedClass.WillSavePerLevel;
         var baseWill = 0.0m;
         if (willPerLevel == 0.5m)
@@ -1027,7 +1041,12 @@
             if (_selectedClassId != value)
             {
                 _selectedClassId = value;
-                _classAgeCategory = SelectedClass.AgeCategory;
+
+                if (SelectedClass != null)
+                {
+                    _classAgeCategory = SelectedClass.AgeCategory;
+                }
+
                 if (SelectedRaceId > 1 && _selectedClassId > 1)
                 {
                     GetAgeDiceType();
@@ -1059,6 +1078,8 @@
 
     private void GetRaceHeightAndWeight()
     {
+        if (SelectedRace is null || SelectedGender is null) return;
+
         _raceRandomHeight = SelectedRace.HeightDice;
         _raceRandomWeight = SelectedRace.WeightDice;
 
@@ -1179,15 +1200,44 @@
             return;
         }
 
+        var validationErrors = new List<string>();
+
         if (!_characterAge.HasValue)
-        {
-            Console.WriteLine("Age is required");
-            return;
-        }
+            validationErrors.Add("Age is required");
 
         if (string.IsNullOrEmpty(_characterHeight))
+            validationErrors.Add("Height is required");
+
+        if (string.IsNullOrEmpty(_characterName))
+            validationErrors.Add("Name is required");
+
+        if (SelectedClass is null)
+            validationErrors.Add("Class is required");
+
+        if (SelectedRace is null)
+            validationErrors.Add("Race is required");
+
+        if (SelectedDeity is null)
+            validationErrors.Add("Deity is required");
+
+        if (SelectedOrder is null)
+            validationErrors.Add("Order is required");
+
+        if (SelectedMorality is null)
+            validationErrors.Add("Morality is required");
+
+        if (SelectedGender is null)
+            validationErrors.Add("Gender is required");
+
+        // If any validation errors, print them all and return
+        if (validationErrors.Any())
         {
-            Console.WriteLine("Height is required");
+            Console.WriteLine("Character creation failed. Missing required fields:");
+            foreach (var error in validationErrors)
+            {
+                Console.WriteLine($"  - {error}");
+            }
+
             return;
         }
 
@@ -1197,8 +1247,8 @@
         {
             Name = _characterName,
             CampaignId = _selectedCampaignId,
-            Class = SelectedClass.Id,
-            Race = SelectedRace.Id,
+            Class = SelectedClass!.Id,
+            Race = SelectedRace!.Id,
             Experience = 0,
             Strength = _characterStrength,
             Dexterity = CharacterDexterity,
@@ -1207,14 +1257,14 @@
             Intelligence = _characterIntelligence,
             Charisma = _characterCharisma,
             HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
-            Deity = SelectedDeity.Id,
-            Order = SelectedOrder.Midpoint,
-            Morality = SelectedMorality.Midpoint,
+            Deity = SelectedDeity!.Id,
+            Order = SelectedOrder!.Midpoint,
+            Morality = SelectedMorality!.Midpoint,
             Gender = SelectedGenderId,
             Hair = _characterHair,
             Eyes = _characterEyes,
             Skin = _characterSkin,
-            Age = _characterAge.Value,
+            Age = _characterAge!.Value,
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
             Languages = _selectedLanguageIds,
