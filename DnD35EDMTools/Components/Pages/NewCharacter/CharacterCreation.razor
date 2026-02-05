@@ -421,6 +421,9 @@
 </div>
 
 @code {
+
+    #region Fields
+
     private bool _dryRun = true;
     private int _selectedTab;
     private List<CampaignData> _campaigns = [];
@@ -437,6 +440,84 @@
     private List<LanguageData> _languages = [];
     private readonly List<int> _selectedLanguageIds = [];
     private readonly List<StartingEquipment> _startingEquipmentMethods = [];
+
+    private int _selectedCampaignId = 1;
+
+    private string _characterName = "";
+    private int? _characterAge;
+    private string _characterHeight = "";
+    private int _characterWeight;
+    private int _selectedRaceId;
+    private int _raceStartingAge;
+    private int _raceBaseHeight;
+    private string _raceRandomHeight = "0d0";
+    private int _raceBaseWeight;
+    private string _raceRandomWeight = "0d0";
+    private string _raceSize = "medium";
+    private int _characterEyes;
+    private int _characterHair;
+    private int _characterSkin;
+    private int _selectedClassId;
+    private string _classAgeCategory = "";
+    private string _ageTypeDice = "0d0";
+    private int _selectedOrderId;
+    private int _selectedMoralityId;
+    private int _selectedDeityId;
+    private int _selectedGenderId;
+    private int _randomPointsRolled;
+    private int _characterStatPoints = 25;
+    private int _characterStrength;
+    private int _characterDexterity;
+    private int _characterConstitution;
+    private int _characterIntelligence;
+    private int _characterWisdom;
+    private int _characterCharisma;
+    private int _characterLuck;
+    private int _selectedStartingEquipment;
+    private double _calculatedBaseFortitude;
+    private double _calculatedBaseReflex;
+    private double _calculatedBaseWill;
+    private int _platinumPieces;
+    private int _goldPieces;
+    private int _silverPieces;
+    private int _copperPieces;
+    private double _lightLoad;
+    private double _mediumLoad;
+    private double _heavyLoad;
+    private double _liftOffGround;
+    private double _liftOverHead;
+    private double _pushOrDrag;
+
+    private Dictionary<string, Action<int>> _statFields = null!;
+
+    #endregion
+
+    #region Cached Selected Objects
+
+    private CampaignData? SelectedCampaign =>
+        _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+
+    private RaceData? SelectedRace =>
+        SelectedRaceId > 0 ? _races.SingleOrDefault(r => r.Id == SelectedRaceId) : null;
+
+    private ClassData? SelectedClass =>
+        SelectedClassId > 0 ? _classes.SingleOrDefault(c => c.Id == SelectedClassId) : null;
+
+    private GenderData? SelectedGender =>
+        SelectedGenderId > 0 ? _genders.SingleOrDefault(g => g.Id == SelectedGenderId) : null;
+
+    private DeityData? SelectedDeity =>
+        _selectedDeityId > 0 ? _deities.SingleOrDefault(d => d.Id == _selectedDeityId) : null;
+
+    private OrderData? SelectedOrder =>
+        _selectedOrderId > 0 ? _orders.SingleOrDefault(o => o.Id == _selectedOrderId) : null;
+
+    private MoralityData? SelectedMorality =>
+        _selectedMoralityId > 0 ? _moralities.SingleOrDefault(m => m.Id == _selectedMoralityId) : null;
+
+    #endregion
+
+    #region Computed Properties
 
     private List<DeityData> FilteredDeities
     {
@@ -508,24 +589,62 @@
         }
     }
 
+    private string SelectedCampaignStatRollingMethod =>
+        SelectedCampaign?.StatRollingMethod ?? "";
+
+    private string SelectedClassStartingGold =>
+        SelectedClass?.StartingGold ?? "";
+
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await using var db = DbContext;
+        _campaigns = await db.Campaigns
+            .Where(c => c.Id != 2)
+            .Include(c => c.AllowedSources)
+            .ToListAsync();
+        _races = await db.Races.Include(r => r.HairColours)
+            .Include(r => r.EyeColours)
+            .Include(r => r.SkinColours)
+            .Include(r => r.Genders)
+            .ToListAsync();
+        _orders = await db.Orders.ToListAsync();
+        _moralities = await db.Moralities.ToListAsync();
+        _classes = await db.Classes.ToListAsync();
+        _genders = await db.Genders.ToListAsync();
+        _deities = await db.Deities.ToListAsync();
+        _languages = await db.Languages.ToListAsync();
+        InitializeStatFields();
+    }
+
+    private void InitializeStatFields()
+    {
+        _statFields = new Dictionary<string, Action<int>>
+        {
+            { "Strength", val => _characterStrength = val },
+            { "Dexterity", val => CharacterDexterity = val },
+            { "Constitution", val => CharacterConstitution = val },
+            { "Intelligence", val => _characterIntelligence = val },
+            { "Wisdom", val => CharacterWisdom = val },
+            { "Charisma", val => _characterCharisma = val },
+        };
+    }
+
+    #endregion
+
+    #region Tab Navigation
+
     private void SelectTab(int tabNumber)
     {
         _selectedTab = tabNumber;
     }
 
-    private void ToggleLanguageSelection(int languageId)
-    {
-        if (_selectedLanguageIds.Contains(languageId))
-        {
-            _selectedLanguageIds.Remove(languageId);
-        }
-        else
-        {
-            _selectedLanguageIds.Add(languageId);
-        }
-    }
+    #endregion
 
-    private int _selectedCampaignId = 1;
+    #region Tab 0 - Main
 
     private int SelectedCampaignId
     {
@@ -583,168 +702,40 @@
         }
     }
 
-    private ColourData GetColourById(int colourId, List<ColourData> colours)
+    private List<GenderData> GetRaceGenders()
     {
-        var defaultColour = new ColourData
-        {
-            Colour = "None",
-            ColourHexCode = "#00000000"
-        };
-        return colours.FirstOrDefault(c => c.Id == colourId) ?? defaultColour;
+        if (SelectedRaceId == 0)
+            return new List<GenderData>();
+        return SelectedRace?.Genders.ToList() ?? new List<GenderData>();
     }
 
-    #region Cached Selected Objects
+    private int SelectedClassId
+    {
+        get => _selectedClassId;
+        set
+        {
+            if (_selectedClassId != value)
+            {
+                _selectedClassId = value;
 
-    private CampaignData? SelectedCampaign =>
-        _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+                if (SelectedClass != null)
+                {
+                    _classAgeCategory = SelectedClass.AgeCategory;
+                }
 
-    private RaceData? SelectedRace =>
-        SelectedRaceId > 0 ? _races.SingleOrDefault(r => r.Id == SelectedRaceId) : null;
+                if (SelectedRaceId > 1 && _selectedClassId > 1)
+                {
+                    GetAgeDiceType();
+                }
 
-    private ClassData? SelectedClass =>
-        SelectedClassId > 0 ? _classes.SingleOrDefault(c => c.Id == SelectedClassId) : null;
-
-    private GenderData? SelectedGender =>
-        SelectedGenderId > 0 ? _genders.SingleOrDefault(g => g.Id == SelectedGenderId) : null;
-
-    private DeityData? SelectedDeity =>
-        _selectedDeityId > 0 ? _deities.SingleOrDefault(d => d.Id == _selectedDeityId) : null;
-
-    private OrderData? SelectedOrder =>
-        _selectedOrderId > 0 ? _orders.SingleOrDefault(o => o.Id == _selectedOrderId) : null;
-
-    private MoralityData? SelectedMorality =>
-        _selectedMoralityId > 0 ? _moralities.SingleOrDefault(m => m.Id == _selectedMoralityId) : null;
+                SetWealthToZero();
+            }
+        }
+    }
 
     #endregion
 
-    private void RollRandomAge()
-    {
-        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
-    }
-
-    private void RollRandomHeight()
-    {
-        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
-    }
-
-    private void RollRandomWeight()
-    {
-        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
-    }
-
-    private void InitializeCharacterStatsBasedOnCampaign()
-    {
-        switch (SelectedCampaignStatRollingMethod)
-        {
-            case "3D6":
-            case "3D6R1":
-            case "4D6DL":
-                SetStatsToZero();
-                break;
-            case "SAL":
-                SetStatsToZero();
-                _standardArray = [13, 12, 11, 10, 9, 8];
-                break;
-            case "SAA":
-                SetStatsToZero();
-                _standardArray = [15, 14, 13, 12, 10, 8];
-                break;
-            case "SAH":
-                SetStatsToZero();
-                _standardArray = [17, 16, 15, 14, 11, 9];
-                break;
-            case "PBA":
-            case "PBR":
-                if (SelectedCampaignStatRollingMethod == "PBR")
-                {
-                    _characterStatPoints = 0;
-                    _randomPointsRolled = 0;
-                }
-
-                _characterStatPoints = 25;
-                _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                break;
-        }
-    }
-
-    private string SelectedCampaignStatRollingMethod =>
-        SelectedCampaign?.StatRollingMethod ?? "";
-
-    private string SelectedClassStartingGold =>
-        SelectedClass?.StartingGold ?? "";
-
-    private void PopulateStartingEquipmentMethods()
-    {
-        _startingEquipmentMethods.Clear();
-
-        if (SelectedCampaign?.AllowWealthAverage == true)
-        {
-            _startingEquipmentMethods.Add(new StartingEquipment
-            {
-                Id = 1,
-                Name = "Wealth Average",
-                Description = "Roll starting wealth using class average values"
-            });
-        }
-
-        if (SelectedCampaign?.AllowWealthRandom == true)
-        {
-            _startingEquipmentMethods.Add(new StartingEquipment
-            {
-                Id = 2,
-                Name = "Wealth Random",
-                Description = "Roll starting wealth using class random values"
-            });
-        }
-
-        if (SelectedCampaign?.AllowStartingEquipment == true)
-        {
-            _startingEquipmentMethods.Add(new StartingEquipment
-            {
-                Id = 3,
-                Name = "Equipment Pack",
-                Description = "Customize starting equipment"
-            });
-        }
-    }
-
-    private string _characterName = "";
-    private int? _characterAge;
-    private string _characterHeight = "";
-    private int _characterWeight;
-    private int _selectedRaceId;
-    private int _raceStartingAge;
-    private int _raceBaseHeight;
-    private string _raceRandomHeight = "0d0";
-    private int _raceBaseWeight;
-    private string _raceRandomWeight = "0d0";
-    private string _raceSize = "medium";
-    private int _characterEyes;
-    private int _characterHair;
-    private int _characterSkin;
-    private int _selectedClassId;
-    private string _classAgeCategory = "";
-    private string _ageTypeDice = "0d0";
-    private int _selectedOrderId;
-    private int _selectedMoralityId;
-    private int _selectedDeityId;
-    private int _selectedGenderId;
-
-    private int _randomPointsRolled;
-    private int _characterStatPoints = 25;
-    private int _characterStrength;
-    private int _characterDexterity;
-    private int _characterConstitution;
-    private int _characterIntelligence;
-    private int _characterWisdom;
-    private int _characterCharisma;
-    private int _characterLuck;
+    #region Tab 1 - Stats
 
     private int CharacterDexterity
     {
@@ -779,64 +770,6 @@
         }
     }
 
-    private int _selectedStartingEquipment;
-    private double _calculatedBaseFortitude;
-    private double _calculatedBaseReflex;
-    private double _calculatedBaseWill;
-    private int _platinumPieces;
-    private int _goldPieces;
-    private int _silverPieces;
-    private int _copperPieces;
-    private double _lightLoad;
-    private double _mediumLoad;
-    private double _heavyLoad;
-    private double _liftOffGround;
-    private double _liftOverHead;
-    private double _pushOrDrag;
-
-    private Dictionary<string, Action<int>> _statFields = null!;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await using var db = DbContext;
-        _campaigns = await db.Campaigns
-            .Where(c => c.Id != 2)
-            .Include(c => c.AllowedSources)
-            .ToListAsync();
-        _races = await db.Races.Include(r => r.HairColours)
-            .Include(r => r.EyeColours)
-            .Include(r => r.SkinColours)
-            .Include(r => r.Genders)
-            .ToListAsync();
-        _orders = await db.Orders.ToListAsync();
-        _moralities = await db.Moralities.ToListAsync();
-        _classes = await db.Classes.ToListAsync();
-        _genders = await db.Genders.ToListAsync();
-        _deities = await db.Deities.ToListAsync();
-        _languages = await db.Languages.ToListAsync();
-        InitializeStatFields();
-    }
-
-    private void InitializeStatFields()
-    {
-        _statFields = new Dictionary<string, Action<int>>
-        {
-            { "Strength", val => _characterStrength = val },
-            { "Dexterity", val => CharacterDexterity = val },
-            { "Constitution", val => CharacterConstitution = val },
-            { "Intelligence", val => _characterIntelligence = val },
-            { "Wisdom", val => CharacterWisdom = val },
-            { "Charisma", val => _characterCharisma = val },
-        };
-    }
-
-    private List<GenderData> GetRaceGenders()
-    {
-        if (SelectedRaceId == 0)
-            return new List<GenderData>();
-        return SelectedRace?.Genders.ToList() ?? new List<GenderData>();
-    }
-
     private void SetStatsToZero()
     {
         _characterStrength = 0;
@@ -845,18 +778,6 @@
         _characterIntelligence = 0;
         CharacterWisdom = 0;
         _characterCharisma = 0;
-    }
-
-    private void RollStat(string rollingMethod, string stat)
-    {
-        int statValue = GetStatValue(stat);
-        do
-        {
-            if (statValue <= 7)
-                statValue = RollStats.RollStatBasedOnMethod(rollingMethod);
-        } while (statValue <= 7);
-
-        SetStatValue(stat, statValue);
     }
 
     private int GetStatValue(string stat)
@@ -883,6 +804,18 @@
         {
             throw new ArgumentException("Invalid stat");
         }
+    }
+
+    private void RollStat(string rollingMethod, string stat)
+    {
+        int statValue = GetStatValue(stat);
+        do
+        {
+            if (statValue <= 7)
+                statValue = RollStats.RollStatBasedOnMethod(rollingMethod);
+        } while (statValue <= 7);
+
+        SetStatValue(stat, statValue);
     }
 
     private void IncreaseStatValue(string stat)
@@ -976,66 +909,73 @@
         _calculatedBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, CharacterWisdom);
     }
 
-    private void GetStartingEquipment()
+    private void InitializeCharacterStatsBasedOnCampaign()
     {
-        if (_selectedStartingEquipment == 1)
+        switch (SelectedCampaignStatRollingMethod)
         {
-            if (_goldPieces != 0) return;
-            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+            case "3D6":
+            case "3D6R1":
+            case "4D6DL":
+                SetStatsToZero();
+                break;
+            case "SAL":
+                SetStatsToZero();
+                _standardArray = [13, 12, 11, 10, 9, 8];
+                break;
+            case "SAA":
+                SetStatsToZero();
+                _standardArray = [15, 14, 13, 12, 10, 8];
+                break;
+            case "SAH":
+                SetStatsToZero();
+                _standardArray = [17, 16, 15, 14, 11, 9];
+                break;
+            case "PBA":
+            case "PBR":
+                if (SelectedCampaignStatRollingMethod == "PBR")
+                {
+                    _characterStatPoints = 0;
+                    _randomPointsRolled = 0;
+                }
 
-            _platinumPieces = startingWealth[0];
-            _goldPieces = startingWealth[1];
-            _silverPieces = startingWealth[2];
-            _copperPieces = startingWealth[3];
-        }
-
-        if (_selectedStartingEquipment == 2)
-        {
-            if (_goldPieces != 0) return;
-            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
-
-            _platinumPieces = startingWealth[0];
-            _goldPieces = startingWealth[1];
-            _silverPieces = startingWealth[2];
-            _copperPieces = startingWealth[3];
-        }
-
-        if (_selectedStartingEquipment == 3)
-        {
-            Console.WriteLine("Equipment Packs not Implemented");
+                _characterStatPoints = 25;
+                _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                break;
         }
     }
 
-    private int SelectedClassId
+    #endregion
+
+    #region Tab 2 - Appearance
+
+    private ColourData GetColourById(int colourId, List<ColourData> colours)
     {
-        get => _selectedClassId;
-        set
+        var defaultColour = new ColourData
         {
-            if (_selectedClassId != value)
-            {
-                _selectedClassId = value;
-
-                if (SelectedClass != null)
-                {
-                    _classAgeCategory = SelectedClass.AgeCategory;
-                }
-
-                if (SelectedRaceId > 1 && _selectedClassId > 1)
-                {
-                    GetAgeDiceType();
-                }
-
-                SetWealthToZero();
-            }
-        }
+            Colour = "None",
+            ColourHexCode = "#00000000"
+        };
+        return colours.FirstOrDefault(c => c.Id == colourId) ?? defaultColour;
     }
 
-    private void SetWealthToZero()
+    private void RollRandomAge()
     {
-        _platinumPieces = 0;
-        _goldPieces = 0;
-        _silverPieces = 0;
-        _copperPieces = 0;
+        _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
+    }
+
+    private void RollRandomHeight()
+    {
+        _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
+    }
+
+    private void RollRandomWeight()
+    {
+        _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
     }
 
     private void GetAgeDiceType()
@@ -1074,6 +1014,103 @@
             _raceBaseWeight = (SelectedRace.MaleWeight + SelectedRace.FemaleWeight) / 2;
         }
     }
+
+    #endregion
+
+    #region Tab 3 - Languages
+
+    private void ToggleLanguageSelection(int languageId)
+    {
+        if (_selectedLanguageIds.Contains(languageId))
+        {
+            _selectedLanguageIds.Remove(languageId);
+        }
+        else
+        {
+            _selectedLanguageIds.Add(languageId);
+        }
+    }
+
+    #endregion
+
+    #region Tab 4 - Equipment
+
+    private void PopulateStartingEquipmentMethods()
+    {
+        _startingEquipmentMethods.Clear();
+
+        if (SelectedCampaign?.AllowWealthAverage == true)
+        {
+            _startingEquipmentMethods.Add(new StartingEquipment
+            {
+                Id = 1,
+                Name = "Wealth Average",
+                Description = "Roll starting wealth using class average values"
+            });
+        }
+
+        if (SelectedCampaign?.AllowWealthRandom == true)
+        {
+            _startingEquipmentMethods.Add(new StartingEquipment
+            {
+                Id = 2,
+                Name = "Wealth Random",
+                Description = "Roll starting wealth using class random values"
+            });
+        }
+
+        if (SelectedCampaign?.AllowStartingEquipment == true)
+        {
+            _startingEquipmentMethods.Add(new StartingEquipment
+            {
+                Id = 3,
+                Name = "Equipment Pack",
+                Description = "Customize starting equipment"
+            });
+        }
+    }
+
+    private void GetStartingEquipment()
+    {
+        if (_selectedStartingEquipment == 1)
+        {
+            if (_goldPieces != 0) return;
+            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+
+            _platinumPieces = startingWealth[0];
+            _goldPieces = startingWealth[1];
+            _silverPieces = startingWealth[2];
+            _copperPieces = startingWealth[3];
+        }
+
+        if (_selectedStartingEquipment == 2)
+        {
+            if (_goldPieces != 0) return;
+            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+
+            _platinumPieces = startingWealth[0];
+            _goldPieces = startingWealth[1];
+            _silverPieces = startingWealth[2];
+            _copperPieces = startingWealth[3];
+        }
+
+        if (_selectedStartingEquipment == 3)
+        {
+            Console.WriteLine("Equipment Packs not Implemented");
+        }
+    }
+
+    private void SetWealthToZero()
+    {
+        _platinumPieces = 0;
+        _goldPieces = 0;
+        _silverPieces = 0;
+        _copperPieces = 0;
+    }
+
+    #endregion
+
+    #region Character Creation & Utility
 
     private async Task GetCarryingCapacityForStrengthAsync()
     {
@@ -1268,5 +1305,7 @@
             Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
         }
     }
+
+    #endregion
 
 }
