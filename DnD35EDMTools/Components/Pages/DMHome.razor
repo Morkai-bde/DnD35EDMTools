@@ -1,4 +1,4 @@
-﻿@page "/DMHome"
+@page "/DMHome"
 
 @using DnD35EDMTools.Data
 @using Microsoft.EntityFrameworkCore
@@ -95,16 +95,16 @@
                             <label for="allow-wealth-random">Allow Starting Wealth, Random</label>
                         </div>
                         <div>
-                            <input type="checkbox" id="allow-wealth-average" value="@AllowStartingEquipment" @bind="AllowStartingEquipment"/>
+                            <input type="checkbox" id="allow-starting-equipment" value="@AllowStartingEquipment" @bind="AllowStartingEquipment"/>
                         </div>
                         <div>
-                            <label for="allow-wealth-average">Allow Starting Equipment</label>
+                            <label for="allow-starting-equipment">Allow Starting Equipment</label>
                         </div>
                         <div>
-                            <input type="checkbox" id="allow-wealth-average" value="@AllowStartingEquipmentCustomization" @bind="AllowStartingEquipmentCustomization"/>
+                            <input type="checkbox" id="allow-starting-equipment-customization" value="@AllowStartingEquipmentCustomization" @bind="AllowStartingEquipmentCustomization"/>
                         </div>
                         <div>
-                            <label for="allow-wealth-average">Allow Starting Equipment Customization</label>
+                            <label for="allow-starting-equipment-customization">Allow Starting Equipment Customization</label>
                         </div>
                         <div>
                             <label for="description">Description</label>
@@ -156,7 +156,11 @@
         set
         {
             _selectedCampaignId = value;
-            LoadSelectedBooks();
+            _ = InvokeAsync(async () =>
+            {
+                await LoadSelectedBooks();
+                StateHasChanged();
+            });
         }
     }
 
@@ -476,21 +480,28 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = DbContext;
-        _campaigns = await db.Campaigns.ToListAsync();
-        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
-
-        foreach (var book in _sourceBooks)
+        try
         {
-            _selectedSourceBooks[book.Id] = false;
+            await using var db = CreateDbContext();
+            _campaigns = await db.Campaigns.ToListAsync();
+            _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+
+            foreach (var book in _sourceBooks)
+            {
+                _selectedSourceBooks[book.Id] = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to initialize DM Home page");
         }
     }
 
-    private async void LoadSelectedBooks()
+    private async Task LoadSelectedBooks()
     {
         if (_selectedCampaignId != 0)
         {
-            await using var db = DbContext;
+            await using var db = CreateDbContext();
             var selectedCampaign = await db.Campaigns
                 .Include(c => c.AllowedSources)
                 .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
@@ -525,22 +536,17 @@
 
         newCampaign.AllowedSources.Clear();
 
-        var db = DbContext;
+        await using var db = CreateDbContext();
         db.Campaigns.Add(newCampaign);
-
-        if (!_dryRun)
-            await db.SaveChangesAsync();
 
         foreach (var book in _sourceBooks)
         {
             if (_selectedSourceBooks[book.Id])
             {
-                if (newCampaign.AllowedSources.Any(x => x.Id == newCampaign.Id)) continue;
+                if (newCampaign.AllowedSources.Any(x => x.Id == book.Id)) continue;
                 newCampaign.AllowedSources.Add(book);
             }
         }
-
-        db.Campaigns.Update(newCampaign);
 
         if (!_dryRun)
             await db.SaveChangesAsync();
@@ -561,17 +567,17 @@
     {
         if (_selectedCampaignId == 0)
         {
-            Console.WriteLine("No campaign selected.");
+            Logger.LogWarning("UpdateCampaign called with no campaign selected");
             return;
         }
 
         if (_selectedCampaignId <= 2)
         {
-            Console.WriteLine("Can not update default campaigns");
+            Logger.LogWarning("Attempted to update a default campaign (ID: {CampaignId})", _selectedCampaignId);
             return;
         }
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var campaignToUpdate = await db.Campaigns
             .Include(c => c.AllowedSources)
@@ -579,7 +585,7 @@
 
         if (campaignToUpdate == null)
         {
-            Console.WriteLine("Campaign not found.");
+            Logger.LogError("Campaign with ID {CampaignId} not found in database during update", _selectedCampaignId);
             return;
         }
 
@@ -614,24 +620,24 @@
     {
         if (_selectedCampaignId == 0)
         {
-            Console.WriteLine("No campaign selected.");
+            Logger.LogWarning("DeleteCampaign called with no campaign selected");
             return;
         }
         
         if (_selectedCampaignId <= 2)
         {
-            Console.WriteLine("Can not delete default campaigns");
+            Logger.LogWarning("Attempted to delete a default campaign (ID: {CampaignId})", _selectedCampaignId);
             return;
         }
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var campaignToDelete = await db.Campaigns.Include(c => c.AllowedSources)
             .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
 
         if (campaignToDelete == null)
         {
-            Console.WriteLine("Campaign not found.");
+            Logger.LogError("Campaign with ID {CampaignId} not found in database during delete", _selectedCampaignId);
             return;
         }
         foreach (var sourceBook in campaignToDelete.AllowedSources)

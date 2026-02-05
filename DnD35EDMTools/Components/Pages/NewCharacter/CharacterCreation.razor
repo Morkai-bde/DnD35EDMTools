@@ -1,4 +1,4 @@
-﻿@page "/CharacterCreation"
+@page "/CharacterCreation"
 
 @using DnD35EDMTools.Data
 @using DnD35EDMTools.Data.Lists
@@ -764,23 +764,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = DbContext;
-        _campaigns = await db.Campaigns
-            .Where(c => c.Id != 2)
-            .Include(c => c.AllowedSources)
-            .ToListAsync();
-        _races = await db.Races.Include(r => r.HairColours)
-            .Include(r => r.EyeColours)
-            .Include(r => r.SkinColours)
-            .Include(r => r.Genders)
-            .ToListAsync();
-        _orders = await db.Orders.ToListAsync();
-        _moralities = await db.Moralities.ToListAsync();
-        _classes = await db.Classes.ToListAsync();
-        _genders = await db.Genders.ToListAsync();
-        _deities = await db.Deities.ToListAsync();
-        _languages = await db.Languages.ToListAsync();
-        InitializeStatFields();
+        try
+        {
+            await using var db = CreateDbContext();
+            _campaigns = await db.Campaigns
+                .Where(c => c.Id != 2)
+                .Include(c => c.AllowedSources)
+                .ToListAsync();
+            _races = await db.Races.Include(r => r.HairColours)
+                .Include(r => r.EyeColours)
+                .Include(r => r.SkinColours)
+                .Include(r => r.Genders)
+                .ToListAsync();
+            _orders = await db.Orders.ToListAsync();
+            _moralities = await db.Moralities.ToListAsync();
+            _classes = await db.Classes.ToListAsync();
+            _genders = await db.Genders.ToListAsync();
+            _deities = await db.Deities.ToListAsync();
+            _languages = await db.Languages.ToListAsync();
+            InitializeStatFields();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to initialize Character Creation page");
+        }
     }
 
     private void InitializeStatFields()
@@ -974,7 +981,7 @@
         if (_selectedStartingEquipment == 1)
         {
             if (_goldPieces != 0) return;
-            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+            var startingWealth = RollWealth.StartingWealthAverage(SelectedClassStartingGold);
 
             _platinumPieces = startingWealth[0];
             _goldPieces = startingWealth[1];
@@ -995,7 +1002,7 @@
 
         if (_selectedStartingEquipment == 3)
         {
-            Console.WriteLine("Equipment Packs not Implemented");
+            Logger.LogWarning("Equipment Packs feature not yet implemented");
         }
     }
 
@@ -1065,11 +1072,11 @@
     {
         if (_characterStrength <= 0)
         {
-            Console.Write($"Strength not set {_characterStrength}");
+            Logger.LogWarning("Cannot calculate carrying capacity: Strength not set (value: {Strength})", _characterStrength);
             return;
         }
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var cc = await db.CarryingCapacity
             .AsNoTracking()
@@ -1077,7 +1084,7 @@
 
         if (cc is null)
         {
-            Console.WriteLine("Unable to load Carrying Capacity Data");
+            Logger.LogError("Unable to load Carrying Capacity data for Strength {Strength}", _characterStrength);
             return;
         }
 
@@ -1094,7 +1101,7 @@
         bool skipRollStatsAndLuck = false;
         if (_selectedCampaignId == 1)
         {
-            Console.WriteLine("No Campaign Selected");
+            Logger.LogWarning("GenerateRandomCharacter called with no campaign selected");
             return;
         }
 
@@ -1102,14 +1109,14 @@
         _characterName = "Random Jo";
         SelectedRaceId = rand.Next(2, _races.Count + 1);
 
-        var randomRaceHairIndex = rand.Next(2, _raceHairColours.Count);
-        _characterHair = _raceHairColours[randomRaceHairIndex].Id;
+        if (_raceHairColours.Count > 0)
+            _characterHair = _raceHairColours[rand.Next(0, _raceHairColours.Count)].Id;
 
-        var randomRaceEyesIndex = rand.Next(2, _raceEyeColours.Count);
-        _characterEyes = _raceEyeColours[randomRaceEyesIndex].Id;
+        if (_raceEyeColours.Count > 0)
+            _characterEyes = _raceEyeColours[rand.Next(0, _raceEyeColours.Count)].Id;
 
-        var randomRaceSkinIndex = rand.Next(2, _raceSkinColours.Count);
-        _characterSkin = _raceSkinColours[randomRaceSkinIndex].Id;
+        if (_raceSkinColours.Count > 0)
+            _characterSkin = _raceSkinColours[rand.Next(0, _raceSkinColours.Count)].Id;
 
         SelectedClassId = rand.Next(2, _classes.Count + 1);
 
@@ -1119,18 +1126,18 @@
         _selectedMoralityId = rand.Next(1, _moralities.Count + 1);
 
         var deity = FilteredDeities;
-        var randomDeityIndex = rand.Next(2, FilteredDeities.Count);
-        _selectedDeityId = deity[randomDeityIndex].Id;
+        if (deity.Count > 0)
+            _selectedDeityId = deity[rand.Next(0, deity.Count)].Id;
 
         var raceGenders = GetRaceGenders();
-        var randomGenderIndex = rand.Next(2, raceGenders.Count);
-        SelectedGenderId = raceGenders[randomGenderIndex].Id;
+        if (raceGenders.Count > 0)
+            SelectedGenderId = raceGenders[rand.Next(0, raceGenders.Count)].Id;
 
         _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
 
         _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
 
-        var notAllowedMethods = new[] { "PBA", "BPR", "SAL", "SAA", "SAH" };
+        var notAllowedMethods = new[] { "PBA", "PBR", "SAL", "SAA", "SAH" };
         if (notAllowedMethods.Contains(SelectedCampaignStatRollingMethod))
         {
             skipRollStatsAndLuck = true;
@@ -1151,15 +1158,15 @@
         SetWealthToZero();
     }
 
-    private void CreateNewCharacter()
+    private async Task CreateNewCharacter()
     {
         if (_selectedCampaignId == 1)
         {
-            Console.WriteLine("No Campaign Selected");
+            Logger.LogWarning("CreateNewCharacter called with no campaign selected");
             return;
         }
 
-        GetCarryingCapacityForStrengthAsync().GetAwaiter().GetResult();
+        await GetCarryingCapacityForStrengthAsync();
 
         var newCharacter = new CharacterData
         {
@@ -1182,7 +1189,7 @@
             Hair = _characterHair,
             Eyes = _characterEyes,
             Skin = _characterSkin,
-            Age = Int32.Parse(_characterAge),
+            Age = int.TryParse(_characterAge, out var parsedAge) ? parsedAge : 0,
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
             Languages = _selectedLanguageIds,
@@ -1202,16 +1209,16 @@
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 
-        using var db = DbContext;
+        await using var db = CreateDbContext();
 
         db.Characters.Add(newCharacter);
 
         if (!_dryRun)
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
         foreach (var property in newCharacter.GetType().GetProperties())
         {
-            Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
+            Logger.LogDebug("Created character property {PropertyName}: {PropertyValue}", property.Name, property.GetValue(newCharacter));
         }
     }
 

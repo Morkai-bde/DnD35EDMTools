@@ -1,4 +1,4 @@
-﻿@page "/AddNewRace"
+@page "/AddNewRace"
 
 <h3>Add New Race</h3>
 
@@ -506,6 +506,8 @@
 
 <button @onclick="CreateNewRace">Create</button>
 
+@inject ILogger<AddNewRace> Logger
+
 @code {
 
     private string _raceName, _raceSize, _raceYoungAgeDice, _raceMiddleAgeDice, _raceOldAgeDice, _raceHeightDice, _raceWeightDice, _raceDescription, _raceSource;
@@ -527,9 +529,9 @@
         _raceFeatBonus, _raceAdulthoodAge, _raceMiddleAge, _raceVenerableAge, _raceFemaleHeight, _raceMaleHeight,
         _raceFemaleWeight, _raceMaleWeight, _racePage;
     
-    private static void CreateNewRace()
+    private void CreateNewRace()
     {
-        Console.WriteLine("Database Saving Not Implemented");
+        Logger.LogWarning("CreateNewRace called but database saving is not yet implemented");
     }
 
 }

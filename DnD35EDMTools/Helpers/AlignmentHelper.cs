@@ -1,4 +1,4 @@
-﻿using DnD35EDMTools.Data;
+using DnD35EDMTools.Data;
 namespace DnD35EDMTools.Helpers;
 
 public static class AlignmentHelper
@@ -7,13 +7,17 @@ public static class AlignmentHelper
     public static string GetOrderNameByValue(List<OrderData> orders, int orderValue)
     {
         var order = orders.FirstOrDefault(o => orderValue >= o.MinValue && orderValue <= o.MaxValue);
-        return order!.Order;
+        if (order is null)
+            throw new InvalidOperationException($"No order found for value {orderValue}.");
+        return order.Order;
     }
     
     public static string GetMoralityNameByValue(List<MoralityData> moralities, int moralityValue)
     {
         var morality = moralities.FirstOrDefault(o => moralityValue >= o.MinValue && moralityValue <= o.MaxValue);
-        return morality!.Morality;
+        if (morality is null)
+            throw new InvalidOperationException($"No morality found for value {moralityValue}.");
+        return morality.Morality;
     }
 
     public static string GetAlignmentFromOrderAndMorality(List<OrderData> orders, List<MoralityData> moralities,
@@ -21,7 +25,11 @@ public static class AlignmentHelper
     {
         var order = orders.FirstOrDefault(o => orderValue >= o.MinValue && orderValue <= o.MaxValue);
         var morality = moralities.FirstOrDefault(o => moralityValue >= o.MinValue && moralityValue <= o.MaxValue);
-        var alignment = $"{order!.Order} {morality!.Morality}";
+        if (order is null)
+            throw new InvalidOperationException($"No order found for value {orderValue}.");
+        if (morality is null)
+            throw new InvalidOperationException($"No morality found for value {moralityValue}.");
+        var alignment = $"{order.Order} {morality.Morality}";
         if (alignment == "Neutral Neutral")
             alignment = "True Neutral";
         return alignment;

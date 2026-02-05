@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 
 namespace DnD35EDMTools.Data;
 
@@ -9,12 +9,10 @@ public class CharacterData
     [MaxLength(100)]
     public string Name { get; set; } = null!;
 
-    [MaxLength(100)]
     public int Class { get; set; }
     public int Race { get; set; }
     public int Experience { get; set; }
     public int HitPoints { get; set; }
-    [MaxLength(20)]
     public int Order { get; set; }
     public int Morality { get; set; }
     public int? Deity { get; set; }

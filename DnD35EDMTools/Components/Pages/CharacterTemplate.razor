@@ -1,4 +1,4 @@
-﻿@page "/CharacterTemplate"
+@page "/CharacterTemplate"
 
 @using DnD35EDMTools.Data
 @using DnD35EDMTools.Helpers
@@ -18,7 +18,7 @@
     <select class="cc-select" id="character-id" name="character" @bind="SelectedCharacterId">
         @foreach (var id in _characters)
         {
-            <option value="@id.Id" titme="@id.Name">@id.Name</option>
+            <option value="@id.Id" title="@id.Name">@id.Name</option>
         }
     </select>
     <button
@@ -403,8 +403,6 @@
 
 @code {
 
-    [Parameter] public int Row { get; set; }
-
     private List<OrderData> _orders = [];
     private List<MoralityData> _moralities = [];
     private List<CharacterData> _characters = [];
@@ -463,22 +461,26 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = DbContext;
-        _characters = await db.Characters
-            .ToListAsync();
+        try
+        {
+            await using var db = CreateDbContext();
+            _characters = await db.Characters
+                .ToListAsync();
 
-        _orders = await db.Orders.ToListAsync();
-        _moralities = await db.Moralities.ToListAsync();
-
-        await base.OnInitializedAsync(
-        );
+            _orders = await db.Orders.ToListAsync();
+            _moralities = await db.Moralities.ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to initialize Character Template page");
+        }
     }
 
     private int SelectedCharacterId { get; set; }
 
     private async Task LoadCharacterAsync(int characterId)
     {
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
         var character = await db.Characters
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == characterId);
