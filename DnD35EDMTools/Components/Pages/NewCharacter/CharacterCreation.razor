@@ -780,9 +780,9 @@
     }
 
     private int _selectedStartingEquipment;
-    private decimal _calculatedBaseFortitude;
-    private decimal _calculatedBaseReflex;
-    private decimal _calculatedBaseWill;
+    private double _calculatedBaseFortitude;
+    private double _calculatedBaseReflex;
+    private double _calculatedBaseWill;
     private int _platinumPieces;
     private int _goldPieces;
     private int _silverPieces;
@@ -958,49 +958,22 @@
     private void CalculatedBaseFortitude()
     {
         if (SelectedClassId <= 1 || SelectedClass == null) return;
-        var fortitudePerLevel = SelectedClass.FortitudeSavePerLevel;
-        var baseFortitude = 0.0m;
-        if (fortitudePerLevel == 0.5m)
-        {
-            baseFortitude = 2.0m;
-        }
 
-        var constitutionModifier = ConversionHelper.ConvertStatToBonus(CharacterConstitution);
-        baseFortitude += fortitudePerLevel + constitutionModifier;
-
-        _calculatedBaseFortitude = Math.Floor(baseFortitude);
+        _calculatedBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, CharacterConstitution);
     }
 
     private void CalculatedBaseReflex()
     {
         if (SelectedClassId <= 1 || SelectedClass == null) return;
-        var reflexPerLevel = SelectedClass.ReflexSavePerLevel;
-        var baseReflex = 0.0m;
-        if (reflexPerLevel == 0.5m)
-        {
-            baseReflex = 2.0m;
-        }
 
-        var dexterityModifier = ConversionHelper.ConvertStatToBonus(CharacterDexterity);
-        baseReflex += reflexPerLevel + dexterityModifier;
-
-        _calculatedBaseReflex = Math.Floor(baseReflex);
+        _calculatedBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, CharacterDexterity);
     }
 
     private void CalculatedBaseWill()
     {
         if (SelectedClassId <= 1 || SelectedClass == null) return;
-        var willPerLevel = SelectedClass.WillSavePerLevel;
-        var baseWill = 0.0m;
-        if (willPerLevel == 0.5m)
-        {
-            baseWill = 2.0m;
-        }
 
-        var wisdomModifier = ConversionHelper.ConvertStatToBonus(CharacterWisdom);
-        baseWill += willPerLevel + wisdomModifier;
-
-        _calculatedBaseWill = Math.Floor(baseWill);
+        _calculatedBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, CharacterWisdom);
     }
 
     private void GetStartingEquipment()
@@ -1229,7 +1202,6 @@
         if (SelectedGender is null)
             validationErrors.Add("Gender is required");
 
-        // If any validation errors, print them all and return
         if (validationErrors.Any())
         {
             Console.WriteLine("Character creation failed. Missing required fields:");

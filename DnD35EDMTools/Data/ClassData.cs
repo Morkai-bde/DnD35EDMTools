@@ -7,9 +7,9 @@ public class ClassData
     public string HitDice { get; set; }
     public int SkillPoints { get; set; }
     public string AgeCategory { get; set; }
-    public decimal FortitudeSavePerLevel { get; set; }
-    public decimal ReflexSavePerLevel { get; set; }
-    public decimal WillSavePerLevel { get; set; }
+    public double FortitudeSavePerLevel { get; set; }
+    public double ReflexSavePerLevel { get; set; }
+    public double WillSavePerLevel { get; set; }
     public string StartingGold { get; set; }
     public string Description { get; set; }
     public string Source { get; set; }

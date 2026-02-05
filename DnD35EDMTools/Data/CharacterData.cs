@@ -32,9 +32,9 @@ public class CharacterData
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
     public List<int> Languages { get; set; } = [1];
-    public decimal BaseFortitudeSave { get; set; }
-    public decimal BaseReflexSave { get; set; } 
-    public decimal BaseWillSave { get; set; }
+    public double BaseFortitudeSave { get; set; }
+    public double BaseReflexSave { get; set; } 
+    public double BaseWillSave { get; set; }
     public int PlatinumPieces { get; set; }
     public int GoldPieces { get; set; }
     public int SilverPieces { get; set; }
