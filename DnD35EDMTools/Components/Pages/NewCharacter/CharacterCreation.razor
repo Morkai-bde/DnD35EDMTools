@@ -1151,7 +1151,7 @@
         SetWealthToZero();
     }
 
-    private void CreateNewCharacter()
+    private async Task CreateNewCharacter()
     {
         if (_selectedCampaignId == 1)
         {
@@ -1171,7 +1171,7 @@
             return;
         }
         
-        GetCarryingCapacityForStrengthAsync().GetAwaiter().GetResult();
+        await GetCarryingCapacityForStrengthAsync();
 
         var newCharacter = new CharacterData
         {
@@ -1214,12 +1214,12 @@
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 
-        using var db = DbContext;
+        await using var db = DbContext;
 
         db.Characters.Add(newCharacter);
 
         if (!_dryRun)
-            db.SaveChanges();
+            await db.SaveChangesAsync();
 
         foreach (var property in newCharacter.GetType().GetProperties())
         {
