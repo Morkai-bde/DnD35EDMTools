@@ -357,17 +357,20 @@
         }
         @if (_selectedTab == 3)
         {
-            <div class="dnd-cc-tab-languages">
-                @foreach (var language in FilteredLanguages)
-                {
-                    var isBonus = language.IsBonus;
-                    <div class="language-item">
-                        <input type="checkbox" id="@language.Name.ToLower()" @onchange="_ => ToggleLanguageSelection(language.Id)" checked="@isBonus">
-                        &nbsp;
-                        <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
-                    </div>
-                }
-            </div>
+            @if (SelectedClassId > 1 && SelectedRaceId > 1)
+            {
+                <div class="dnd-cc-tab-languages">
+                    @foreach (var language in FilteredLanguages)
+                    {
+                        var isBonus = language.IsBonus;
+                        <div class="language-item">
+                            <input type="checkbox" id="@language.Name.ToLower()" @onchange="_ => ToggleLanguageSelection(language.Id)" checked="@isBonus">
+                            &nbsp;
+                            <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
+                        </div>
+                    }
+                </div>
+            }
         }
         @if (_selectedTab == 4)
         {
