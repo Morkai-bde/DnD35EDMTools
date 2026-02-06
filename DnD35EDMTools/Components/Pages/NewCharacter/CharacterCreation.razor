@@ -1185,43 +1185,31 @@
 
         var rand = new Random();
         _characterName = "Random Jo";
-        SelectedRaceId = rand.Next(2, _races.Count + 1);
+        SelectedRaceId = _races[rand.Next(_races.Count)].Id;
 
-        var randomRaceHairIndex = rand.Next(2, _raceHairColours.Count);
-        _characterHair = _raceHairColours[randomRaceHairIndex].Id;
+        _characterHair = _raceHairColours[rand.Next(_raceHairColours.Count)].Id;
 
-        var randomRaceEyesIndex = rand.Next(2, _raceEyeColours.Count);
-        _characterEyes = _raceEyeColours[randomRaceEyesIndex].Id;
+        _characterEyes = _raceEyeColours[rand.Next(_raceEyeColours.Count)].Id;
 
-        var randomRaceSkinIndex = rand.Next(2, _raceSkinColours.Count);
-        _characterSkin = _raceSkinColours[randomRaceSkinIndex].Id;
+        _characterSkin = _raceSkinColours[rand.Next(_raceSkinColours.Count)].Id;
 
-        SelectedClassId = rand.Next(2, _classes.Count + 1);
+        SelectedClassId = _classes[rand.Next(_classes.Count)].Id;
 
         _characterAge = CharacterAppearanceHelpers.RandomizeAge(_raceStartingAge, _ageTypeDice);
 
-        _selectedOrderId = rand.Next(1, _orders.Count + 1);
-        _selectedMoralityId = rand.Next(1, _moralities.Count + 1);
-
-        var deity = FilteredDeities;
-        var randomDeityIndex = rand.Next(2, FilteredDeities.Count);
-        _selectedDeityId = deity[randomDeityIndex].Id;
+        _selectedOrderId = _orders[rand.Next(_orders.Count)].Id;
+        _selectedMoralityId = _moralities[rand.Next(_moralities.Count)].Id;
+        _selectedDeityId = FilteredDeities[rand.Next(FilteredDeities.Count)].Id;
 
         var raceGenders = GetRaceGenders();
-        var randomGenderIndex = rand.Next(2, raceGenders.Count);
-        SelectedGenderId = raceGenders[randomGenderIndex].Id;
+        SelectedGenderId = raceGenders[rand.Next(raceGenders.Count)].Id;
 
         _characterHeight = CharacterAppearanceHelpers.RandomizeHeight(_raceBaseHeight, _raceRandomHeight);
 
         _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
 
-        var notAllowedMethods = new[] { "PBA", "BPR", "SAL", "SAA", "SAH" };
-        if (notAllowedMethods.Contains(SelectedCampaignStatRollingMethod))
-        {
-            skipRollStatsAndLuck = true;
-        }
-
-        if (!skipRollStatsAndLuck)
+        var allowedMethods = new[] { "3D6", "3D6R1", "4D6DL"};
+        if (allowedMethods.Contains(SelectedCampaignStatRollingMethod))
         {
             SetStatsToZero();
             RollStat(SelectedCampaignStatRollingMethod, "Strength");
