@@ -140,7 +140,7 @@
         @if (_selectedTab == 1)
         {
             <div class="dnd-cc-tab-stats">
-                @if (SelectedRaceId > 1)
+                @if (SelectedRaceId > NO_SELECTION_ID)
                 {
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
@@ -281,7 +281,7 @@
         @if (_selectedTab == 2)
         {
             <div class="dnd-cc-tab-appearance">
-                @if (SelectedRaceId > 1 && SelectedGenderId > 1 && SelectedClassId > 1)
+                @if (SelectedRaceId > NO_SELECTION_ID && SelectedGenderId > NO_SELECTION_ID && SelectedClassId > NO_SELECTION_ID)
                 {
                     <div>
                         <label for="hair">Hair:</label>
@@ -357,7 +357,7 @@
         }
         @if (_selectedTab == 3)
         {
-            @if (SelectedClassId > 1 && SelectedRaceId > 1)
+            @if (SelectedClassId > NO_SELECTION_ID && SelectedRaceId > NO_SELECTION_ID)
             {
                 <div class="dnd-cc-tab-languages">
                     @foreach (var language in FilteredLanguages)
@@ -375,7 +375,7 @@
         @if (_selectedTab == 4)
         {
             <div class="dnd-cc-tab-equipment">
-                @if (SelectedClassId > 1)
+                @if (SelectedClassId > NO_SELECTION_ID)
                 {
                     <div>
                         <label for="starting-equipment-method">Starting Equipment:</label>
@@ -427,6 +427,11 @@
 
     #region Fields
 
+    private const int NO_SELECTION_ID = 0;
+    private const int MIN_STAT_VALUE = 8;
+    private const int MAX_STAT_VALUE = 18;
+    private const int STAT_THRESHOLD_FOR_BONUS = 13;
+    
     private bool _dryRun = true;
     private int _selectedTab;
     private List<CampaignData> _campaigns = [];
@@ -498,25 +503,25 @@
     #region Cached Selected Objects
 
     private CampaignData? SelectedCampaign =>
-        _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+        _selectedCampaignId > NO_SELECTION_ID ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
 
     private RaceData? SelectedRace =>
-        SelectedRaceId > 0 ? _races.SingleOrDefault(r => r.Id == SelectedRaceId) : null;
+        SelectedRaceId > NO_SELECTION_ID ? _races.SingleOrDefault(r => r.Id == SelectedRaceId) : null;
 
     private ClassData? SelectedClass =>
-        SelectedClassId > 0 ? _classes.SingleOrDefault(c => c.Id == SelectedClassId) : null;
+        SelectedClassId > NO_SELECTION_ID ? _classes.SingleOrDefault(c => c.Id == SelectedClassId) : null;
 
     private GenderData? SelectedGender =>
-        SelectedGenderId > 0 ? _genders.SingleOrDefault(g => g.Id == SelectedGenderId) : null;
+        SelectedGenderId > NO_SELECTION_ID ? _genders.SingleOrDefault(g => g.Id == SelectedGenderId) : null;
 
     private DeityData? SelectedDeity =>
-        _selectedDeityId > 0 ? _deities.SingleOrDefault(d => d.Id == _selectedDeityId) : null;
+        _selectedDeityId > NO_SELECTION_ID ? _deities.SingleOrDefault(d => d.Id == _selectedDeityId) : null;
 
     private OrderData? SelectedOrder =>
-        _selectedOrderId > 0 ? _orders.SingleOrDefault(o => o.Id == _selectedOrderId) : null;
+        _selectedOrderId > NO_SELECTION_ID ? _orders.SingleOrDefault(o => o.Id == _selectedOrderId) : null;
 
     private MoralityData? SelectedMorality =>
-        _selectedMoralityId > 0 ? _moralities.SingleOrDefault(m => m.Id == _selectedMoralityId) : null;
+        _selectedMoralityId > NO_SELECTION_ID ? _moralities.SingleOrDefault(m => m.Id == _selectedMoralityId) : null;
 
     #endregion
 
@@ -526,7 +531,7 @@
     {
         get
         {
-            if (_selectedMoralityId == 0 || _selectedOrderId == 0)
+            if (_selectedMoralityId == NO_SELECTION_ID || _selectedOrderId == NO_SELECTION_ID)
             {
                 return _deities;
             }
@@ -549,7 +554,7 @@
         get
         {
             var filteredLanguages = new List<LanguageData>();
-            if (_selectedCampaignId == default || SelectedRaceId == default || SelectedClassId == default)
+            if (_selectedCampaignId == NO_SELECTION_ID || SelectedRaceId == NO_SELECTION_ID || SelectedClassId == NO_SELECTION_ID)
             {
                 return filteredLanguages;
             }
@@ -669,7 +674,7 @@
 
             if (SelectedRace != null)
             {
-                if (_selectedRaceId != 0)
+                if (_selectedRaceId > NO_SELECTION_ID)
                 {
                     _raceStartingAge = SelectedRace.AdulthoodAge;
                     _raceHairColours = SelectedRace.HairColours.ToList();
@@ -684,7 +689,7 @@
                     _raceSkinColours = [];
                 }
 
-                if (SelectedRaceId > 1 && _selectedClassId > 1)
+                if (SelectedRaceId > NO_SELECTION_ID && _selectedClassId > NO_SELECTION_ID)
                 {
                     GetAgeDiceType();
                 }
@@ -700,14 +705,14 @@
         set
         {
             _selectedGenderId = value;
-            if (_selectedGenderId > 1)
+            if (_selectedGenderId > NO_SELECTION_ID)
                 GetRaceHeightAndWeight();
         }
     }
 
     private List<GenderData> GetRaceGenders()
     {
-        if (SelectedRaceId == 0)
+        if (SelectedRaceId == NO_SELECTION_ID)
             return new List<GenderData>();
         return SelectedRace?.Genders.ToList() ?? new List<GenderData>();
     }
@@ -726,7 +731,7 @@
                     _classAgeCategory = SelectedClass.AgeCategory;
                 }
 
-                if (SelectedRaceId > 1 && _selectedClassId > 1)
+                if (SelectedRaceId > NO_SELECTION_ID && _selectedClassId > NO_SELECTION_ID)
                 {
                     GetAgeDiceType();
                 }
@@ -814,23 +819,22 @@
         int statValue = GetStatValue(stat);
         do
         {
-            if (statValue <= 7)
+            if (statValue < MIN_STAT_VALUE)
                 statValue = RollStats.RollStatBasedOnMethod(rollingMethod);
-        } while (statValue <= 7);
+        } while (statValue < MIN_STAT_VALUE);
 
         SetStatValue(stat, statValue);
     }
 
     private void IncreaseStatValue(string stat)
     {
-        const int maxStatValue = 18;
 
         if (!_statFields.ContainsKey(stat)) return;
 
         var currentStatValue = GetStatValue(stat);
-        if (currentStatValue >= maxStatValue) return;
+        if (currentStatValue >= MAX_STAT_VALUE) return;
 
-        var pointsToDeduct = currentStatValue < 13 ? 1 : ConversionHelper.ConvertStatToBonus(currentStatValue);
+        var pointsToDeduct = currentStatValue < STAT_THRESHOLD_FOR_BONUS ? 1 : ConversionHelper.ConvertStatToBonus(currentStatValue);
         if (_characterStatPoints - pointsToDeduct >= 0)
         {
             _characterStatPoints -= pointsToDeduct;
@@ -840,15 +844,14 @@
 
     private void DecreaseStatValue(string stat)
     {
-        const int minStatValue = 8;
 
         if (!_statFields.ContainsKey(stat)) return;
 
         var currentStatValue = GetStatValue(stat);
-        if (currentStatValue <= minStatValue) return;
+        if (currentStatValue <= MIN_STAT_VALUE) return;
 
         var pointsToAdd = 1;
-        if (currentStatValue >= 13)
+        if (currentStatValue >= STAT_THRESHOLD_FOR_BONUS)
         {
             pointsToAdd = ConversionHelper.ConvertStatToBonus(currentStatValue) - (ConversionHelper.ConvertStatToBonus(currentStatValue - 1) == ConversionHelper.ConvertStatToBonus(currentStatValue) ? 0 : 1);
         }
@@ -893,21 +896,21 @@
 
     private void CalculatedBaseFortitude()
     {
-        if (SelectedClassId <= 1 || SelectedClass == null) return;
+        if (SelectedClassId == NO_SELECTION_ID || SelectedClass == null) return;
 
         _calculatedBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, CharacterConstitution);
     }
 
     private void CalculatedBaseReflex()
     {
-        if (SelectedClassId <= 1 || SelectedClass == null) return;
+        if (SelectedClassId == NO_SELECTION_ID || SelectedClass == null) return;
 
         _calculatedBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, CharacterDexterity);
     }
 
     private void CalculatedBaseWill()
     {
-        if (SelectedClassId <= 1 || SelectedClass == null) return;
+        if (SelectedClassId == NO_SELECTION_ID || SelectedClass == null) return;
 
         _calculatedBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, CharacterWisdom);
     }
@@ -994,7 +997,8 @@
 
     private void GetRaceHeightAndWeight()
     {
-        if (SelectedRace is null || SelectedGender is null) return;
+        if (_selectedRaceId < NO_SELECTION_ID || SelectedGenderId < NO_SELECTION_ID) return;
+        if (SelectedRace == null || SelectedGender == null) return;
 
         _raceRandomHeight = SelectedRace.HeightDice;
         _raceRandomWeight = SelectedRace.WeightDice;
