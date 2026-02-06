@@ -1001,20 +1001,20 @@
 
         var gender = SelectedGender?.Gender;
 
-        if (gender == "Male")
+        switch (gender)
         {
-            _raceBaseHeight = SelectedRace.MaleHeight;
-            _raceBaseWeight = SelectedRace.MaleWeight;
-        }
-        else if (gender == "Female")
-        {
-            _raceBaseHeight = SelectedRace.FemaleHeight;
-            _raceBaseWeight = SelectedRace.FemaleWeight;
-        }
-        else
-        {
-            _raceBaseHeight = (SelectedRace.MaleHeight + SelectedRace.FemaleHeight) / 2;
-            _raceBaseWeight = (SelectedRace.MaleWeight + SelectedRace.FemaleWeight) / 2;
+            case "Male":
+                _raceBaseHeight = SelectedRace.MaleHeight;
+                _raceBaseWeight = SelectedRace.MaleWeight;
+                break;
+            case "Female":
+                _raceBaseHeight = SelectedRace.FemaleHeight;
+                _raceBaseWeight = SelectedRace.FemaleWeight;
+                break;
+            default:
+                _raceBaseHeight = (SelectedRace.MaleHeight + SelectedRace.FemaleHeight) / 2;
+                _raceBaseWeight = (SelectedRace.MaleWeight + SelectedRace.FemaleWeight) / 2;
+                break;
         }
     }
 
@@ -1075,32 +1075,25 @@
 
     private void GetStartingEquipment()
     {
-        if (_selectedStartingEquipment == 1)
-        {
-            if (_goldPieces != 0) return;
-            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+        var startingWealth = new List<int>();
 
-            _platinumPieces = startingWealth[0];
-            _goldPieces = startingWealth[1];
-            _silverPieces = startingWealth[2];
-            _copperPieces = startingWealth[3];
+        switch (_selectedStartingEquipment)
+        {
+            case 1:
+                startingWealth = RollWealth.StartingWealthAverage(SelectedClassStartingGold);
+                break;
+            case 2:
+                startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
+                break;
+            case 3:
+                Console.WriteLine("Equipment Packs not Implemented");
+                return;
         }
 
-        if (_selectedStartingEquipment == 2)
-        {
-            if (_goldPieces != 0) return;
-            var startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
-
-            _platinumPieces = startingWealth[0];
-            _goldPieces = startingWealth[1];
-            _silverPieces = startingWealth[2];
-            _copperPieces = startingWealth[3];
-        }
-
-        if (_selectedStartingEquipment == 3)
-        {
-            Console.WriteLine("Equipment Packs not Implemented");
-        }
+        _platinumPieces = startingWealth[0];
+        _goldPieces = startingWealth[1];
+        _silverPieces = startingWealth[2];
+        _copperPieces = startingWealth[3];
     }
 
     private void SetWealthToZero()
