@@ -235,7 +235,7 @@
                             <input class="cc-point-buy-stat-input" type="text" id="luck" @bind="_characterLuck"/><input class="cc-point-buy-stat-input" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)"/>
                         </div>
                         <div>
-                            <button class="cc-pb-randomize-button" @onclick="CalculateLuck">Calculate</button>
+                            &nbsp;
                         </div>
                     }
 
@@ -632,12 +632,12 @@
     {
         _statFields = new Dictionary<string, Action<int>>
         {
-            { "Strength", val => _characterStrength = val },
+            { "Strength", val => CharacterStrength = val },
             { "Dexterity", val => CharacterDexterity = val },
             { "Constitution", val => CharacterConstitution = val },
-            { "Intelligence", val => _characterIntelligence = val },
+            { "Intelligence", val => CharacterIntelligence = val },
             { "Wisdom", val => CharacterWisdom = val },
-            { "Charisma", val => _characterCharisma = val },
+            { "Charisma", val => CharacterCharisma = val },
         };
     }
 
@@ -745,6 +745,17 @@
 
     #region Tab 1 - Stats
 
+    private int CharacterStrength
+    {
+        get => _characterStrength;
+        set
+        {
+            if (_characterStrength == value) return;
+            _characterStrength = value;
+            CalculateLuck();
+        }
+    }
+
     private int CharacterDexterity
     {
         get => _characterDexterity;
@@ -752,6 +763,7 @@
         {
             if (_characterDexterity == value) return;
             _characterDexterity = value;
+            CalculateLuck();
             CalculatedBaseReflex();
         }
     }
@@ -763,7 +775,19 @@
         {
             if (_characterConstitution == value) return;
             _characterConstitution = value;
+            CalculateLuck();
             CalculatedBaseFortitude();
+        }
+    }
+
+    private int CharacterIntelligence
+    {
+        get => _characterIntelligence;
+        set
+        {
+            if (_characterIntelligence == value) return;
+            _characterIntelligence = value;
+            CalculateLuck();
         }
     }
 
@@ -774,30 +798,42 @@
         {
             if (_characterWisdom == value) return;
             _characterWisdom = value;
+            CalculateLuck();
             CalculatedBaseWill();
+        }
+    }
+
+    private int CharacterCharisma
+    {
+        get => _characterCharisma;
+        set
+        {
+            if (_characterCharisma == value) return;
+            _characterCharisma = value;
+            CalculateLuck();
         }
     }
 
     private void SetStatsToZero()
     {
-        _characterStrength = 0;
+        CharacterStrength = 0;
         CharacterDexterity = 0;
         CharacterConstitution = 0;
-        _characterIntelligence = 0;
+        CharacterIntelligence = 0;
         CharacterWisdom = 0;
-        _characterCharisma = 0;
+        CharacterCharisma = 0;
     }
 
     private int GetStatValue(string stat)
     {
         return stat switch
         {
-            "Strength" => _characterStrength,
+            "Strength" => CharacterStrength,
             "Dexterity" => CharacterDexterity,
             "Constitution" => CharacterConstitution,
-            "Intelligence" => _characterIntelligence,
+            "Intelligence" => CharacterIntelligence,
             "Wisdom" => CharacterWisdom,
-            "Charisma" => _characterCharisma,
+            "Charisma" => CharacterCharisma,
             _ => throw new ArgumentException("Invalid stat name", nameof(stat)),
         };
     }
@@ -888,8 +924,8 @@
 
     private void CalculateLuck()
     {
-        if (_characterStrength != 0 && CharacterDexterity != 0 && CharacterConstitution != 0 && _characterIntelligence != 0 && CharacterWisdom != 0 && _characterCharisma != 0)
-            _characterLuck = (_characterStrength + CharacterDexterity + CharacterConstitution + _characterIntelligence + CharacterWisdom + _characterCharisma) / 6;
+        if (CharacterStrength != 0 && CharacterDexterity != 0 && CharacterConstitution != 0 && CharacterIntelligence != 0 && CharacterWisdom != 0 && CharacterCharisma != 0)
+            _characterLuck = (CharacterStrength + CharacterDexterity + CharacterConstitution + CharacterIntelligence + CharacterWisdom + CharacterCharisma) / 6;
     }
 
     private void CalculatedBaseFortitude()
@@ -943,12 +979,12 @@
                 }
 
                 _characterStatPoints = 25;
-                _characterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 CharacterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 CharacterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 CharacterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                _characterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                CharacterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
                 break;
         }
     }
@@ -1112,9 +1148,9 @@
 
     private async Task GetCarryingCapacityForStrengthAsync()
     {
-        if (_characterStrength <= 0)
+        if (CharacterStrength <= 0)
         {
-            Console.Write($"Strength not set {_characterStrength}");
+            Console.Write($"Strength not set {CharacterStrength}");
             return;
         }
 
@@ -1122,7 +1158,7 @@
 
         var cc = await db.CarryingCapacity
             .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == _characterStrength);
+            .SingleOrDefaultAsync(x => x.Id == CharacterStrength);
 
         if (cc is null)
         {
@@ -1257,12 +1293,12 @@
             Class = SelectedClass!.Id,
             Race = SelectedRace!.Id,
             Experience = 0,
-            Strength = _characterStrength,
+            Strength = CharacterStrength,
             Dexterity = CharacterDexterity,
             Constitution = CharacterConstitution,
             Wisdom = CharacterWisdom,
-            Intelligence = _characterIntelligence,
-            Charisma = _characterCharisma,
+            Intelligence = CharacterIntelligence,
+            Charisma = CharacterCharisma,
             HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
             Deity = SelectedDeity!.Id,
             Order = SelectedOrder!.Midpoint,
