@@ -270,56 +270,79 @@
         }
     }
 
+    private void MapFormToCampaign(CampaignData campaign)
+    {
+        campaign.Name = CampaignName;
+        campaign.Description = Description;
+        campaign.StatRollingMethod = SelectedStatRollingMethod;
+        campaign.HitPointRollingMethod = SelectedHitPointRollingMethod;
+        campaign.HideTrainedOnlySkills = HideTrainedOnlySkills;
+        campaign.AllowAvatarPoints = AllowAvatarPoints;
+        campaign.AllowLuck = AllowLuck;
+        campaign.AllowWealthAverage = AllowWealthAverage;
+        campaign.AllowWealthRandom = AllowWealthRandom;
+        campaign.AllowStartingEquipment = AllowStartingEquipment;
+        campaign.AllowStartingEquipmentCustomization = AllowStartingEquipmentCustomization;
+    }
+
+    private async Task SetCampaignSourcesAsync(ApplicationDbContext db, CampaignData campaign)
+    {
+        await db.Entry(campaign).Collection(c => c.AllowedSources).LoadAsync();
+
+        campaign.AllowedSources.Clear();
+
+        var selectedIds = _selectedSourceBooks.Where(kv => kv.Value).Select(kv => kv.Key).ToList();
+        if (selectedIds.Count == 0)
+            return;
+
+        var selectedBooks = await db.SourceBooks.Where(sb => selectedIds.Contains(sb.Id)).ToListAsync();
+        foreach (var book in selectedBooks)
+        {
+            db.Attach(book);
+            campaign.AllowedSources.Add(book);
+        }
+    }
+
+    private async Task ReloadListsAsync(ApplicationDbContext db, int? keepSelectedCampaignId = null)
+    {
+        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+        _campaigns = await db.Campaigns.ToListAsync();
+        var targetCampaignId = keepSelectedCampaignId ?? _selectedCampaignId;
+        if (!_campaigns.Any(c => c.Id == targetCampaignId))
+        {
+            targetCampaignId = _campaigns.FirstOrDefault()?.Id ?? 0;
+        }
+        _selectedCampaignId = targetCampaignId;
+        _selectedSourceBooks = _sourceBooks.ToDictionary(b => b.Id, b => false);
+        await LoadSelectedBooks();
+    }
+
     private async Task CreateCampaign()
     {
-        var newCampaign = new CampaignData
+        await using var db = DbContext;
+
+        var campaign = new CampaignData
         {
-            Name = CampaignName,
-            Description = Description,
-            StatRollingMethod = SelectedStatRollingMethod,
-            HitPointRollingMethod = SelectedHitPointRollingMethod,
-            HideTrainedOnlySkills = HideTrainedOnlySkills,
-            AllowAvatarPoints = AllowAvatarPoints,
-            AllowLuck = AllowLuck,
-            AllowWealthAverage = AllowWealthAverage,
-            AllowWealthRandom = AllowWealthRandom,
-            AllowStartingEquipment = AllowStartingEquipment,
-            AllowStartingEquipmentCustomization = AllowStartingEquipmentCustomization,
             AllowedSources = new List<SourceBookData>()
         };
 
-        newCampaign.AllowedSources.Clear();
+        MapFormToCampaign(campaign);
 
-        var db = DbContext;
-        db.Campaigns.Add(newCampaign);
-
-        if (!_dryRun)
-            await db.SaveChangesAsync();
-
-        foreach (var book in _sourceBooks)
-        {
-            if (_selectedSourceBooks[book.Id])
-            {
-                if (newCampaign.AllowedSources.Any(x => x.Id == newCampaign.Id)) continue;
-                newCampaign.AllowedSources.Add(book);
-            }
-        }
-
-        db.Campaigns.Update(newCampaign);
+        db.Campaigns.Add(campaign);
 
         if (!_dryRun)
-            await db.SaveChangesAsync();
-
-        _sourceBooks.Clear();
-        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
-        _selectedSourceBooks.Clear();
-
-        foreach (var book in _sourceBooks)
         {
-            _selectedSourceBooks[book.Id] = false;
+            await db.SaveChangesAsync();
         }
 
-        _campaigns = await db.Campaigns.ToListAsync();
+        await SetCampaignSourcesAsync(db, campaign);
+
+        if (!_dryRun)
+        {
+            await db.SaveChangesAsync();
+        }
+
+        await ReloadListsAsync(db);
     }
 
     private async Task UpdateCampaign()
@@ -338,41 +361,22 @@
 
         await using var db = DbContext;
 
-        var campaignToUpdate = await db.Campaigns
-            .Include(c => c.AllowedSources)
-            .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
-
-        if (campaignToUpdate == null)
+        var campaign = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+        if (campaign == null)
         {
             Console.WriteLine("Campaign not found.");
             return;
         }
 
-        campaignToUpdate.Name = CampaignName;
-        campaignToUpdate.Description = Description;
-        campaignToUpdate.StatRollingMethod = SelectedStatRollingMethod;
-        campaignToUpdate.HitPointRollingMethod = SelectedHitPointRollingMethod;
-        campaignToUpdate.HideTrainedOnlySkills = HideTrainedOnlySkills;
-        campaignToUpdate.AllowAvatarPoints = AllowAvatarPoints;
-        campaignToUpdate.AllowLuck = AllowLuck;
-        campaignToUpdate.AllowWealthAverage = AllowWealthAverage;
-        campaignToUpdate.AllowWealthRandom = AllowWealthRandom;
-        campaignToUpdate.AllowStartingEquipment = AllowStartingEquipment;
-        campaignToUpdate.AllowStartingEquipmentCustomization = AllowStartingEquipmentCustomization;
-
-        var selectedSourceBooks = _sourceBooks.Where(book => _selectedSourceBooks[book.Id]);
-
-        campaignToUpdate.AllowedSources.Clear();
-
-        foreach (var book in selectedSourceBooks)
-        {
-            db.Attach(book);
-            campaignToUpdate.AllowedSources.Add(book);
-        }
+        MapFormToCampaign(campaign);
+        await SetCampaignSourcesAsync(db, campaign);
 
         if (!_dryRun)
+        {
             await db.SaveChangesAsync();
-        _campaigns = await db.Campaigns.ToListAsync();
+        }
+
+        await ReloadListsAsync(db);
     }
 
     private async Task DeleteCampaign()
@@ -382,7 +386,7 @@
             Console.WriteLine("No campaign selected.");
             return;
         }
-        
+
         if (_selectedCampaignId <= 2)
         {
             Console.WriteLine("Can not delete default campaigns");
@@ -391,25 +395,25 @@
 
         await using var db = DbContext;
 
-        var campaignToDelete = await db.Campaigns.Include(c => c.AllowedSources)
+        var campaign = await db.Campaigns
+            .Include(c => c.AllowedSources)
             .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
 
-        if (campaignToDelete == null)
+        if (campaign == null)
         {
             Console.WriteLine("Campaign not found.");
             return;
         }
-        foreach (var sourceBook in campaignToDelete.AllowedSources)
-        {
-            sourceBook.CampaignSourceBooks.Remove(campaignToDelete);
-        }
         
-        db.Campaigns.Remove(campaignToDelete);
+        campaign.AllowedSources.Clear();
+
+        db.Campaigns.Remove(campaign);
 
         if (!_dryRun)
         {
             await db.SaveChangesAsync();
-            _campaigns = await db.Campaigns.ToListAsync();
         }
+
+        await ReloadListsAsync(db);
     }
 }
