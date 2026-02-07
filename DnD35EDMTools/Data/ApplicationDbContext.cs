@@ -1,10 +1,8 @@
-using DnD35EDMTools.Migrations;
-using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace DnD35EDMTools.Data
 {
-    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
+    public class ApplicationDbContext : DbContext
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -29,62 +27,62 @@ namespace DnD35EDMTools.Data
         public DbSet<SourceBookData> SourceBooks { get; set; }
         
         protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<RaceData>()
+                .HasMany(c => c.EyeColours)
+                .WithMany(c => c.RaceEyeColours)
+                .UsingEntity(joinEntity =>
             {
-                base.OnModelCreating(modelBuilder);
-                modelBuilder.Entity<RaceData>()
-                    .HasMany(c => c.EyeColours)
-                    .WithMany(c => c.RaceEyeColours)
-                    .UsingEntity(joinEntity =>
+                joinEntity.ToTable("JoinTableRaceEyeColour");
+            });
+            
+            modelBuilder.Entity<RaceData>()
+                .HasMany(c => c.HairColours)
+                .WithMany(c => c.RaceHairColours)
+                .UsingEntity(joinEntity =>
                 {
-                    joinEntity.ToTable("JoinTableRaceEyeColour");
+                    joinEntity.ToTable("JoinTableRaceHairColour");
                 });
-                
-                modelBuilder.Entity<RaceData>()
-                    .HasMany(c => c.HairColours)
-                    .WithMany(c => c.RaceHairColours)
-                    .UsingEntity(joinEntity =>
-                    {
-                        joinEntity.ToTable("JoinTableRaceHairColour");
-                    });
-                
-                modelBuilder.Entity<RaceData>()
-                    .HasMany(c => c.SkinColours)
-                    .WithMany(c => c.RaceSkinColours)
-                    .UsingEntity(joinEntity =>
-                    {
-                        joinEntity.ToTable("JoinTableRaceSkinColour");
-                    });
-                
-                modelBuilder.Entity<RaceData>()
-                    .HasMany(c => c.Genders)
-                    .WithMany(c => c.RaceGenders)
-                    .UsingEntity(joinEntity =>
-                    {
-                        joinEntity.ToTable("JoinTableRaceGenders");
-                    });
-                
-                modelBuilder.Entity<AlignmentData>()
-                    .HasMany(a => a.AllowedAlignments)
-                    .WithMany()
-                    .UsingEntity<Dictionary<string, object>>(
-                        "JoinTableAllowedAlignments",
-                        j => j
-                            .HasOne<AlignmentData>()
-                            .WithMany()
-                            .HasForeignKey("AlignmentDataId"),
-                        j => j
-                            .HasOne<AlignmentData>()
-                            .WithMany()
-                            .HasForeignKey("AllowedAlignmentId")
-                    );
-                
-                modelBuilder.Entity<CampaignData>()
-                    .HasMany(c => c.AllowedSources)
-                    .WithMany(s => s.CampaignSourceBooks)
-                    .UsingEntity(joinEntity =>
-                    {
-                        joinEntity.ToTable("JoinTableCampaignSourceBooks");
-                    });
-            }
+            
+            modelBuilder.Entity<RaceData>()
+                .HasMany(c => c.SkinColours)
+                .WithMany(c => c.RaceSkinColours)
+                .UsingEntity(joinEntity =>
+                {
+                    joinEntity.ToTable("JoinTableRaceSkinColour");
+                });
+            
+            modelBuilder.Entity<RaceData>()
+                .HasMany(c => c.Genders)
+                .WithMany(c => c.RaceGenders)
+                .UsingEntity(joinEntity =>
+                {
+                    joinEntity.ToTable("JoinTableRaceGenders");
+                });
+            
+            modelBuilder.Entity<AlignmentData>()
+                .HasMany(a => a.AllowedAlignments)
+                .WithMany()
+                .UsingEntity<Dictionary<string, object>>(
+                    "JoinTableAllowedAlignments",
+                    j => j
+                        .HasOne<AlignmentData>()
+                        .WithMany()
+                        .HasForeignKey("AlignmentDataId"),
+                    j => j
+                        .HasOne<AlignmentData>()
+                        .WithMany()
+                        .HasForeignKey("AllowedAlignmentId")
+                );
+            
+            modelBuilder.Entity<CampaignData>()
+                .HasMany(c => c.AllowedSources)
+                .WithMany(s => s.CampaignSourceBooks)
+                .UsingEntity(joinEntity =>
+                {
+                    joinEntity.ToTable("JoinTableCampaignSourceBooks");
+                });
+        }
     }
 }

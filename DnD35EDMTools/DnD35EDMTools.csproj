@@ -4,12 +4,10 @@
         <TargetFramework>net8.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>aspnet-DnD35EDMTools-13B45F4B-55CF-4ADF-B06C-E7E8352E81DC</UserSecretsId>
     </PropertyGroup>
 
     <ItemGroup>
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="8.0.1"/>
-        <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="8.0.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="8.0.1"/>
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="8.0.1"/>
     </ItemGroup>
