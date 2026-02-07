@@ -473,7 +473,7 @@
     private int _selectedDeityId;
     private int _selectedGenderId;
     private int _randomPointsRolled;
-    private int _characterStatPoints = 25;
+    private int _characterStatPoints;
     private int _characterStrength;
     private int _characterDexterity;
     private int _characterConstitution;
@@ -971,21 +971,25 @@
                 _standardArray = [17, 16, 15, 14, 11, 9];
                 break;
             case "PBA":
+                _characterStatPoints = 25;
+                RollAllStats();
+                break;
             case "PBR":
-                if (SelectedCampaignStatRollingMethod == "PBR")
-                {
-                    _characterStatPoints = 0;
-                    _randomPointsRolled = 0;
-                }
-
-                CharacterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
-                CharacterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+                _characterStatPoints = 0;
+                _randomPointsRolled = 0;
+                RollAllStats();
                 break;
         }
+    }
+    
+    private void RollAllStats()
+    {
+        CharacterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+        CharacterDexterity = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+        CharacterConstitution = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+        CharacterIntelligence = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+        CharacterWisdom = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
+        CharacterCharisma = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
     }
 
     #endregion
