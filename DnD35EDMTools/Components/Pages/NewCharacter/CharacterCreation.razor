@@ -981,7 +981,7 @@
                 break;
         }
     }
-    
+
     private void RollAllStats()
     {
         CharacterStrength = RollStats.RollStatBasedOnMethod(SelectedCampaignStatRollingMethod);
@@ -1179,7 +1179,6 @@
 
     private void GenerateRandomCharacter()
     {
-        bool skipRollStatsAndLuck = false;
         if (_selectedCampaignId == 1)
         {
             Console.WriteLine("No Campaign Selected");
@@ -1211,7 +1210,7 @@
 
         _characterWeight = CharacterAppearanceHelpers.RandomizeWeight(_raceBaseWeight, _raceRandomWeight, ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight));
 
-        var allowedMethods = new[] { "3D6", "3D6R1", "4D6DL"};
+        var allowedMethods = new[] { "3D6", "3D6R1", "4D6DL" };
         if (allowedMethods.Contains(SelectedCampaignStatRollingMethod))
         {
             SetStatsToZero();
