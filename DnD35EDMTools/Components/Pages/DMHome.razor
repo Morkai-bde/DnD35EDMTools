@@ -147,12 +147,16 @@
 
 @code {
     private bool _dryRun = true;
-
     private int _selectedCampaignId = 1;
 
-    public int SelectedCampaignId
+    private Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
+    
+    private CampaignData? SelectedCampaign =>
+        _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+
+    private int SelectedCampaignId
     {
-        get { return _selectedCampaignId; }
+        get => _selectedCampaignId;
         set
         {
             _selectedCampaignId = value;
@@ -160,319 +164,75 @@
         }
     }
 
-    private Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
-
     private string CampaignName
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.Name;
-                }
-            }
-
-            return "";
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.Name = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.Name ?? "";
+        set { if (SelectedCampaign != null) SelectedCampaign.Name = value; }
     }
 
     private string SelectedStatRollingMethod
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.StatRollingMethod;
-                }
-            }
-
-            return "";
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.StatRollingMethod = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.StatRollingMethod ?? "";
+        set { if (SelectedCampaign != null) SelectedCampaign.StatRollingMethod = value; }
     }
 
     private string SelectedHitPointRollingMethod
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.HitPointRollingMethod;
-                }
-            }
-
-            return "";
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.HitPointRollingMethod = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.HitPointRollingMethod ?? "";
+        set { if (SelectedCampaign != null) SelectedCampaign.HitPointRollingMethod = value; }
     }
 
     private bool HideTrainedOnlySkills
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.HideTrainedOnlySkills;
-                }
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.HideTrainedOnlySkills = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.HideTrainedOnlySkills ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.HideTrainedOnlySkills = value; }
+        
     }
 
     private bool AllowAvatarPoints
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.AllowAvatarPoints;
-                }
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.AllowAvatarPoints = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.AllowAvatarPoints ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.AllowAvatarPoints = value; }
     }
 
     private bool AllowLuck
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.AllowLuck;
-                }
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.AllowLuck = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.AllowLuck ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.AllowLuck = value; }
     }
-    
+
     private bool AllowWealthAverage
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.AllowWealthAverage;
-                }
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.AllowWealthAverage = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.AllowWealthAverage ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.AllowWealthAverage = value; }
     }
-    
-    private bool AllowWealthRandom
-    {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.AllowWealthRandom;
-                }
-            }
 
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.AllowWealthRandom = value;
-                }
-            }
-        }
-    }
-    
     private bool AllowStartingEquipment
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.AllowStartingEquipment;
-                }
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.AllowStartingEquipment = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.AllowStartingEquipment ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipment = value; }
     }
-    
+
+    private bool AllowWealthRandom
+    {
+        get => SelectedCampaign?.AllowWealthRandom ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.AllowWealthRandom = value; }
+    }
+
     private bool AllowStartingEquipmentCustomization
     {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.AllowStartingEquipmentCustomization;
-                }
-            }
-
-            return false;
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.AllowStartingEquipmentCustomization = value;
-                }
-            }
-        }
+        get => SelectedCampaign?.AllowStartingEquipmentCustomization ?? false;
+        set { if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipmentCustomization = value; }
     }
-    
-    private string? Description
-    {
-        get
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    return selectedCampaign.Description;
-                }
-            }
 
-            return "";
-        }
-        set
-        {
-            if (_selectedCampaignId != 0)
-            {
-                var selectedCampaign = _campaigns.SingleOrDefault(n => n.Id == _selectedCampaignId);
-                if (selectedCampaign != null)
-                {
-                    selectedCampaign.Description = value;
-                }
-            }
-        }
+    private string Description
+    {
+        get => SelectedCampaign?.Description ?? "";
+        set { if (SelectedCampaign != null) SelectedCampaign.Description = value; }
     }
 
     private List<CampaignData> _campaigns = new List<CampaignData>();
     private List<SourceBookData> _sourceBooks = new List<SourceBookData>();
-
 
     protected override async Task OnInitializedAsync()
     {
