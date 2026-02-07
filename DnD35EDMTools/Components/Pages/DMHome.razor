@@ -160,7 +160,12 @@
         set
         {
             _selectedCampaignId = value;
-            LoadSelectedBooks();
+            _ = InvokeAsync(async () =>
+            {
+                await LoadSelectedBooks();
+                StateHasChanged();
+            });
+
         }
     }
 
@@ -246,7 +251,7 @@
         }
     }
 
-    private async void LoadSelectedBooks()
+    private async Task LoadSelectedBooks()
     {
         if (_selectedCampaignId != 0)
         {
