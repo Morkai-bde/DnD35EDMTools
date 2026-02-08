@@ -146,13 +146,25 @@
 </div>
 
 @code {
+
+    #region Fields
+
     private bool _dryRun = true;
     private int _selectedCampaignId = 1;
-
     private Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
+    private List<CampaignData> _campaigns = new List<CampaignData>();
+    private List<SourceBookData> _sourceBooks = new List<SourceBookData>();
     
+    #endregion
+
+    #region Cached Properties
+
     private CampaignData? SelectedCampaign =>
         _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+
+    #endregion
+
+    #region Campaign Selection
 
     private int SelectedCampaignId
     {
@@ -168,6 +180,10 @@
 
         }
     }
+
+    #endregion
+
+    #region Form Binding Properties
 
     private string CampaignName
     {
@@ -236,8 +252,9 @@
         set { if (SelectedCampaign != null) SelectedCampaign.Description = value; }
     }
 
-    private List<CampaignData> _campaigns = new List<CampaignData>();
-    private List<SourceBookData> _sourceBooks = new List<SourceBookData>();
+    #endregion
+
+    #region Lifecycle Methods
 
     protected override async Task OnInitializedAsync()
     {
@@ -250,6 +267,10 @@
             _selectedSourceBooks[book.Id] = false;
         }
     }
+
+    #endregion
+
+    #region Helper Methods
 
     private async Task LoadSelectedBooks()
     {
@@ -309,6 +330,10 @@
         _selectedCampaignId = 1;
         await LoadSelectedBooks();
     }
+
+    #endregion
+
+    #region CRUD Operations
 
     private async Task CreateCampaign()
     {
@@ -401,4 +426,7 @@
 
         await ReloadListsAsync(db);
     }
+
+    #endregion
+
 }
