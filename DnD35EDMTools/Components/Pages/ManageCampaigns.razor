@@ -289,7 +289,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
         _campaigns = await db.Campaigns.ToListAsync();
         _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
 
@@ -317,7 +317,7 @@
 
         if (_selectedCampaignId != 0)
         {
-            await using var db = DbContext;
+            await using var db = CreateDbContext();
             var selectedCampaign = await db.Campaigns
                 .Include(c => c.AllowedSources)
                 .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
@@ -378,7 +378,7 @@
 
     private async Task CreateCampaign()
     {
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var campaign = new CampaignData
         {
@@ -410,7 +410,7 @@
                 return;
         }
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var campaign = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
         if (campaign == null)
@@ -442,7 +442,7 @@
                 return;
         }
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var campaign = await db.Campaigns
             .Include(c => c.AllowedSources)

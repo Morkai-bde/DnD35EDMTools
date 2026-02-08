@@ -609,7 +609,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
         _campaigns = await db.Campaigns
             .Where(c => c.Id != 2)
             .Include(c => c.AllowedSources)
@@ -1157,7 +1157,7 @@
             return;
         }
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         var cc = await db.CarryingCapacity
             .AsNoTracking()
@@ -1317,7 +1317,7 @@
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
 
         db.Characters.Add(newCharacter);
 

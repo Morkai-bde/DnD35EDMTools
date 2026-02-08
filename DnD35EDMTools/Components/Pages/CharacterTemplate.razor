@@ -463,7 +463,7 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
         _characters = await db.Characters
             .ToListAsync();
 
@@ -478,7 +478,7 @@
 
     private async Task LoadCharacterAsync(int characterId)
     {
-        await using var db = DbContext;
+        await using var db = CreateDbContext();
         var character = await db.Characters
             .AsNoTracking()
             .FirstOrDefaultAsync(c => c.Id == characterId);
