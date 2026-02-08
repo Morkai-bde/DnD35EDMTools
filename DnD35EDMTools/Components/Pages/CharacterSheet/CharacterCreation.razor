@@ -6,14 +6,10 @@
 @using DnD35EDMTools.Helpers
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
 
+<PageTitle>Character Creation</PageTitle>
+
 <h3>Character Creation</h3>
 
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Character Creation</title>
-    <link rel="stylesheet" href="./styles.css"/>
-</head>
 <div class="dnd-character-creation-header">
     <button class="cch-button @((_selectedTab == 0) ? "cch-button-selected" : "")" @onclick="() => SelectTab(0)">Main</button>
     <button class="cch-button @((_selectedTab == 1) ? "cch-button-selected" : "")" @onclick="() => SelectTab(1)">Stats</button>
