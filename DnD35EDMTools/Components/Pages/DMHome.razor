@@ -19,10 +19,10 @@
             <div class="dnd-dm-home-top-section">
                 <div class="dnd-dm-home-top__left">
                     <div>
-                        <label for="campaign-name">Campaign Name</label>
+                        <label for="select-campaign-name">Campaign Name</label>
                     </div>
                     <div>
-                        <select class="dm-select" id="campaign-name" @bind="SelectedCampaignId">
+                        <select class="dm-select" id="select-campaign-name" @bind="SelectedCampaignId">
                             @foreach (var id in _campaigns)
                             {
                                 <option value=@id.Id title=@id.Description>@id.Name</option>
@@ -35,7 +35,7 @@
                             <label for="campaign-name">Campaign Name:</label>
                         </div>
                         <div>
-                            <input class="dm-input" type="text" id="name" @bind="CampaignName"/>
+                            <input class="dm-input" type="text" id="campaign-name" @bind="CampaignName"/>
                         </div>
                         <div>
                             <label for="stat-rolling-method">Stat Rolling Method</label>
@@ -154,7 +154,7 @@
     private readonly Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
     private List<CampaignData> _campaigns = [];
     private List<SourceBookData> _sourceBooks = [];
-    
+
     #endregion
 
     #region Cached Properties
@@ -177,7 +177,6 @@
                 await LoadSelectedBooks();
                 StateHasChanged();
             });
-
         }
     }
 
@@ -188,68 +187,100 @@
     private string CampaignName
     {
         get => SelectedCampaign?.Name ?? "";
-        set { if (SelectedCampaign != null) SelectedCampaign.Name = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.Name = value;
+        }
     }
 
     private string SelectedStatRollingMethod
     {
         get => SelectedCampaign?.StatRollingMethod ?? "";
-        set { if (SelectedCampaign != null) SelectedCampaign.StatRollingMethod = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.StatRollingMethod = value;
+        }
     }
 
     private string SelectedHitPointRollingMethod
     {
         get => SelectedCampaign?.HitPointRollingMethod ?? "";
-        set { if (SelectedCampaign != null) SelectedCampaign.HitPointRollingMethod = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.HitPointRollingMethod = value;
+        }
     }
 
     private bool HideTrainedOnlySkills
     {
         get => SelectedCampaign?.HideTrainedOnlySkills ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.HideTrainedOnlySkills = value; }
-        
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.HideTrainedOnlySkills = value;
+        }
     }
 
     private bool AllowAvatarPoints
     {
         get => SelectedCampaign?.AllowAvatarPoints ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.AllowAvatarPoints = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowAvatarPoints = value;
+        }
     }
 
     private bool AllowLuck
     {
         get => SelectedCampaign?.AllowLuck ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.AllowLuck = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowLuck = value;
+        }
     }
 
     private bool AllowWealthAverage
     {
         get => SelectedCampaign?.AllowWealthAverage ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.AllowWealthAverage = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowWealthAverage = value;
+        }
     }
 
     private bool AllowStartingEquipment
     {
         get => SelectedCampaign?.AllowStartingEquipment ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipment = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipment = value;
+        }
     }
 
     private bool AllowWealthRandom
     {
         get => SelectedCampaign?.AllowWealthRandom ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.AllowWealthRandom = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowWealthRandom = value;
+        }
     }
 
     private bool AllowStartingEquipmentCustomization
     {
         get => SelectedCampaign?.AllowStartingEquipmentCustomization ?? false;
-        set { if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipmentCustomization = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipmentCustomization = value;
+        }
     }
 
     private string Description
     {
         get => SelectedCampaign?.Description ?? "";
-        set { if (SelectedCampaign != null) SelectedCampaign.Description = value; }
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.Description = value;
+        }
     }
 
     #endregion
@@ -280,9 +311,10 @@
             {
                 _selectedSourceBooks[book.Id] = false;
             }
+
             return;
         }
-        
+
         if (_selectedCampaignId != 0)
         {
             await using var db = DbContext;
