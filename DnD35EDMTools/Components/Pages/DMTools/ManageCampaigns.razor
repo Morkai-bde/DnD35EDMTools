@@ -289,13 +289,20 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = CreateDbContext();
-        _campaigns = await db.Campaigns.ToListAsync();
-        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
-
-        foreach (var book in _sourceBooks)
+        try
         {
-            _selectedSourceBooks[book.Id] = false;
+            await using var db = CreateDbContext();
+            _campaigns = await db.Campaigns.ToListAsync();
+            _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+
+            foreach (var book in _sourceBooks)
+            {
+                _selectedSourceBooks[book.Id] = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to initialize Manage Campaigns: {ex.Message}");
         }
     }
 
@@ -317,17 +324,24 @@
 
         if (_selectedCampaignId != 0)
         {
-            await using var db = CreateDbContext();
-            var selectedCampaign = await db.Campaigns
-                .Include(c => c.AllowedSources)
-                .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
-
-            if (selectedCampaign != null)
+            try
             {
-                foreach (var book in _sourceBooks)
+                await using var db = CreateDbContext();
+                var selectedCampaign = await db.Campaigns
+                    .Include(c => c.AllowedSources)
+                    .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+                if (selectedCampaign != null)
                 {
-                    _selectedSourceBooks[book.Id] = selectedCampaign.AllowedSources.Any(s => s.Id == book.Id);
+                    foreach (var book in _sourceBooks)
+                    {
+                        _selectedSourceBooks[book.Id] = selectedCampaign.AllowedSources.Any(s => s.Id == book.Id);
+                    }
                 }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"Failed to load selected books: {ex.Message}");
             }
         }
     }
@@ -378,24 +392,31 @@
 
     private async Task CreateCampaign()
     {
-        await using var db = CreateDbContext();
-
-        var campaign = new CampaignData
+        try
         {
-            AllowedSources = []
-        };
+            await using var db = CreateDbContext();
 
-        MapFormToCampaign(campaign);
-        await SetCampaignSourcesAsync(db, campaign);
+            var campaign = new CampaignData
+            {
+                AllowedSources = []
+            };
 
-        db.Campaigns.Add(campaign);
+            MapFormToCampaign(campaign);
+            await SetCampaignSourcesAsync(db, campaign);
 
-        if (!_dryRun)
-        {
-            await db.SaveChangesAsync();
+            db.Campaigns.Add(campaign);
+
+            if (!_dryRun)
+            {
+                await db.SaveChangesAsync();
+            }
+
+            await ReloadCampaignsAsync(db);
         }
-
-        await ReloadCampaignsAsync(db);
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to create campaign: {ex.Message}");
+        }
     }
 
     private async Task UpdateCampaign()
@@ -410,24 +431,31 @@
                 return;
         }
 
-        await using var db = CreateDbContext();
-
-        var campaign = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
-        if (campaign == null)
+        try
         {
-            Console.WriteLine("Campaign not found.");
-            return;
+            await using var db = CreateDbContext();
+
+            var campaign = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+            if (campaign == null)
+            {
+                Console.WriteLine("Campaign not found.");
+                return;
+            }
+
+            MapFormToCampaign(campaign);
+            await SetCampaignSourcesAsync(db, campaign);
+
+            if (!_dryRun)
+            {
+                await db.SaveChangesAsync();
+            }
+
+            await ReloadCampaignsAsync(db);
         }
-
-        MapFormToCampaign(campaign);
-        await SetCampaignSourcesAsync(db, campaign);
-
-        if (!_dryRun)
+        catch (Exception ex)
         {
-            await db.SaveChangesAsync();
+            Console.WriteLine($"Failed to update campaign: {ex.Message}");
         }
-
-        await ReloadCampaignsAsync(db);
     }
 
     private async Task DeleteCampaign()
@@ -442,26 +470,33 @@
                 return;
         }
 
-        await using var db = CreateDbContext();
-
-        var campaign = await db.Campaigns
-            .Include(c => c.AllowedSources)
-            .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
-
-        if (campaign == null)
+        try
         {
-            Console.WriteLine("Campaign not found.");
-            return;
+            await using var db = CreateDbContext();
+
+            var campaign = await db.Campaigns
+                .Include(c => c.AllowedSources)
+                .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+            if (campaign == null)
+            {
+                Console.WriteLine("Campaign not found.");
+                return;
+            }
+
+            db.Campaigns.Remove(campaign);
+
+            if (!_dryRun)
+            {
+                await db.SaveChangesAsync();
+            }
+
+            await ReloadCampaignsAsync(db);
         }
-
-        db.Campaigns.Remove(campaign);
-
-        if (!_dryRun)
+        catch (Exception ex)
         {
-            await db.SaveChangesAsync();
+            Console.WriteLine($"Failed to delete campaign: {ex.Message}");
         }
-
-        await ReloadCampaignsAsync(db);
     }
 
     #endregion
