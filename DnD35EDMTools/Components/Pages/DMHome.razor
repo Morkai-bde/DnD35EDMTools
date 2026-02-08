@@ -151,9 +151,9 @@
 
     private bool _dryRun = true;
     private int _selectedCampaignId = 1;
-    private Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
-    private List<CampaignData> _campaigns = new List<CampaignData>();
-    private List<SourceBookData> _sourceBooks = new List<SourceBookData>();
+    private readonly Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
+    private List<CampaignData> _campaigns = [];
+    private List<SourceBookData> _sourceBooks = [];
     
     #endregion
 
@@ -274,6 +274,15 @@
 
     private async Task LoadSelectedBooks()
     {
+        if (_selectedCampaignId <= 0)
+        {
+            foreach (var book in _sourceBooks)
+            {
+                _selectedSourceBooks[book.Id] = false;
+            }
+            return;
+        }
+        
         if (_selectedCampaignId != 0)
         {
             await using var db = DbContext;
@@ -324,7 +333,7 @@
         }
     }
 
-    private async Task ReloadListsAsync(ApplicationDbContext db)
+    private async Task ReloadCampaignsAsync(ApplicationDbContext db)
     {
         _campaigns = await db.Campaigns.ToListAsync();
         _selectedCampaignId = 1;
@@ -341,7 +350,7 @@
 
         var campaign = new CampaignData
         {
-            AllowedSources = new List<SourceBookData>()
+            AllowedSources = []
         };
 
         MapFormToCampaign(campaign);
@@ -354,21 +363,19 @@
             await db.SaveChangesAsync();
         }
 
-        await ReloadListsAsync(db);
+        await ReloadCampaignsAsync(db);
     }
 
     private async Task UpdateCampaign()
     {
-        if (_selectedCampaignId == 0)
+        switch (_selectedCampaignId)
         {
-            Console.WriteLine("No campaign selected.");
-            return;
-        }
-
-        if (_selectedCampaignId <= 2)
-        {
-            Console.WriteLine("Can not update default campaigns");
-            return;
+            case 0:
+                Console.WriteLine("No campaign selected.");
+                return;
+            case <= 2:
+                Console.WriteLine("Cannot update default campaigns");
+                return;
         }
 
         await using var db = DbContext;
@@ -388,21 +395,19 @@
             await db.SaveChangesAsync();
         }
 
-        await ReloadListsAsync(db);
+        await ReloadCampaignsAsync(db);
     }
 
     private async Task DeleteCampaign()
     {
-        if (_selectedCampaignId == 0)
+        switch (_selectedCampaignId)
         {
-            Console.WriteLine("No campaign selected.");
-            return;
-        }
-
-        if (_selectedCampaignId <= 2)
-        {
-            Console.WriteLine("Can not delete default campaigns");
-            return;
+            case 0:
+                Console.WriteLine("No campaign selected.");
+                return;
+            case <= 2:
+                Console.WriteLine("Cannot delete default campaigns");
+                return;
         }
 
         await using var db = DbContext;
@@ -424,7 +429,7 @@
             await db.SaveChangesAsync();
         }
 
-        await ReloadListsAsync(db);
+        await ReloadCampaignsAsync(db);
     }
 
     #endregion
