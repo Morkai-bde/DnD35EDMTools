@@ -27,7 +27,7 @@
                 <div class="nav-item px-3">
                     <form action="Account/Logout" method="post">
                         <AntiforgeryToken/>
-                        <input type="hidden" name="ReturnUrl" value="@currentUrl"/>
+                        <input type="hidden" name="ReturnUrl" value="@_currentUrl"/>
                         <button type="submit" class="nav-link">
                             <span class="bi bi-arrow-bar-left-nav-menu" aria-hidden="true"></span> Logout
                         </button>
@@ -36,10 +36,10 @@
             </Authorized>
             <NotAuthorized>
                 <div class="nav-item px-3">
-                                    <NavLink class="nav-link" href="ManageCampaigns">
-                                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Manage Campaigns
-                                    </NavLink>
-                                </div>
+                    <NavLink class="nav-link" href="ManageCampaigns">
+                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Manage Campaigns
+                    </NavLink>
+                </div>
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="CharacterTemplate">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Character Template
@@ -53,11 +53,6 @@
                 <div class="nav-item px-3">
                     <NavLink class="nav-link" href="AddNewRace">
                         <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> New Race
-                    </NavLink>
-                </div>
-                <div class="nav-item px-3">
-                    <NavLink class="nav-link" href="Tests">
-                        <span class="bi bi-person-fill-nav-menu" aria-hidden="true"></span> Tests
                     </NavLink>
                 </div>
                 <div class="nav-item px-3">
@@ -76,17 +71,17 @@
 </div>
 
 @code {
-    private string? currentUrl;
+    private string? _currentUrl;
 
     protected override void OnInitialized()
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
+        _currentUrl = NavigationManager.ToBaseRelativePath(NavigationManager.Uri);
         NavigationManager.LocationChanged += OnLocationChanged;
     }
 
     private void OnLocationChanged(object? sender, LocationChangedEventArgs e)
     {
-        currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
+        _currentUrl = NavigationManager.ToBaseRelativePath(e.Location);
         StateHasChanged();
     }
 
