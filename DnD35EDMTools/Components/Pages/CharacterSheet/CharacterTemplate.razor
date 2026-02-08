@@ -18,7 +18,7 @@
     <select class="cc-select" id="character-id" name="character" @bind="SelectedCharacterId">
         @foreach (var id in _characters)
         {
-            <option value="@id.Id" titme="@id.Name">@id.Name</option>
+            <option value="@id.Id" title="@id.Name">@id.Name</option>
         }
     </select>
     <button
@@ -403,6 +403,8 @@
 
 @code {
 
+    #region Fields
+
     [Parameter] public int Row { get; set; }
 
     private List<OrderData> _orders = [];
@@ -461,103 +463,139 @@
 
 //[Parameter] public List<string> Skills { get; set; } = new List<string>();
 
+    #endregion
+
+    #region Lifecycle Methods
+
     protected override async Task OnInitializedAsync()
     {
         await using var db = CreateDbContext();
         _characters = await db.Characters
+            .AsNoTracking()
             .ToListAsync();
 
-        _orders = await db.Orders.ToListAsync();
-        _moralities = await db.Moralities.ToListAsync();
+        _orders = await db.Orders.AsNoTracking().ToListAsync();
+        _moralities = await db.Moralities.AsNoTracking().ToListAsync();
 
-        await base.OnInitializedAsync(
-        );
+        for (var i = 0; i < _characterLanguages.Length; i++)
+        {
+            _characterLanguages[i] = string.Empty;
+        }
+
+        await base.OnInitializedAsync();
     }
 
     private int SelectedCharacterId { get; set; }
 
+    #endregion
+
+    #region Load Character
+
     private async Task LoadCharacterAsync(int characterId)
     {
-        await using var db = CreateDbContext();
-        var character = await db.Characters
-            .AsNoTracking()
-            .FirstOrDefaultAsync(c => c.Id == characterId);
-
-        if (character is null)
-            return;
-
-        var colorIds = new[] { character.Eyes, character.Hair, character.Skin };
-        var colors = await db.Colours
-            .Where(c => colorIds.Contains(c.Id))
-            .ToDictionaryAsync(c => c.Id, c => c.Colour);
-
-        _characterEyes = colors.GetValueOrDefault(character.Eyes) ?? "";
-        _characterHair = colors.GetValueOrDefault(character.Hair) ?? "";
-        _characterSkin = colors.GetValueOrDefault(character.Skin) ?? "";
-
-        var classTask = db.Classes.Where(c => c.Id == character.Class).Select(c => c.Name).FirstOrDefaultAsync();
-        var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
-        var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
-        var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
-        var languagesTask = db.Languages.Where(l => character.Languages.Contains(l.Id)).Select(l => l.Name).ToListAsync();
-
-        await Task.WhenAll(classTask, raceTask, deityTask, genderTask, languagesTask);
-
-        _characterClass = await classTask ?? "";
-        _characterRace = await raceTask ?? "";
-        _characterDeity = await deityTask ?? "";
-        _characterGender = await genderTask ?? "";
-        var characterLanguageNames = await languagesTask;
-
-        for (var i = 0; i < 21; i++)
+        if (characterId <= 0)
         {
-            _characterLanguages[i] = i < characterLanguageNames.Count
-                ? characterLanguageNames[i]
-                : string.Empty;
+            return;
         }
 
-        _characterName = character.Name;
-        _characterExperience = $"{character.Experience}/";
-        _characterHitPoints = character.HitPoints;
-        _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
-        _characterAge = character.Age;
-        _characterWeight = $"{character.Weight} lbs.";
-        _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
-        _characterPlayerName = character.PlayerName ?? string.Empty;
+        try
+        {
+            await using var db = CreateDbContext();
+            var character = await db.Characters
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == characterId);
 
-        _characterLightLoad = character.LightLoad;
-        _characterMediumLoad = character.MediumLoad;
-        _characterHeavyLoad = character.HeavyLoad;
-        _characterLiftOverHead = character.LiftOverHead;
-        _characterLiftOffGround = character.LiftOffGround;
-        _characterPushOrDrag = character.PushOrDrag;
+            if (character is null)
+                return;
 
-        _characterStrength = character.Strength;
-        _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength);
-        _characterDexterity = character.Dexterity;
-        _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity);
-        _characterConstitution = character.Constitution;
-        _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution);
-        _characterIntelligence = character.Intelligence;
-        _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence);
-        _characterWisdom = character.Wisdom;
-        _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom);
-        _characterCharisma = character.Charisma;
-        _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma);
+            var classTask = db.Classes.Where(c => c.Id == character.Class).Select(c => c.Name).FirstOrDefaultAsync();
+            var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
+            var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
+            var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
 
-        CalculateLuck();
+            var colorIds = new[] { character.Eyes, character.Hair, character.Skin };
+            var colorsTask = db.Colours
+                .AsNoTracking()
+                .Where(c => colorIds.Contains(c.Id))
+                .ToDictionaryAsync(c => c.Id, c => c.Colour);
 
-        _characterFortSave = character.BaseFortitudeSave;
-        _characterRefSave = character.BaseReflexSave;
-        _characterWillSave = character.BaseWillSave;
+            var languagesTask = db.Languages
+                .AsNoTracking()
+                .Where(l => character.Languages.Contains(l.Id))
+                .Select(l => l.Name)
+                .ToListAsync();
 
-        _characterPlatinum = character.PlatinumPieces;
-        _characterGold = character.GoldPieces;
-        _characterSilver = character.SilverPieces;
-        _characterCopper = character.CopperPieces;
+            await Task.WhenAll(classTask, raceTask, deityTask, genderTask, colorsTask, languagesTask);
 
-        StateHasChanged();
+            _characterClass = await classTask ?? string.Empty;
+            _characterRace = await raceTask ?? string.Empty;
+            _characterDeity = await deityTask ?? string.Empty;
+            _characterGender = await genderTask ?? string.Empty;
+
+            var colors = await colorsTask;
+            _characterEyes = colors.GetValueOrDefault(character.Eyes) ?? string.Empty;
+            _characterHair = colors.GetValueOrDefault(character.Hair) ?? string.Empty;
+            _characterSkin = colors.GetValueOrDefault(character.Skin) ?? string.Empty;
+
+            var characterLanguageNames = await languagesTask;
+            for (var i = 0; i < 21; i++)
+            {
+                _characterLanguages[i] = i < characterLanguageNames.Count
+                    ? characterLanguageNames[i]
+                    : string.Empty;
+            }
+
+            _characterName = character.Name;
+            _characterExperience = $"{character.Experience}/";
+            _characterHitPoints = character.HitPoints;
+            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
+            _characterAge = character.Age;
+            _characterWeight = $"{character.Weight} lbs.";
+            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
+            _characterPlayerName = character.PlayerName ?? string.Empty;
+
+            _characterLightLoad = character.LightLoad;
+            _characterMediumLoad = character.MediumLoad;
+            _characterHeavyLoad = character.HeavyLoad;
+            _characterLiftOverHead = character.LiftOverHead;
+            _characterLiftOffGround = character.LiftOffGround;
+            _characterPushOrDrag = character.PushOrDrag;
+
+            _characterStrength = character.Strength;
+            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength);
+            _characterDexterity = character.Dexterity;
+            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity);
+            _characterConstitution = character.Constitution;
+            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution);
+            _characterIntelligence = character.Intelligence;
+            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence);
+            _characterWisdom = character.Wisdom;
+            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom);
+            _characterCharisma = character.Charisma;
+            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma);
+
+            CalculateLuck();
+
+            _characterFortSave = character.BaseFortitudeSave;
+            _characterRefSave = character.BaseReflexSave;
+            _characterWillSave = character.BaseWillSave;
+
+            _characterPlatinum = character.PlatinumPieces;
+            _characterGold = character.GoldPieces;
+            _characterSilver = character.SilverPieces;
+            _characterCopper = character.CopperPieces;
+
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load character {characterId}: {ex.Message}");
+        }
     }
+
+    #endregion
+
+    #region Calculations
 
     private void CalculateLuck()
     {
@@ -578,5 +616,7 @@
             _characterLuckMod = ConversionHelper.ConvertStatToBonus(_characterLuck.Value);
         }
     }
+
+    #endregion
 
 }
