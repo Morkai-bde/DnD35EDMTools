@@ -609,23 +609,30 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await using var db = CreateDbContext();
-        _campaigns = await db.Campaigns
-            .Where(c => c.Id != 2)
-            .Include(c => c.AllowedSources)
-            .ToListAsync();
-        _races = await db.Races.Include(r => r.HairColours)
-            .Include(r => r.EyeColours)
-            .Include(r => r.SkinColours)
-            .Include(r => r.Genders)
-            .ToListAsync();
-        _orders = await db.Orders.ToListAsync();
-        _moralities = await db.Moralities.ToListAsync();
-        _classes = await db.Classes.ToListAsync();
-        _genders = await db.Genders.ToListAsync();
-        _deities = await db.Deities.ToListAsync();
-        _languages = await db.Languages.ToListAsync();
-        InitializeStatFields();
+        try
+        {
+            await using var db = CreateDbContext();
+            _campaigns = await db.Campaigns
+                .Where(c => c.Id != 2)
+                .Include(c => c.AllowedSources)
+                .ToListAsync();
+            _races = await db.Races.Include(r => r.HairColours)
+                .Include(r => r.EyeColours)
+                .Include(r => r.SkinColours)
+                .Include(r => r.Genders)
+                .ToListAsync();
+            _orders = await db.Orders.ToListAsync();
+            _moralities = await db.Moralities.ToListAsync();
+            _classes = await db.Classes.ToListAsync();
+            _genders = await db.Genders.ToListAsync();
+            _deities = await db.Deities.ToListAsync();
+            _languages = await db.Languages.ToListAsync();
+            InitializeStatFields();
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to initialize Character Creation: {ex.Message}");
+        }
     }
 
     private void InitializeStatFields()
@@ -1157,24 +1164,31 @@
             return;
         }
 
-        await using var db = CreateDbContext();
-
-        var cc = await db.CarryingCapacity
-            .AsNoTracking()
-            .SingleOrDefaultAsync(x => x.Id == CharacterStrength);
-
-        if (cc is null)
+        try
         {
-            Console.WriteLine("Unable to load Carrying Capacity Data");
-            return;
-        }
+            await using var db = CreateDbContext();
 
-        _lightLoad = WeightHelper.GetWeight(cc.LightLoad, _raceSize);
-        _mediumLoad = WeightHelper.GetWeight(cc.MediumLoad, _raceSize);
-        _heavyLoad = WeightHelper.GetWeight(cc.HeavyLoad, _raceSize);
-        _liftOverHead = WeightHelper.GetWeight(cc.LiftOverHead, _raceSize);
-        _liftOffGround = WeightHelper.GetWeight(cc.LiftOffGround, _raceSize);
-        _pushOrDrag = WeightHelper.GetWeight(cc.PushOrDrag, _raceSize);
+            var cc = await db.CarryingCapacity
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == CharacterStrength);
+
+            if (cc is null)
+            {
+                Console.WriteLine("Unable to load Carrying Capacity Data");
+                return;
+            }
+
+            _lightLoad = WeightHelper.GetWeight(cc.LightLoad, _raceSize);
+            _mediumLoad = WeightHelper.GetWeight(cc.MediumLoad, _raceSize);
+            _heavyLoad = WeightHelper.GetWeight(cc.HeavyLoad, _raceSize);
+            _liftOverHead = WeightHelper.GetWeight(cc.LiftOverHead, _raceSize);
+            _liftOffGround = WeightHelper.GetWeight(cc.LiftOffGround, _raceSize);
+            _pushOrDrag = WeightHelper.GetWeight(cc.PushOrDrag, _raceSize);
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to load Carrying Capacity: {ex.Message}");
+        }
     }
 
     private void GenerateRandomCharacter()
@@ -1317,16 +1331,23 @@
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 
-        await using var db = CreateDbContext();
-
-        db.Characters.Add(newCharacter);
-
-        if (!_dryRun)
-            await db.SaveChangesAsync();
-
-        foreach (var property in newCharacter.GetType().GetProperties())
+        try
         {
-            Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
+            await using var db = CreateDbContext();
+
+            db.Characters.Add(newCharacter);
+
+            if (!_dryRun)
+                await db.SaveChangesAsync();
+
+            foreach (var property in newCharacter.GetType().GetProperties())
+            {
+                Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Failed to create character: {ex.Message}");
         }
     }
 
