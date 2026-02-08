@@ -303,17 +303,10 @@
         }
     }
 
-    private async Task ReloadListsAsync(ApplicationDbContext db, int? keepSelectedCampaignId = null)
+    private async Task ReloadListsAsync(ApplicationDbContext db)
     {
-        _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
         _campaigns = await db.Campaigns.ToListAsync();
-        var targetCampaignId = keepSelectedCampaignId ?? _selectedCampaignId;
-        if (!_campaigns.Any(c => c.Id == targetCampaignId))
-        {
-            targetCampaignId = _campaigns.FirstOrDefault()?.Id ?? 0;
-        }
-        _selectedCampaignId = targetCampaignId;
-        _selectedSourceBooks = _sourceBooks.ToDictionary(b => b.Id, b => false);
+        _selectedCampaignId = 1;
         await LoadSelectedBooks();
     }
 
@@ -327,15 +320,9 @@
         };
 
         MapFormToCampaign(campaign);
+        await SetCampaignSourcesAsync(db, campaign);
 
         db.Campaigns.Add(campaign);
-
-        if (!_dryRun)
-        {
-            await db.SaveChangesAsync();
-        }
-
-        await SetCampaignSourcesAsync(db, campaign);
 
         if (!_dryRun)
         {
@@ -404,8 +391,6 @@
             Console.WriteLine("Campaign not found.");
             return;
         }
-        
-        campaign.AllowedSources.Clear();
 
         db.Campaigns.Remove(campaign);
 
