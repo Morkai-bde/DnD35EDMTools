@@ -4,6 +4,7 @@ using Microsoft.EntityFrameworkCore;
 using DnD35EDMTools.Components;
 using DnD35EDMTools.Components.Account;
 using DnD35EDMTools.Data;
+using DnD35EDMTools.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +38,7 @@ builder.Services.AddIdentityCore<ApplicationUser>(options => options.SignIn.Requ
     .AddDefaultTokenProviders();
 
 builder.Services.AddSingleton<IEmailSender<ApplicationUser>, IdentityNoOpEmailSender>();
+builder.Services.AddSingleton<NotificationService>();
 
 var app = builder.Build();
 

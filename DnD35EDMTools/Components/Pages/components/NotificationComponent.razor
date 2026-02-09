@@ -1,0 +1,76 @@
+﻿@using DnD35EDMTools.Data.Classes
+@using DnD35EDMTools.Services
+
+
+@inject NotificationService NotificationService
+
+<div class="dnd-notification-container">
+    @foreach (var notification in NotificationService.Notifications.ToList())
+    {
+        <div @key="notification.Id" class="dnd-notification @GetCssClass(notification.Type)">
+            <span>@notification.Message</span>
+            <div class="dnd-progress-bar" style="width: @(GetProgressWidth(notification))%"></div>
+            <button class="dnd-notification-button" @onclick="() => RemoveNotification(notification.Id)">x</button>
+        </div>
+    }
+</div>
+
+@code {
+    private Timer? _timer;
+
+    protected override async Task OnInitializedAsync()
+    {
+        NotificationService.OnChange += async () => await InvokeAsync(StateHasChanged);
+        
+        _timer = new Timer(UpdateProgressBars, null, 0, 100);
+    }
+
+    private void UpdateProgressBars(object state)
+    {
+        InvokeAsync(() =>
+        {
+            var expiredNotifications = NotificationService.Notifications
+                .Where(n => (DateTime.Now - n.CreatedAt).TotalSeconds >= n.DurationSeconds)
+                .ToList();
+
+            foreach (var notification in expiredNotifications)
+            {
+                RemoveNotification(notification.Id);
+            }
+
+            StateHasChanged();
+        });
+    }
+
+    private void RemoveNotification(Guid id)
+    {
+        NotificationService.RemoveNotification(id);
+    }
+
+    private string GetCssClass(NotificationType type)
+    {
+        return type switch
+        {
+            NotificationType.Success => "dnd-notification-success",
+            NotificationType.Error => "dnd-notification-error",
+            NotificationType.Warning => "dnd-notification-warning",
+            NotificationType.Info => "dnd-notification-info",
+            _ => string.Empty,
+        };
+    }
+
+    private double GetProgressWidth(Notification notification)
+    {
+        var elapsedSeconds = (DateTime.Now - notification.CreatedAt).TotalSeconds;
+        var remainingSeconds = notification.DurationSeconds - elapsedSeconds;
+
+        return Math.Max(0, (remainingSeconds / notification.DurationSeconds) * 100);
+    }
+
+    public async ValueTask DisposeAsync()
+    {
+        _timer?.Dispose();
+        await Task.CompletedTask;
+    }
+
+}
