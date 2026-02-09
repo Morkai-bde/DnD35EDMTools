@@ -18,13 +18,14 @@
                     </div>
                     <div>
                         <select class="dm-select" id="select-campaign-name" @bind="SelectedCampaignId">
+                            <option value="0">Select Campaign</option>
                             @foreach (var id in _campaigns)
                             {
                                 <option value=@id.Id title=@id.Description>@id.Name</option>
                             }
                         </select>
                     </div>
-                    @if (_selectedCampaignId >= 2)
+                    @if (_selectedCampaignId > NoSelectedId)
                     {
                         <div>
                             <label for="campaign-name">Campaign Name:</label>
@@ -144,8 +145,9 @@
 
     #region Fields
 
+    private const int NoSelectedId = 0;
     private bool _dryRun = true;
-    private int _selectedCampaignId = 1;
+    private int _selectedCampaignId;
     private readonly Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
     private List<CampaignData> _campaigns = [];
     private List<SourceBookData> _sourceBooks = [];
@@ -155,7 +157,7 @@
     #region Cached Properties
 
     private CampaignData? SelectedCampaign =>
-        _selectedCampaignId > 0 ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+        _selectedCampaignId > NoSelectedId ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
 
     #endregion
 
@@ -307,7 +309,7 @@
 
     private async Task LoadSelectedBooks()
     {
-        if (_selectedCampaignId <= 0)
+        if (_selectedCampaignId == NoSelectedId)
         {
             foreach (var book in _sourceBooks)
             {
@@ -317,7 +319,7 @@
             return;
         }
 
-        if (_selectedCampaignId != 0)
+        if (_selectedCampaignId > NoSelectedId)
         {
             try
             {
@@ -377,7 +379,7 @@
     private async Task ReloadCampaignsAsync(ApplicationDbContext db)
     {
         _campaigns = await db.Campaigns.ToListAsync();
-        _selectedCampaignId = 1;
+        _selectedCampaignId = NoSelectedId;
         await LoadSelectedBooks();
     }
 
@@ -421,7 +423,7 @@
             case 0:
                 Console.WriteLine("No campaign selected.");
                 return;
-            case <= 2:
+            case 1:
                 Console.WriteLine("Cannot update default campaigns");
                 return;
         }
@@ -460,7 +462,7 @@
             case 0:
                 Console.WriteLine("No campaign selected.");
                 return;
-            case <= 2:
+            case 1:
                 Console.WriteLine("Cannot delete default campaigns");
                 return;
         }
