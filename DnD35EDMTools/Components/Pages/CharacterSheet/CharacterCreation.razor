@@ -29,6 +29,7 @@
                 </div>
                 <div>
                     <select class="cc-select" id="campaign" name="campaign" @bind="SelectedCampaignId">
+                        <option value="0">Select Campaign</option>
                         @foreach (var id in _campaigns)
                         {
                             <option value="@id.Id" title="@id.Description">@id.Name</option>
@@ -38,7 +39,7 @@
                 <div>
                     &nbsp;
                 </div>
-                @if (_selectedCampaignId != 1)
+                @if (_selectedCampaignId > NoSelectionId)
                 {
                     <div>
                         <label for="name">Name:</label>
@@ -68,9 +69,25 @@
                     </div>
                     <div>
                         <select class="cc-select" id="gender" @bind="SelectedGenderId">
+                            <option value="0">Select a Gender</option>
                             @foreach (var gender in GetRaceGenders())
                             {
                                 <option value=@gender.Id title=@gender.Description>@gender.Gender</option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        <label for="class">Class:</label>
+                    </div>
+                    <div>
+                        <select class="cc-select" id="class" @bind="SelectedClassId">
+                            <option value="0">Select a Class</option>
+                            @foreach (var name in _classes)
+                            {
+                                <option value=@name.Id title=@name.Description>@name.Name</option>
                             }
                         </select>
                     </div>
@@ -82,6 +99,7 @@
                     </div>
                     <div>
                         <select class="cc-select" id="order" @bind="_selectedOrderId">
+                            <option value="0">Select an Order</option>
                             @foreach (var order in _orders)
                             {
                                 <option value=@order.Id title=@order.Description>@order.Order</option>
@@ -96,6 +114,7 @@
                     </div>
                     <div>
                         <select class="cc-select" id="morality" @bind="_selectedMoralityId">
+                            <option value="0">Select a Morality</option>
                             @foreach (var morality in _moralities)
                             {
                                 <option value=@morality.Id title=@morality.Description>@morality.Morality</option>
@@ -110,6 +129,7 @@
                     </div>
                     <div>
                         <select class="cc-select" id="deity" @bind="_selectedDeityId">
+                            <option value="0">Select a Deity</option>
                             @foreach (var name in FilteredDeities)
                             {
                                 <option value=@name.Id title=@name.Description>@name.Name</option>
@@ -118,17 +138,6 @@
                     </div>
                     <div>
                         &nbsp;
-                    </div>
-                    <div>
-                        <label for="class">Class:</label>
-                    </div>
-                    <div>
-                        <select class="cc-select" id="class" @bind="SelectedClassId">
-                            @foreach (var name in _classes)
-                            {
-                                <option value=@name.Id title=@name.Description>@name.Name</option>
-                            }
-                        </select>
                     </div>
                 }
             </div>
@@ -445,7 +454,7 @@
     private readonly List<int> _selectedLanguageIds = [];
     private readonly List<StartingEquipment> _startingEquipmentMethods = [];
 
-    private int _selectedCampaignId = 1;
+    private int _selectedCampaignId;
 
     private string _characterName = "";
     private int? _characterAge;
@@ -673,32 +682,36 @@
         get => _selectedRaceId;
         set
         {
+            if (_selectedRaceId == value) return;
             _selectedRaceId = value;
+            
+            _selectedGenderId = NoSelectionId;
+            _selectedOrderId = NoSelectionId;
+            _selectedMoralityId = NoSelectionId;
+            _selectedDeityId = NoSelectionId;
 
-            if (SelectedRace != null)
+            if (SelectedRace == null) return;
+            if (_selectedRaceId > NoSelectionId)
             {
-                if (_selectedRaceId > NoSelectionId)
-                {
-                    _raceStartingAge = SelectedRace.AdulthoodAge;
-                    _raceHairColours = SelectedRace.HairColours.ToList();
-                    _raceEyeColours = SelectedRace.EyeColours.ToList();
-                    _raceSkinColours = SelectedRace.SkinColours.ToList();
-                    _raceSize = SelectedRace.Size;
-                }
-                else
-                {
-                    _raceHairColours = [];
-                    _raceEyeColours = [];
-                    _raceSkinColours = [];
-                }
-
-                if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
-                {
-                    GetAgeDiceType();
-                }
-
-                PopulateStartingEquipmentMethods();
+                _raceStartingAge = SelectedRace.AdulthoodAge;
+                _raceHairColours = SelectedRace.HairColours.ToList();
+                _raceEyeColours = SelectedRace.EyeColours.ToList();
+                _raceSkinColours = SelectedRace.SkinColours.ToList();
+                _raceSize = SelectedRace.Size;
             }
+            else
+            {
+                _raceHairColours = [];
+                _raceEyeColours = [];
+                _raceSkinColours = [];
+            }
+
+            if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
+            {
+                GetAgeDiceType();
+            }
+
+            PopulateStartingEquipmentMethods();
         }
     }
 
@@ -707,6 +720,7 @@
         get => _selectedGenderId;
         set
         {
+            if (_selectedGenderId == value) return;
             _selectedGenderId = value;
             if (_selectedGenderId > NoSelectionId)
                 GetRaceHeightAndWeight();
@@ -725,22 +739,20 @@
         get => _selectedClassId;
         set
         {
-            if (_selectedClassId != value)
+            if (_selectedClassId == value) return;
+            _selectedClassId = value;
+
+            if (SelectedClass != null)
             {
-                _selectedClassId = value;
-
-                if (SelectedClass != null)
-                {
-                    _classAgeCategory = SelectedClass.AgeCategory;
-                }
-
-                if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
-                {
-                    GetAgeDiceType();
-                }
-
-                SetWealthToZero();
+                _classAgeCategory = SelectedClass.AgeCategory;
             }
+
+            if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
+            {
+                GetAgeDiceType();
+            }
+
+            SetWealthToZero();
         }
     }
 
