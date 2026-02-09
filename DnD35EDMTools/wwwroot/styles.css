@@ -512,6 +512,15 @@
     max-height: 480px;
     padding: 20px;
 }
+.dnd-cc-tab-languages__header {
+    border-color: var(--cellbordercolour);
+    grid-auto-flow: column;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-bottom: 0;
+}
 
 .dnd-cc-tab-languages {
     border-color: var(--cellbordercolour);

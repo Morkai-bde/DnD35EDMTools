@@ -365,12 +365,23 @@
         {
             @if (SelectedClassId > NoSelectionId && SelectedRaceId > NoSelectionId)
             {
+                <div class="dnd-cc-tab-languages__header">
+                    <strong>Additional language selections remaining: @RemainingLanguageSelections</strong>
+                </div>
+                <div>
+                    &nbsp;
+                </div>
                 <div class="dnd-cc-tab-languages">
                     @foreach (var language in FilteredLanguages)
                     {
-                        var isBonus = language.IsBonus;
+                        var isChecked = _selectedLanguageIds.Contains(language.Id) || language.IsBonus;
+                        var isDisabled = language.IsBonus || (!isChecked && RemainingLanguageSelections <= 0);
                         <div class="language-item">
-                            <input type="checkbox" id="@language.Name.ToLower()" @onchange="_ => ToggleLanguageSelection(language.Id)" checked="@isBonus">
+                            <input type="checkbox"
+                                   id="@language.Name.ToLower()"
+                                   checked="@isChecked"
+                                   disabled="@isDisabled"
+                                   @onchange="_ => ToggleLanguageSelection(language.Id)">
                             &nbsp;
                             <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
                         </div>
@@ -585,18 +596,14 @@
                         if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
                         {
                             filteredLanguages.Add(language);
-
-                            if (language.IsBonus && !_selectedLanguageIds.Contains(language.Id))
-                            {
-                                _selectedLanguageIds.Add(language.Id);
-                            }
-
                             break;
                         }
                     }
                 }
             }
 
+            // prune selections that are no longer allowed
+            _selectedLanguageIds.RemoveAll(id => !filteredLanguages.Any(l => l.Id == id));
             return filteredLanguages;
         }
     }
@@ -606,6 +613,15 @@
 
     private string SelectedClassStartingGold =>
         SelectedClass?.StartingGold ?? "";
+
+    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence));
+
+    private int RemainingLanguageSelections
+        => Math.Max(0, BonusLanguageSlots - _selectedLanguageIds.Count(id =>
+            {
+                var lang = FilteredLanguages.FirstOrDefault(l => l.Id == id);
+                return lang != null && !lang.IsBonus;
+            }));
 
     #endregion
 
@@ -1079,14 +1095,25 @@
 
     private void ToggleLanguageSelection(int languageId)
     {
+        // Do not allow toggling automatic/bonus languages
+        var lang = FilteredLanguages.FirstOrDefault(l => l.Id == languageId);
+        if (lang != null && lang.IsBonus)
+        {
+            return;
+        }
+
         if (_selectedLanguageIds.Contains(languageId))
         {
             _selectedLanguageIds.Remove(languageId);
+            return;
         }
-        else
+
+        if (RemainingLanguageSelections <= 0)
         {
-            _selectedLanguageIds.Add(languageId);
+            return;
         }
+
+        _selectedLanguageIds.Add(languageId);
     }
 
     #endregion
