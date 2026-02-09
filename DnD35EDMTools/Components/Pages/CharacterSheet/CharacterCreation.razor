@@ -618,7 +618,7 @@
         {
             await using var db = CreateDbContext();
             _campaigns = await db.Campaigns
-                .Where(c => c.Id != 2)
+                .Where(c => c.Id > 1)
                 .Include(c => c.AllowedSources)
                 .ToListAsync();
             _races = await db.Races.Include(r => r.HairColours)
