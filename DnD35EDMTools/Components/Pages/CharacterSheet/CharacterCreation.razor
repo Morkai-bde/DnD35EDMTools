@@ -602,7 +602,6 @@
                 }
             }
 
-            // prune selections that are no longer allowed
             _selectedLanguageIds.RemoveAll(id => !filteredLanguages.Any(l => l.Id == id));
             return filteredLanguages;
         }
@@ -1329,6 +1328,9 @@
 
         await GetCarryingCapacityForStrengthAsync();
 
+        var bonusLanguageIds = FilteredLanguages.Where(l => l.IsBonus).Select(l => l.Id);
+        var finalLanguageIds = _selectedLanguageIds.Union(bonusLanguageIds).ToList();
+        
         var newCharacter = new CharacterData
         {
             Name = _characterName,
@@ -1353,7 +1355,7 @@
             Age = _characterAge!.Value,
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
-            Languages = _selectedLanguageIds,
+            Languages = finalLanguageIds,
             BaseFortitudeSave = _calculatedBaseFortitude,
             BaseReflexSave = _calculatedBaseReflex,
             BaseWillSave = _calculatedBaseWill,
