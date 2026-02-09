@@ -572,9 +572,7 @@
                 return filteredLanguages;
             }
 
-            var selectedRace = SelectedRace.Race;
-            var selectedClass = SelectedClass.Name;
-            if (selectedRace != "Select a Race" && selectedClass != "Select a Class")
+            if (SelectedRaceId > NoSelectionId && SelectedClassId > NoSelectionId)
             {
                 var allowedSourceBooks = selectedCampaign.AllowedSources;
                 foreach (var language in _languages)
@@ -582,8 +580,8 @@
                     foreach (var sourceBook in allowedSourceBooks)
                     {
                         var isAllowedBySourceBook = language.Sourcebook == sourceBook.Abbreviation;
-                        var isAllowedByRace = language.RequiredRace == "Any" || language.RequiredRace == selectedRace;
-                        var isAllowedByClass = language.RequiredClass == "Any" || language.RequiredClass == selectedClass;
+                        var isAllowedByRace = language.RequiredRace == "Any" || language.RequiredRace == SelectedRace.Race;
+                        var isAllowedByClass = language.RequiredClass == "Any" || language.RequiredClass == SelectedClass.Name;
                         if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
                         {
                             filteredLanguages.Add(language);
