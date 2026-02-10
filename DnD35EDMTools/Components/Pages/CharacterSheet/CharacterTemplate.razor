@@ -1,6 +1,7 @@
 ﻿@page "/CharacterTemplate"
 
 @using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Classes
 @using DnD35EDMTools.Helpers
 @using Microsoft.EntityFrameworkCore
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
@@ -584,7 +585,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load character {characterId}: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load character {characterId}: {ex.Message}");
         }
     }
 

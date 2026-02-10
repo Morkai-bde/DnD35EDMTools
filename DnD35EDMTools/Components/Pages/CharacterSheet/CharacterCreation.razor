@@ -1,6 +1,8 @@
 ﻿@page "/CharacterCreation"
 
+@using System.Text
 @using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Classes
 @using DnD35EDMTools.Data.Lists
 @using Microsoft.EntityFrameworkCore
 @using DnD35EDMTools.Helpers
@@ -650,7 +652,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize Character Creation: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to initialize Character Creation: {ex.Message}");
         }
     }
 
@@ -1154,7 +1156,7 @@
         }
     }
 
-    private void GetStartingEquipment()
+    private async Task GetStartingEquipment()
     {
         if (_goldPieces > 0)
         {
@@ -1172,7 +1174,7 @@
                 startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
                 break;
             case 3:
-                Console.WriteLine("Equipment Packs not Implemented");
+                await NotificationService.AddNotification(NotificationType.Warning, "Equipment Packs not Implemented");
                 return;
         }
 
@@ -1196,12 +1198,6 @@
 
     private async Task GetCarryingCapacityForStrengthAsync()
     {
-        if (CharacterStrength <= 0)
-        {
-            Console.Write($"Strength not set {CharacterStrength}");
-            return;
-        }
-
         try
         {
             await using var db = CreateDbContext();
@@ -1212,7 +1208,7 @@
 
             if (cc is null)
             {
-                Console.WriteLine("Unable to load Carrying Capacity Data");
+                await NotificationService.AddNotification(NotificationType.Error, "Unable to load Carrying Capacity Data");
                 return;
             }
 
@@ -1225,15 +1221,15 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to load Carrying Capacity: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load Carrying Capacity: {ex.Message}");
         }
     }
 
-    private void GenerateRandomCharacter()
+    private async Task GenerateRandomCharacter()
     {
         if (_selectedCampaignId == NoSelectionId)
         {
-            Console.WriteLine("No Campaign Selected");
+            await NotificationService.AddNotification(NotificationType.Error, $"No Campaign Selected.");
             return;
         }
 
@@ -1280,9 +1276,9 @@
 
     private async Task CreateNewCharacter()
     {
-        if (_selectedCampaignId == 1)
+        if (_selectedCampaignId == NoSelectionId)
         {
-            Console.WriteLine("No Campaign Selected");
+            await NotificationService.AddNotification(NotificationType.Error, "No Campaign Selected");
             return;
         }
 
@@ -1317,10 +1313,9 @@
 
         if (validationErrors.Any())
         {
-            Console.WriteLine("Character creation failed. Missing required fields:");
             foreach (var error in validationErrors)
             {
-                Console.WriteLine($"  - {error}");
+                await NotificationService.AddNotification(NotificationType.Info, $"{error}");
             }
 
             return;
@@ -1380,15 +1375,22 @@
 
             if (!_dryRun)
                 await db.SaveChangesAsync();
+            
+            var sb = new StringBuilder();
 
             foreach (var property in newCharacter.GetType().GetProperties())
             {
-                Console.WriteLine($"{property.Name}: {property.GetValue(newCharacter)}");
+                var value = property.GetValue(newCharacter);
+                sb.AppendLine($"{property.Name}: {value}");
             }
+
+            var notificationString = sb.ToString();
+
+            await NotificationService.AddNotification(NotificationType.Info, notificationString, 20);
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to create character: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to create character: {ex.Message}");
         }
     }
 

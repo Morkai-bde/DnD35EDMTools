@@ -1,6 +1,7 @@
 ﻿@page "/ManageCampaigns"
 
 @using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Classes
 @using Microsoft.EntityFrameworkCore
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
 
@@ -299,7 +300,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to initialize Manage Campaigns: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to initialize Manage Campaigns: {ex.Message}");
         }
     }
 
@@ -338,7 +339,7 @@
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"Failed to load selected books: {ex.Message}");
+                await NotificationService.AddNotification(NotificationType.Error, $"Failed to load selected books: {ex.Message}");
             }
         }
     }
@@ -412,7 +413,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to create campaign: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to create campaign: {ex.Message}");
         }
     }
 
@@ -421,10 +422,10 @@
         switch (_selectedCampaignId)
         {
             case 0:
-                Console.WriteLine("No campaign selected.");
+                await NotificationService.AddNotification(NotificationType.Info, "No campaign selected.");
                 return;
             case 1:
-                Console.WriteLine("Cannot update default campaigns");
+                await NotificationService.AddNotification(NotificationType.Warning, "Cannot update default campaigns");
                 return;
         }
 
@@ -435,7 +436,7 @@
             var campaign = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
             if (campaign == null)
             {
-                Console.WriteLine("Campaign not found.");
+                await NotificationService.AddNotification(NotificationType.Warning, "Campaign not Found.");
                 return;
             }
 
@@ -451,7 +452,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to update campaign: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to update campaign: {ex.Message}");
         }
     }
 
@@ -460,10 +461,10 @@
         switch (_selectedCampaignId)
         {
             case 0:
-                Console.WriteLine("No campaign selected.");
+                await NotificationService.AddNotification(NotificationType.Info, "No campaign selected.");
                 return;
             case 1:
-                Console.WriteLine("Cannot delete default campaigns");
+                await NotificationService.AddNotification(NotificationType.Warning, "Cannot delete default campaigns");
                 return;
         }
 
@@ -477,7 +478,7 @@
 
             if (campaign == null)
             {
-                Console.WriteLine("Campaign not found.");
+                await NotificationService.AddNotification(NotificationType.Warning, "Campaign not Found.");
                 return;
             }
 
@@ -492,7 +493,7 @@
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to delete campaign: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to delete campaign: {ex.Message}");
         }
     }
 
