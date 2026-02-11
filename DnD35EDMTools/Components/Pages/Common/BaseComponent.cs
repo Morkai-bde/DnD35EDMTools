@@ -6,8 +6,6 @@ namespace DnD35EDMTools.Components.Pages.Common;
 
 public class BaseComponent : ComponentBase
 {
-    [Inject]
-    protected IDbContextFactory<ApplicationDbContext> DbContextFactory { get; set; }
-
-    protected ApplicationDbContext DbContext => DbContextFactory.CreateDbContext();
+    [Inject] protected IDbContextFactory<ApplicationDbContext> DbContextFactory { get; set; }
+    protected ApplicationDbContext CreateDbContext() => DbContextFactory.CreateDbContext();
 }

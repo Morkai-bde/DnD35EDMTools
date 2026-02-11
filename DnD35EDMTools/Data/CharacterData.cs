@@ -8,13 +8,10 @@ public class CharacterData
     public int CampaignId { get; set; } = 1;
     [MaxLength(100)]
     public string Name { get; set; } = null!;
-
-    [MaxLength(100)]
     public int Class { get; set; }
     public int Race { get; set; }
     public int Experience { get; set; }
     public int HitPoints { get; set; }
-    [MaxLength(20)]
     public int Order { get; set; }
     public int Morality { get; set; }
     public int? Deity { get; set; }
@@ -32,9 +29,9 @@ public class CharacterData
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
     public List<int> Languages { get; set; } = [1];
-    public decimal BaseFortitudeSave { get; set; }
-    public decimal BaseReflexSave { get; set; } 
-    public decimal BaseWillSave { get; set; }
+    public double BaseFortitudeSave { get; set; }
+    public double BaseReflexSave { get; set; } 
+    public double BaseWillSave { get; set; }
     public int PlatinumPieces { get; set; }
     public int GoldPieces { get; set; }
     public int SilverPieces { get; set; }
@@ -53,7 +50,6 @@ public class CharacterData
     // public int ArcaneSpellFailure { get; set; }
     // public int BaseAttackBonus { get; set; }
     // public int SpellResistance { get; set; }
-    // public List<int> Saves { get; set; }
     // public List<int> OtherStats { get; set; }
     // public List<string> DamageReductions { get; set; }
     // public List<string> Immunities { get; set; }

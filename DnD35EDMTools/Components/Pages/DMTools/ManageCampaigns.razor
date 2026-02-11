@@ -1,0 +1,502 @@
+﻿@page "/ManageCampaigns"
+
+@using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Classes
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<PageTitle>Manage Campaigns</PageTitle>
+
+<h3>Manage Campaigns</h3>
+
+<div class="dnd-dm-home-container">
+    <div class="dnd-dm-home-main-content">
+        <div class="dnd-dm-home-sheet">
+            <div class="dnd-dm-home-top-section">
+                <div class="dnd-dm-home-top__left">
+                    <div>
+                        <label for="select-campaign-name">Campaign Name</label>
+                    </div>
+                    <div>
+                        <select class="dm-select" id="select-campaign-name" @bind="SelectedCampaignId">
+                            <option value="0">Select Campaign</option>
+                            @foreach (var id in _campaigns)
+                            {
+                                <option value=@id.Id title=@id.Description>@id.Name</option>
+                            }
+                        </select>
+                    </div>
+                    @if (_selectedCampaignId > NoSelectedId)
+                    {
+                        <div>
+                            <label for="campaign-name">Campaign Name:</label>
+                        </div>
+                        <div>
+                            <input class="dm-input" type="text" id="campaign-name" @bind="CampaignName"/>
+                        </div>
+                        <div>
+                            <label for="stat-rolling-method">Stat Rolling Method</label>
+                        </div>
+                        <div>
+                            <select class="dm-input" id="stat-rolling-method" @bind="SelectedStatRollingMethod">
+                                <option value="3D6" title="Roll 3d6">3D6</option>
+                                <option value="3D6R1" title="Roll 3d6 and Re Roll any 1's">3D6R1</option>
+                                <option value="4D6DL" title="Roll 4d6 and drop the lowest value">4D6DL</option>
+                                <option value="SAL" title="Players can assign the following stats: 13, 12, 11, 10, 9, 8">Standard Array (Low)</option>
+                                <option value="SAA" title="Players can assign the following stats: 15, 14, 13, 12, 10, 8">Standard Array (Average)</option>
+                                <option value="SAH" title="Players can assign the following stats: 17, 16, 15, 14, 11, 9">Standard Array (High)</option>
+                                <option value="PBA" title="Players can divide 25 points between stats">Point Buy, Average</option>
+                                <option value="PBR" title="Players can divide a random amount of points between 12 and 96 between stats">Point Buy, Random</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label for="hit-point-rolling-method">Hit Point Rolling Method</label>
+                        </div>
+                        <div>
+                            <select class="dm-input" id="hit-point-rolling-method" @bind="SelectedHitPointRollingMethod">
+                                <option value="REL" title="Max roll at Level 1, then roll every level afterwards, Players get up to 3 rolls, if they choose to roll again, they can not take the previous result. If they run out of rolls, they have to take the last rolled result.">Roll Every Level</option>
+                                <option value="HP1" title="Max roll at Level 1, then 1/2 +1 of the class dice per level afterwards">1/2 +1</option>
+                                <option value="TRD" title="Max roll at Level 1, then 2/3 Rounded down of the class dice per level afterwards">2/3 Rounded Down</option>
+                                <option value="QRD" title="Max roll at Level 1, then 3/4 Rounded down of the class dice per level afterwards">3/4 Rounded Down</option>
+                            </select>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="hide-trained-only-skills" value="@HideTrainedOnlySkills" @bind="HideTrainedOnlySkills"/>
+                        </div>
+                        <div>
+                            <label for="hide-trained-only-skills">Hide trained only skills on character sheet.</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-avatar-points" value="@AllowAvatarPoints" @bind="AllowAvatarPoints"/>
+                        </div>
+                        <div>
+                            <label for="allow-avatar-points">Enable Avatar Points.</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-luck" value="@AllowLuck" @bind="AllowLuck"/>
+                        </div>
+                        <div>
+                            <label for="allow-luck">Enable custom luck stat.</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-wealth-average" value="@AllowWealthAverage" @bind="AllowWealthAverage"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-average">Allow Starting Wealth, Average</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-wealth-random" value="@AllowWealthRandom" @bind="AllowWealthRandom"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-random">Allow Starting Wealth, Random</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-wealth-average" value="@AllowStartingEquipment" @bind="AllowStartingEquipment"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-average">Allow Starting Equipment</label>
+                        </div>
+                        <div>
+                            <input type="checkbox" id="allow-wealth-average" value="@AllowStartingEquipmentCustomization" @bind="AllowStartingEquipmentCustomization"/>
+                        </div>
+                        <div>
+                            <label for="allow-wealth-average">Allow Starting Equipment Customization</label>
+                        </div>
+                        <div>
+                            <label for="description">Description</label>
+                        </div>
+                        <div>
+                            <textarea class="dm-textarea" id="description" @bind="Description"></textarea>
+                        </div>
+                    }
+                </div>
+                <div class="dnd-dm-home-top__right">
+                    @if (_selectedCampaignId > NoSelectedId)
+                    {
+                        @foreach (var book in _sourceBooks)
+                        {
+                            <div>
+                                <input type="checkbox" id="@book.Id" @bind="_selectedSourceBooks[book.Id]"/>
+                            </div>
+                            <div>
+                                <label for="@book.Id">@book.Name</label>
+                            </div>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<div>
+    &nbsp;
+</div>
+
+<button style="padding: 4px" @onclick="CreateCampaign">Create Campaign</button>&nbsp;
+<button style="padding: 4px" @onclick="UpdateCampaign">Update Campaign</button>&nbsp;
+<button style="padding: 4px" @onclick="DeleteCampaign">Delete Campaign</button>
+&nbsp;
+<div>
+    Is a Dry Run?
+    <input type="checkbox" @bind="_dryRun"/>
+</div>
+
+@code {
+
+    #region Fields
+
+    private const int NoSelectedId = 0;
+    private bool _dryRun = true;
+    private int _selectedCampaignId;
+    private readonly Dictionary<int, bool> _selectedSourceBooks = new Dictionary<int, bool>();
+    private List<CampaignData> _campaigns = [];
+    private List<SourceBookData> _sourceBooks = [];
+
+    #endregion
+
+    #region Cached Properties
+
+    private CampaignData? SelectedCampaign =>
+        _selectedCampaignId > NoSelectedId ? _campaigns.SingleOrDefault(c => c.Id == _selectedCampaignId) : null;
+
+    #endregion
+
+    #region Campaign Selection
+
+    private int SelectedCampaignId
+    {
+        get => _selectedCampaignId;
+        set
+        {
+            _selectedCampaignId = value;
+            _ = InvokeAsync(async () =>
+            {
+                await LoadSelectedBooks();
+                StateHasChanged();
+            });
+        }
+    }
+
+    #endregion
+
+    #region Form Binding Properties
+
+    private string CampaignName
+    {
+        get => SelectedCampaign?.Name ?? "";
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.Name = value;
+        }
+    }
+
+    private string SelectedStatRollingMethod
+    {
+        get => SelectedCampaign?.StatRollingMethod ?? "";
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.StatRollingMethod = value;
+        }
+    }
+
+    private string SelectedHitPointRollingMethod
+    {
+        get => SelectedCampaign?.HitPointRollingMethod ?? "";
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.HitPointRollingMethod = value;
+        }
+    }
+
+    private bool HideTrainedOnlySkills
+    {
+        get => SelectedCampaign?.HideTrainedOnlySkills ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.HideTrainedOnlySkills = value;
+        }
+    }
+
+    private bool AllowAvatarPoints
+    {
+        get => SelectedCampaign?.AllowAvatarPoints ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowAvatarPoints = value;
+        }
+    }
+
+    private bool AllowLuck
+    {
+        get => SelectedCampaign?.AllowLuck ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowLuck = value;
+        }
+    }
+
+    private bool AllowWealthAverage
+    {
+        get => SelectedCampaign?.AllowWealthAverage ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowWealthAverage = value;
+        }
+    }
+
+    private bool AllowStartingEquipment
+    {
+        get => SelectedCampaign?.AllowStartingEquipment ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipment = value;
+        }
+    }
+
+    private bool AllowWealthRandom
+    {
+        get => SelectedCampaign?.AllowWealthRandom ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowWealthRandom = value;
+        }
+    }
+
+    private bool AllowStartingEquipmentCustomization
+    {
+        get => SelectedCampaign?.AllowStartingEquipmentCustomization ?? false;
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.AllowStartingEquipmentCustomization = value;
+        }
+    }
+
+    private string Description
+    {
+        get => SelectedCampaign?.Description ?? "";
+        set
+        {
+            if (SelectedCampaign != null) SelectedCampaign.Description = value;
+        }
+    }
+
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            _campaigns = await db.Campaigns.ToListAsync();
+            _sourceBooks = await db.SourceBooks.AsNoTracking().Where(book => book.Implemented).ToListAsync();
+
+            foreach (var book in _sourceBooks)
+            {
+                _selectedSourceBooks[book.Id] = false;
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to initialize Manage Campaigns: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private async Task LoadSelectedBooks()
+    {
+        if (_selectedCampaignId == NoSelectedId)
+        {
+            foreach (var book in _sourceBooks)
+            {
+                _selectedSourceBooks[book.Id] = false;
+            }
+
+            return;
+        }
+
+        if (_selectedCampaignId > NoSelectedId)
+        {
+            try
+            {
+                await using var db = CreateDbContext();
+                var selectedCampaign = await db.Campaigns
+                    .Include(c => c.AllowedSources)
+                    .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+                if (selectedCampaign != null)
+                {
+                    foreach (var book in _sourceBooks)
+                    {
+                        _selectedSourceBooks[book.Id] = selectedCampaign.AllowedSources.Any(s => s.Id == book.Id);
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                await NotificationService.AddNotification(NotificationType.Error, $"Failed to load selected books: {ex.Message}");
+            }
+        }
+    }
+
+    private void MapFormToCampaign(CampaignData campaign)
+    {
+        campaign.Name = CampaignName;
+        campaign.Description = Description;
+        campaign.StatRollingMethod = SelectedStatRollingMethod;
+        campaign.HitPointRollingMethod = SelectedHitPointRollingMethod;
+        campaign.HideTrainedOnlySkills = HideTrainedOnlySkills;
+        campaign.AllowAvatarPoints = AllowAvatarPoints;
+        campaign.AllowLuck = AllowLuck;
+        campaign.AllowWealthAverage = AllowWealthAverage;
+        campaign.AllowWealthRandom = AllowWealthRandom;
+        campaign.AllowStartingEquipment = AllowStartingEquipment;
+        campaign.AllowStartingEquipmentCustomization = AllowStartingEquipmentCustomization;
+    }
+
+    private async Task SetCampaignSourcesAsync(ApplicationDbContext db, CampaignData campaign)
+    {
+        await db.Entry(campaign).Collection(c => c.AllowedSources).LoadAsync();
+
+        campaign.AllowedSources.Clear();
+
+        var selectedIds = _selectedSourceBooks.Where(kv => kv.Value).Select(kv => kv.Key).ToList();
+        if (selectedIds.Count == 0)
+            return;
+
+        var selectedBooks = await db.SourceBooks.Where(sb => selectedIds.Contains(sb.Id)).ToListAsync();
+        foreach (var book in selectedBooks)
+        {
+            db.Attach(book);
+            campaign.AllowedSources.Add(book);
+        }
+    }
+
+    private async Task ReloadCampaignsAsync(ApplicationDbContext db)
+    {
+        _campaigns = await db.Campaigns.ToListAsync();
+        _selectedCampaignId = NoSelectedId;
+        await LoadSelectedBooks();
+    }
+
+    #endregion
+
+    #region CRUD Operations
+
+    private async Task CreateCampaign()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var campaign = new CampaignData
+            {
+                AllowedSources = []
+            };
+
+            MapFormToCampaign(campaign);
+            await SetCampaignSourcesAsync(db, campaign);
+
+            db.Campaigns.Add(campaign);
+
+            if (!_dryRun)
+            {
+                await db.SaveChangesAsync();
+            }
+
+            await ReloadCampaignsAsync(db);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to create campaign: {ex.Message}");
+        }
+    }
+
+    private async Task UpdateCampaign()
+    {
+        switch (_selectedCampaignId)
+        {
+            case 0:
+                await NotificationService.AddNotification(NotificationType.Warning, "No campaign selected.");
+                return;
+            case 1:
+                await NotificationService.AddNotification(NotificationType.Warning, "Cannot update default campaigns");
+                return;
+        }
+
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var campaign = await db.Campaigns.SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+            if (campaign == null)
+            {
+                await NotificationService.AddNotification(NotificationType.Warning, "Campaign not Found.");
+                return;
+            }
+
+            MapFormToCampaign(campaign);
+            await SetCampaignSourcesAsync(db, campaign);
+
+            if (!_dryRun)
+            {
+                await db.SaveChangesAsync();
+            }
+
+            await ReloadCampaignsAsync(db);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to update campaign: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteCampaign()
+    {
+        switch (_selectedCampaignId)
+        {
+            case 0:
+                await NotificationService.AddNotification(NotificationType.Warning, "No campaign selected.");
+                return;
+            case 1:
+                await NotificationService.AddNotification(NotificationType.Warning, "Cannot delete default campaigns");
+                return;
+        }
+
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var campaign = await db.Campaigns
+                .Include(c => c.AllowedSources)
+                .SingleOrDefaultAsync(c => c.Id == _selectedCampaignId);
+
+            if (campaign == null)
+            {
+                await NotificationService.AddNotification(NotificationType.Warning, "Campaign not Found.");
+                return;
+            }
+
+            db.Campaigns.Remove(campaign);
+
+            if (!_dryRun)
+            {
+                await db.SaveChangesAsync();
+            }
+
+            await ReloadCampaignsAsync(db);
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to delete campaign: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+}

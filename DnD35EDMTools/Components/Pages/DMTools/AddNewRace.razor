@@ -1,13 +1,9 @@
 ﻿@page "/AddNewRace"
+@using DnD35EDMTools.Data.Classes
+
+<PageTitle>Add New Race</PageTitle>
 
 <h3>Add New Race</h3>
-
-<head>
-    <meta charset="UTF-8"/>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-    <title>Character Creation</title>
-    <link rel="stylesheet" href="./styles.css"/>
-</head>
 
 <div class="dnd-new-race-container">
 <div class="dnd-new-race-content">
@@ -527,9 +523,9 @@
         _raceFeatBonus, _raceAdulthoodAge, _raceMiddleAge, _raceVenerableAge, _raceFemaleHeight, _raceMaleHeight,
         _raceFemaleWeight, _raceMaleWeight, _racePage;
     
-    private static void CreateNewRace()
+    private async Task CreateNewRace()
     {
-        Console.WriteLine("Database Saving Not Implemented");
+        await NotificationService.AddNotification(NotificationType.Info, "Database Saving Not Implemented");
     }
 
 }

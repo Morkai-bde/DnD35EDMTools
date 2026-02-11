@@ -512,6 +512,15 @@
     max-height: 480px;
     padding: 20px;
 }
+.dnd-cc-tab-languages__header {
+    border-color: var(--cellbordercolour);
+    grid-auto-flow: column;
+    max-height: 480px;
+    overflow-y: auto;
+    padding-top: 20px;
+    padding-left: 20px;
+    padding-bottom: 0;
+}
 
 .dnd-cc-tab-languages {
     border-color: var(--cellbordercolour);
@@ -739,4 +748,51 @@
         grid-template-rows: 60% 40%;
         height: 100%;
     }
+}
+
+/* Notification Styles */
+
+.dnd-notification-container {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    width: 300px;
+    z-index: 1000;
+}
+
+.dnd-notification {
+    margin-bottom: 10px;
+    padding: 10px;
+    border-radius: 5px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+    white-space: pre-wrap;
+    position: relative;
+}
+
+.dnd-notification-success { background-color: #4CAF50; color: white; }
+.dnd-notification-error { background-color: #F44336; color: white; }
+.dnd-notification-warning { background-color: #FF9800; color: white; }
+.dnd-notification-info { background-color: #2196F3; color: white; }
+
+.dnd-progress-bar {
+    height: 5px;
+    background-color: rgba(255, 255, 255, 0.7);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    transition: width 0.1s linear;
+}
+
+.dnd-notification-button {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+    position: absolute;
+    top: 0;
+    right: 6px;
 }
