@@ -1174,7 +1174,7 @@
                 startingWealth = RollWealth.StartingWealthRandom(SelectedClassStartingGold);
                 break;
             case 3:
-                await NotificationService.AddNotification(NotificationType.Warning, "Equipment Packs not Implemented");
+                await NotificationService.AddNotification(NotificationType.Info, "Equipment Packs not Implemented");
                 return;
         }
 
@@ -1208,7 +1208,7 @@
 
             if (cc is null)
             {
-                await NotificationService.AddNotification(NotificationType.Error, "Unable to load Carrying Capacity Data");
+                await NotificationService.AddNotification(NotificationType.Warning, "Unable to load Carrying Capacity Data");
                 return;
             }
 
@@ -1229,7 +1229,7 @@
     {
         if (_selectedCampaignId == NoSelectionId)
         {
-            await NotificationService.AddNotification(NotificationType.Error, $"No Campaign Selected.");
+            await NotificationService.AddNotification(NotificationType.Warning, $"No Campaign Selected.");
             return;
         }
 
@@ -1278,7 +1278,7 @@
     {
         if (_selectedCampaignId == NoSelectionId)
         {
-            await NotificationService.AddNotification(NotificationType.Error, "No Campaign Selected");
+            await NotificationService.AddNotification(NotificationType.Warning, "No Campaign Selected");
             return;
         }
 
@@ -1315,7 +1315,7 @@
         {
             foreach (var error in validationErrors)
             {
-                await NotificationService.AddNotification(NotificationType.Info, $"{error}");
+                await NotificationService.AddNotification(NotificationType.Warning, $"{error}");
             }
 
             return;

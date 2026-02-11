@@ -422,7 +422,7 @@
         switch (_selectedCampaignId)
         {
             case 0:
-                await NotificationService.AddNotification(NotificationType.Info, "No campaign selected.");
+                await NotificationService.AddNotification(NotificationType.Warning, "No campaign selected.");
                 return;
             case 1:
                 await NotificationService.AddNotification(NotificationType.Warning, "Cannot update default campaigns");
@@ -461,7 +461,7 @@
         switch (_selectedCampaignId)
         {
             case 0:
-                await NotificationService.AddNotification(NotificationType.Info, "No campaign selected.");
+                await NotificationService.AddNotification(NotificationType.Warning, "No campaign selected.");
                 return;
             case 1:
                 await NotificationService.AddNotification(NotificationType.Warning, "Cannot delete default campaigns");
