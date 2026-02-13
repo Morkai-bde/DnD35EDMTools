@@ -12,4 +12,5 @@ public class SkillData
     public bool IsCustomizable { get; set; }
     [MaxLength(5)] public string Sourcebook { get; set; } = "";
     public int Page { get; set; } = 0;
+    public List<ClassData> Classes { get; set; }
 }

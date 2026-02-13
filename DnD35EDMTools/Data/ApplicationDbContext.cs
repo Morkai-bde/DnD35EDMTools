@@ -77,6 +77,14 @@ namespace DnD35EDMTools.Data
                             .WithMany()
                             .HasForeignKey("AllowedAlignmentId")
                     );
+
+                modelBuilder.Entity<ClassData>()
+                    .HasMany(c => c.ClassSkills)
+                    .WithMany(s => s.Classes)
+                    .UsingEntity(joinEntity =>
+                    {
+                        joinEntity.ToTable("JoinTableClassSkills");
+                    });
                 
                 modelBuilder.Entity<CampaignData>()
                     .HasMany(c => c.AllowedSources)
