@@ -28,6 +28,7 @@ public class CharacterData
     public int Intelligence { get; set; }
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
+    public Dictionary<int, int> Skills { get; set; } = new();
     public List<int> Languages { get; set; } = [1];
     public double BaseFortitudeSave { get; set; }
     public double BaseReflexSave { get; set; } 

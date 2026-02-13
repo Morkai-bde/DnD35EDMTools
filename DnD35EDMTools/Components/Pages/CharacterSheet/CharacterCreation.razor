@@ -369,22 +369,29 @@
                 @if (SelectedClassId > NoSelectionId && SelectedRaceId > NoSelectionId)
                 {
                     <div class="dnd-cc-tab-skills-header">
-                        <strong>Additional skill point remaining: @RemainingSkillPoints</strong>
+                        <strong>Skill points remaining: @RemainingSkillPoints / @(TotalSkillPoints)</strong>
                     </div>
-                    <div class="dnd-cc-tab-skills-header">
-                        &nbsp;
-                    </div>
+                    <div><strong>Skill Name</strong></div>
+                    <div><strong>Ranks / Max</strong></div>
+                    <div><strong>Actions</strong></div>
                     @foreach (var skill in Skills)
                     {
-                        <div class="cc-list-text-item">
-                            @skill.Name
-                        </div>
-                        <div>
-                            <input class="cc-input-small" type="text"/><input class="cc-input-small" type="text"/>
-                        </div>
-                        <div>
-                            <button class="cc-button-square-small">+</button><button class="cc-button-square-small">-</button>
-                        </div>
+                        var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skill.Id);
+                        if (characterSkill != null)
+                        {
+                            var maxRanks = GetMaxRanks(characterSkill.IsClassSkill);
+                            var classSkillIndicator = characterSkill.IsClassSkill ? " ★" : "";
+                            
+                            <div class="cc-list-text-item">
+                                @skill.Name@classSkillIndicator
+                            </div>
+                            <div>
+                                <input class="cc-input-small" type="text" value="@characterSkill.Ranks" readonly/><input class="cc-input-small" type="text" value="@maxRanks" readonly/>
+                            </div>
+                            <div>
+                                <button class="cc-button-square-small" @onclick="() => AddRank(skill.Id)"disabled="@(characterSkill.Ranks >= maxRanks || RemainingSkillPoints < characterSkill.RankCost)">+</button><button class="cc-button-square-small" @onclick="() => RemoveRank(skill.Id)"disabled="@(characterSkill.Ranks <= 0)">-</button>
+                            </div>
+                        }
                     }
                 }
             </div>
@@ -688,22 +695,29 @@
             }));
 
     private int PointsSpent =>
-        _characterSkills.Sum(s => s.Ranks);
+        _characterSkills.Sum(s => s.Ranks * s.RankCost);
     
-    private int RemainingSkillPoints
+    private int TotalSkillPoints
     {
         get
         {
-            if (SelectedClass != null && SelectedRace != null)
+            if (SelectedClass == null || SelectedRace == null)
             {
-                var skillPoints = Math.Max(1, (SelectedClass.SkillPoints + (SelectedRace.Race == "Human" ? 1 : 0) + 
-                                               ConversionHelper.ConvertStatToBonus(CharacterIntelligence)) * 4 - PointsSpent);
-                return skillPoints;
+                _ = NotificationService.AddNotification(NotificationType.Warning, "Unable to calculate Skill Points");
+                return 0;
             }
-            _ = NotificationService.AddNotification(NotificationType.Warning, "Unable to calculate Skill Points");
-            return 0;
+
+            var baseSkillPoints = SelectedClass.SkillPoints;
+            var humanBonus = SelectedRace.Race == "Human" ? 1 : 0;
+            var intModifier = ConversionHelper.ConvertStatToBonus(CharacterIntelligence);
+
+            var skillPointsPerLevel = Math.Max(1, baseSkillPoints + humanBonus + intModifier);
+
+            return skillPointsPerLevel * 4;
         }
     }
+
+    private int RemainingSkillPoints => TotalSkillPoints - PointsSpent;
 
     #endregion
 
@@ -850,6 +864,7 @@
             if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
             {
                 GetAgeDiceType();
+                InitializeCharacterSkills();
             }
 
             SetWealthToZero();
@@ -1185,6 +1200,72 @@
 
     #region Tab 3 - Skills & Languages
 
+    private void InitializeCharacterSkills()
+    {
+        _characterSkills.Clear();
+    
+        if (SelectedClassId <= NoSelectionId || SelectedClass == null)
+            return;
+    
+        var classSkillIds = SelectedClass.ClassSkills?.Select(s => s.Id).ToHashSet() 
+                            ?? new HashSet<int>();
+    
+        foreach (var skill in Skills)
+        {
+            _characterSkills.Add(new CharacterSkills
+            {
+                SkillId = skill.Id,
+                SkillName = skill.Name,
+                Ranks = 0,
+                IsClassSkill = classSkillIds.Contains(skill.Id)
+            });
+        }
+    }
+
+    private int GetMaxRanks(bool isClassSkill)
+    {
+        int currentLevel = 1;
+        return isClassSkill 
+            ? currentLevel + 3
+            : (currentLevel + 3) / 2;
+    }
+
+    private void AddRank(int skillId)
+    {
+        var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skillId);
+        if (characterSkill == null) return;
+
+        int maxRanks = GetMaxRanks(characterSkill.IsClassSkill);
+        int costToAdd = characterSkill.RankCost;
+
+        if (characterSkill.Ranks >= maxRanks)
+        {
+            _ = NotificationService.AddNotification(NotificationType.Warning, 
+                $"Maximum ranks reached for {characterSkill.SkillName}");
+            return;
+        }
+
+        if (RemainingSkillPoints < costToAdd)
+        {
+            _ = NotificationService.AddNotification(NotificationType.Warning, 
+                "Not enough skill points");
+            return;
+        }
+
+        characterSkill.Ranks++;
+    }
+
+    private void RemoveRank(int skillId)
+    {
+        var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skillId);
+        if (characterSkill == null) return;
+
+        if (characterSkill.Ranks <= 0)
+            return;
+
+        characterSkill.Ranks--;
+    }
+
     private void ToggleLanguageSelection(int languageId)
     {
         var lang = FilteredLanguages.FirstOrDefault(l => l.Id == languageId);
@@ -1416,6 +1497,10 @@
         var bonusLanguageIds = FilteredLanguages.Where(l => l.IsBonus).Select(l => l.Id);
         var finalLanguageIds = _selectedLanguageIds.Union(bonusLanguageIds).ToList();
         
+        var selectedSkills = _characterSkills
+            .Where(cs => cs.Ranks > 0)
+            .ToDictionary(cs => cs.SkillId, cs => cs.Ranks);
+        
         var newCharacter = new CharacterData
         {
             Name = _characterName,
@@ -1440,6 +1525,7 @@
             Age = _characterAge!.Value,
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
+            Skills = selectedSkills,
             Languages = finalLanguageIds,
             BaseFortitudeSave = _calculatedBaseFortitude,
             BaseReflexSave = _calculatedBaseReflex,
@@ -1472,6 +1558,18 @@
             {
                 var value = property.GetValue(newCharacter);
                 sb.AppendLine($"{property.Name}: {value}");
+            }
+
+            if (selectedSkills.Any())
+            {
+                sb.AppendLine("\n=== SKILLS ===");
+                foreach (var (skillId, ranks) in selectedSkills)
+                {
+                    var skill = _skills.First(s => s.Id == skillId);
+                    var charSkill = _characterSkills.First(cs => cs.SkillId == skillId);
+                    var classSkillMarker = charSkill.IsClassSkill ? "★" : "✗";
+                    sb.AppendLine($"{skill.Name} {classSkillMarker}: {ranks} ranks");
+                }
             }
 
             var notificationString = sb.ToString();

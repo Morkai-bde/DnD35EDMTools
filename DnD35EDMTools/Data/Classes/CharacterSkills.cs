@@ -2,8 +2,9 @@
 
 public class CharacterSkills
 {
- public int Id { get; set; }
- public int SkillDefinitionId { get; set; }
- public string? Specialization { get; set; }
- public int Ranks { get; set; }
+    public int SkillId { get; set; }
+    public string SkillName { get; set; }
+    public int Ranks { get; set; }
+    public bool IsClassSkill { get; set; }
+    public int RankCost => IsClassSkill ? 1 : 2;
 }
