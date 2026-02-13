@@ -365,15 +365,38 @@
         }
         @if (_selectedTab == 3)
         {
-            @if (SelectedClassId > NoSelectionId && SelectedRaceId > NoSelectionId)
-            {
-                <div class="dnd-cc-tab-languages__header">
-                    <strong>Additional language selections remaining: @RemainingLanguageSelections</strong>
-                </div>
-                <div>
-                    &nbsp;
-                </div>
-                <div class="dnd-cc-tab-languages">
+            <div class="dnd-cc-tab-skills">
+                @if (SelectedClassId > NoSelectionId && SelectedRaceId > NoSelectionId)
+                {
+                    <div class="dnd-cc-tab-skills-header">
+                        <strong>Additional skill point remaining: @RemainingSkillPoints</strong>
+                    </div>
+                    <div class="dnd-cc-tab-skills-header">
+                        &nbsp;
+                    </div>
+                    @foreach (var skill in Skills)
+                    {
+                        <div class="cc-list-text-item">
+                            @skill.Name
+                        </div>
+                        <div>
+                            <input class="cc-input-small" type="text"/><input class="cc-input-small" type="text"/>
+                        </div>
+                        <div>
+                            <button class="cc-button-square-small">+</button><button class="cc-button-square-small">-</button>
+                        </div>
+                    }
+                }
+            </div>
+            <div class="dnd-cc-tab-languages">
+                @if (SelectedClassId > NoSelectionId && SelectedRaceId > NoSelectionId)
+                {
+                    <div class="dnd-cc-tab-skills-header">
+                        <strong>Additional language selections remaining: @RemainingLanguageSelections</strong>
+                    </div>
+                    <div class="dnd-cc-tab-skills-header">
+                        &nbsp;
+                    </div>
                     @foreach (var language in FilteredLanguages)
                     {
                         var isChecked = _selectedLanguageIds.Contains(language.Id) || language.IsBonus;
@@ -388,8 +411,8 @@
                             <label for="@language.Name.ToLower()" title="@language.Description">@language.Name</label>
                         </div>
                     }
-                </div>
-            }
+                }
+            </div>
         }
         @if (_selectedTab == 4)
         {
@@ -464,6 +487,8 @@
     private List<GenderData> _genders = [];
     private List<DeityData> _deities = [];
     private List<int> _standardArray = [];
+    private List<SkillData> _skills = [];
+    private List<CharacterSkills> _characterSkills = [];
     private List<LanguageData> _languages = [];
     private readonly List<int> _selectedLanguageIds = [];
     private readonly List<StartingEquipment> _startingEquipmentMethods = [];
@@ -568,6 +593,44 @@
         }
     }
 
+    private List<SkillData> Skills
+    {
+        get
+        {
+            var filteredSkills = new List<SkillData>();
+            if (_selectedCampaignId == NoSelectionId || SelectedRaceId == NoSelectionId || SelectedClassId == NoSelectionId)
+            {
+                return filteredSkills;
+            }
+            
+            var selectedCampaign = SelectedCampaign;
+            
+            if (selectedCampaign is null)
+            {
+                return filteredSkills;
+            }
+            
+            if (_selectedCampaignId > NoSelectionId && SelectedRaceId > NoSelectionId && SelectedClassId > NoSelectionId)
+            {
+                var allowedSourceBooks = selectedCampaign.AllowedSources;
+                foreach (var skill in _skills)
+                {
+                    foreach (var sourceBook in allowedSourceBooks)
+                    {
+                        var isAllowedBySourceBook = skill.Sourcebook == sourceBook.Abbreviation;
+                        if (isAllowedBySourceBook)
+                        {
+                            filteredSkills.Add(skill);
+                            break;
+                        }
+                    }
+                }
+                return filteredSkills.OrderBy(skill => skill.Name).ToList();
+            }
+            return filteredSkills;
+        }
+    }
+    
     private List<LanguageData> FilteredLanguages
     {
         get
@@ -624,6 +687,24 @@
                 return lang != null && !lang.IsBonus;
             }));
 
+    private int PointsSpent =>
+        _characterSkills.Sum(s => s.Ranks);
+    
+    private int RemainingSkillPoints
+    {
+        get
+        {
+            if (SelectedClass != null && SelectedRace != null)
+            {
+                var skillPoints = Math.Max(1, (SelectedClass.SkillPoints + (SelectedRace.Race == "Human" ? 1 : 0) + 
+                                               ConversionHelper.ConvertStatToBonus(CharacterIntelligence)) * 4 - PointsSpent);
+                return skillPoints;
+            }
+            _ = NotificationService.AddNotification(NotificationType.Warning, "Unable to calculate Skill Points");
+            return 0;
+        }
+    }
+
     #endregion
 
     #region Lifecycle Methods
@@ -644,9 +725,12 @@
                 .ToListAsync();
             _orders = await db.Orders.ToListAsync();
             _moralities = await db.Moralities.ToListAsync();
-            _classes = await db.Classes.ToListAsync();
+            _classes = await db.Classes
+                .Include(c => c.ClassSkills)
+                .ToListAsync();
             _genders = await db.Genders.ToListAsync();
             _deities = await db.Deities.ToListAsync();
+            _skills = await db.Skills.ToListAsync();
             _languages = await db.Languages.ToListAsync();
             InitializeStatFields();
         }
@@ -770,6 +854,13 @@
 
             SetWealthToZero();
         }
+    }
+
+    private List<SkillData> GetClassSkills()
+    {
+        if (_selectedClassId == NoSelectionId)
+            return new List<SkillData>();
+        return SelectedClass?.ClassSkills.ToList() ?? new List<SkillData>();
     }
 
     #endregion
@@ -1092,11 +1183,10 @@
 
     #endregion
 
-    #region Tab 3 - Languages
+    #region Tab 3 - Skills & Languages
 
     private void ToggleLanguageSelection(int languageId)
     {
-        // Do not allow toggling automatic/bonus languages
         var lang = FilteredLanguages.FirstOrDefault(l => l.Id == languageId);
         if (lang != null && lang.IsBonus)
         {
