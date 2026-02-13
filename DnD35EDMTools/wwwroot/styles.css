@@ -33,6 +33,13 @@
 
 /*Character Sheet Styles*/
 
+.dnd-character-sheet-header {
+    height: 35px;
+    width: 698px;
+    font-size: 28px;
+    padding-bottom: 1px;
+}
+
 .dnd-character-sheet {
     height: auto;
     width: 698px;
@@ -124,7 +131,7 @@
 .skills-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: repeat(15, var(--cellheight));
+    grid-template-rows: repeat(52, var(--cellheight));
 }
 .skills-row-header {
     text-align: center;
@@ -140,11 +147,6 @@
     grid-template-rows: repeat(1, var(--cellheight));
 }
 
-.skills-content {
-    display: grid;
-    /*grid-template-rows: repeat(14, var(--cellheight));*/
-}
-
 .skills-list {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
@@ -156,6 +158,9 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .skills-list-row-content {
@@ -164,6 +169,7 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow:hidden;
 }
 
 .skills-list-row-header-alt {
@@ -172,6 +178,9 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .skills-list-row-content-alt {
@@ -180,6 +189,7 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow:hidden;
 }
 
 /* Languages Styles */
