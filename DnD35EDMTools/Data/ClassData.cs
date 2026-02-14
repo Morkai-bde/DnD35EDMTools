@@ -1,4 +1,6 @@
-﻿namespace DnD35EDMTools.Data;
+﻿using DnD35EDMTools.Data.Classes;
+
+namespace DnD35EDMTools.Data;
 
 public class ClassData
 {
@@ -6,6 +8,7 @@ public class ClassData
     public string Name { get; set; }
     public string HitDice { get; set; }
     public int SkillPoints { get; set; }
+    public List<SkillData> ClassSkills { get; set; }
     public string AgeCategory { get; set; }
     public double FortitudeSavePerLevel { get; set; }
     public double ReflexSavePerLevel { get; set; }

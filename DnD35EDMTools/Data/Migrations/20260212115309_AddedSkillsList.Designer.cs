@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260212115309_AddedSkillsList")]
+    partial class AddedSkillsList
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -30,21 +33,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.HasIndex("CampaignSourceBooksId");
 
                     b.ToTable("JoinTableCampaignSourceBooks", (string)null);
-                });
-
-            modelBuilder.Entity("ClassDataSkillData", b =>
-                {
-                    b.Property<int>("ClassSkillsId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<int>("ClassesId")
-                        .HasColumnType("INTEGER");
-
-                    b.HasKey("ClassSkillsId", "ClassesId");
-
-                    b.HasIndex("ClassesId");
-
-                    b.ToTable("JoinTableClassSkills", (string)null);
                 });
 
             modelBuilder.Entity("ColourDataRaceData", b =>
@@ -363,10 +351,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("SilverPieces")
                         .HasColumnType("INTEGER");
 
-                    b.Property<string>("Skills")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("Skin")
                         .HasColumnType("INTEGER");
 
@@ -457,9 +441,6 @@ namespace DnD35EDMTools.Data.Migrations
                         .IsRequired()
                         .HasMaxLength(75)
                         .HasColumnType("TEXT");
-
-                    b.Property<int>("Page")
-                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Sourcebook")
                         .IsRequired()
@@ -1491,21 +1472,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.HasOne("DnD35EDMTools.Data.CampaignData", null)
                         .WithMany()
                         .HasForeignKey("CampaignSourceBooksId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-                });
-
-            modelBuilder.Entity("ClassDataSkillData", b =>
-                {
-                    b.HasOne("DnD35EDMTools.Data.Classes.SkillData", null)
-                        .WithMany()
-                        .HasForeignKey("ClassSkillsId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("DnD35EDMTools.Data.ClassData", null)
-                        .WithMany()
-                        .HasForeignKey("ClassesId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
                 });

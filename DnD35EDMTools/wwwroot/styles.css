@@ -5,6 +5,7 @@
     --celldefaultcolor: #CCCCCC;
     --cellaltcolor: #E0E0E0;
     --bs-body-bg: #808080; /*Temporary colour change to save my poor eyes*/
+    --dnd-viewheight: 1080px;
 }
 
 *,
@@ -31,6 +32,13 @@
 }
 
 /*Character Sheet Styles*/
+
+.dnd-character-sheet-header {
+    height: 35px;
+    width: 698px;
+    font-size: 28px;
+    padding-bottom: 1px;
+}
 
 .dnd-character-sheet {
     height: auto;
@@ -123,7 +131,7 @@
 .skills-row {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
-    grid-template-rows: repeat(15, var(--cellheight));
+    grid-template-rows: repeat(52, var(--cellheight));
 }
 .skills-row-header {
     text-align: center;
@@ -139,11 +147,6 @@
     grid-template-rows: repeat(1, var(--cellheight));
 }
 
-.skills-content {
-    display: grid;
-    /*grid-template-rows: repeat(14, var(--cellheight));*/
-}
-
 .skills-list {
     display: grid;
     grid-template-columns: 2fr 1fr 1fr;
@@ -155,6 +158,9 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .skills-list-row-content {
@@ -163,6 +169,7 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow:hidden;
 }
 
 .skills-list-row-header-alt {
@@ -171,6 +178,9 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
 }
 
 .skills-list-row-content-alt {
@@ -179,6 +189,7 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+    overflow:hidden;
 }
 
 /* Languages Styles */
@@ -472,7 +483,7 @@
 }
 
 .dnd-character-creation-sheet {
-    height : 484px; /*24*/
+    height : var(--dnd-viewheight) + 4; /*24*/
     width: 1080px;
     border: 2px solid;
 }
@@ -489,7 +500,17 @@
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
     grid-template-columns: 60px 120px 120px;
     grid-auto-rows: 20px;
-    max-height: 480px;
+    max-height: var(--dnd-viewheight);
+    padding: 20px;
+}
+
+.dnd-cc-tab-main__right {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(20px, auto));
+    grid-template-columns: 20px 180px 100px;
+    grid-auto-rows: 20px;
+    max-height: var(--dnd-viewheight);
     padding: 20px;
 }
 
@@ -499,7 +520,7 @@
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
     grid-template-columns: 70px 120px 120px;
     grid-auto-rows: 20px;
-    max-height: 480px;
+    max-height: var(--dnd-viewheight);
     padding: 20px;
 }
 
@@ -509,17 +530,24 @@
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
     grid-template-columns: 40px 120px 120px;
     grid-auto-rows: 20px;
-    max-height: 480px;
+    max-height: var(--dnd-viewheight);
     padding: 20px;
 }
-.dnd-cc-tab-languages__header {
+
+.dnd-cc-tab-skills {
     border-color: var(--cellbordercolour);
-    grid-auto-flow: column;
-    max-height: 480px;
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(20px, auto));
+    grid-template-columns: 160px 120px 40px;
+    grid-auto-rows: 20px;
+    grid-auto-flow: row;
+    max-height: var(--dnd-viewheight);
     overflow-y: auto;
-    padding-top: 20px;
-    padding-left: 20px;
-    padding-bottom: 0;
+    padding: 20px;
+}
+
+.dnd-cc-tab-skills-header {
+    grid-column: span 3; 
 }
 
 .dnd-cc-tab-languages {
@@ -529,9 +557,13 @@
     grid-template-columns: 122px 122px 122px;
     grid-auto-rows: 20px;
     grid-auto-flow: column;
-    max-height: 480px;
+    max-height: var(--dnd-viewheight);
     overflow-y: auto;
     padding: 20px;
+}
+
+.dnd-cc-tab-languages-header {
+    grid-column: span 3;
 }
 
 .dnd-cc-tab-equipment {
@@ -540,11 +572,16 @@
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
     grid-template-columns: 110px 120px 40px 80px;
     grid-auto-rows: 20px;
-    max-height: 480px;
+    max-height: var(--dnd-viewheight);
     padding: 20px;
 }
 
 .language-item {
+    display: flex;
+    align-items: center;
+}
+
+.cc-list-text-item {
     display: flex;
     align-items: center;
 }
@@ -563,6 +600,15 @@
     border-radius: 3px;
     padding: 3px;
 }
+
+.cc-input-small {
+    width: 60px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+    padding: 3px;
+}
+
 .cc-point-buy-stat-input {
     width: 60px;
     height: 20px;
@@ -570,6 +616,7 @@
     border-radius: 3px;
     padding: 3px;
 }
+
 .cc-point-buy-modifier-input {
     width: 60px;
     height: 20px;
@@ -593,6 +640,13 @@
 }
 
 .cc-point-buy-button {
+    width: 20px;
+    height: 20px;
+    border-width: thin;
+    border-radius: 3px;
+}
+
+.cc-button-square-small {
     width: 20px;
     height: 20px;
     border-width: thin;
@@ -667,7 +721,6 @@
     .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr .2fr  .2fr;
     grid-template-columns: .9fr 1fr;
 }
-
 
 .nr-input-select {
     width: 150px;

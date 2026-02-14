@@ -23,7 +23,7 @@
     </button>
 </div>
 
-<h3>@(_characterName) </h3>
+<div class="dnd-character-sheet-header">@(_characterName)</div>
 <div class="dnd-character-sheet">
 <div class="dnd-cs-top-section">
 <div class="dnd-cs-top__left">
@@ -337,15 +337,25 @@
         <div class="skills-row-header">Skills</div>
         <div class="skills-row-header">Ranks</div>
         <div class="skills-row-header">Modifier</div>
-        @for (int i = 0; i < 52; i++)
+
+        @for (int i = 0; i < MaxRows; i++)
         {
-            <Skill Row="@i"></Skill>
+        var skill = i < Skills.Count ? Skills[i] : null;
+
+        <div class="@RowHeaderClass(i)">
+            @(skill?.Name ?? "")
+        </div>
+
+        <div class="@RowContentClass(i)">
+            @(skill?.Ranks.ToString() ?? "")
+        </div>
+
+        <div class="@RowContentClass(i)">
+            @(skill?.Modifier.ToString() ?? "")
+        </div>
         }
-        @* @foreach (var skill in Skills) *@
-        @* { *@
-        @*     <div class="skill-item">@skill</div> *@
-        @* } *@
     </div>
+
     <div class="weapon-row">
         <div class="weapon-list-right">
             <div class="weapon-row-header">Critical</div>
@@ -402,11 +412,13 @@
     #region Fields
 
     [Parameter] public int Row { get; set; }
+    private const int MaxRows = 52;
 
     private List<OrderData> _orders = [];
     private List<MoralityData> _moralities = [];
     private List<CharacterData> _characters = [];
-
+    private List<CharacterSkillDisplay> Skills { get; set; } = [];
+    
     private string _characterName = string.Empty;
     private string _characterClass = string.Empty;
     private string _characterRace = string.Empty;
@@ -457,10 +469,22 @@
     private int? _characterSilver;
     private int? _characterCopper;
 
-//[Parameter] public List<string> Skills { get; set; } = new List<string>();
-
     #endregion
 
+    #region Calculated Properties
+
+    private string RowHeaderClass(int row)
+        => row % 2 == 1
+            ? "skills-list-row-header-alt"
+            : "skills-list-row-header";
+
+    private string RowContentClass(int row)
+        => row % 2 == 1
+            ? "skills-list-row-content-alt"
+            : "skills-list-row-content";
+
+    #endregion
+    
     #region Lifecycle Methods
 
     protected override async Task OnInitializedAsync()
@@ -503,8 +527,16 @@
 
             if (character is null)
                 return;
+            var campaignTask = db.Campaigns
+                .AsNoTracking()
+                .Where(c => c.Id == character.CampaignId)
+                .FirstOrDefaultAsync();
 
-            var classTask = db.Classes.Where(c => c.Id == character.Class).Select(c => c.Name).FirstOrDefaultAsync();
+            var classTask = db.Classes
+                .Include(c => c.ClassSkills)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == character.Class);
+
             var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
             var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
             var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
@@ -520,10 +552,22 @@
                 .Where(l => character.Languages.Contains(l.Id))
                 .Select(l => l.Name)
                 .ToListAsync();
+            
+            var skillsTask = db.Skills
+                .AsNoTracking()
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+            
+            await Task.WhenAll(campaignTask, classTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask);
 
-            await Task.WhenAll(classTask, raceTask, deityTask, genderTask, colorsTask, languagesTask);
+            var campaign = await campaignTask;
+            var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
+            
+            var characterClass = await classTask;
+            _characterClass = characterClass?.Name ?? string.Empty;
+            
+            var classSkillIds = characterClass?.ClassSkills?.Select(s => s.Id).ToHashSet() ?? [];
 
-            _characterClass = await classTask ?? string.Empty;
             _characterRace = await raceTask ?? string.Empty;
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
@@ -540,6 +584,36 @@
                     ? characterLanguageNames[i]
                     : string.Empty;
             }
+            
+            var allSkills = await skillsTask;
+            Skills = allSkills
+                .Select(skill =>
+                {
+                    var ranks = character.Skills.TryGetValue(skill.Id, out var r) ? r : 0;
+
+                    var isClassSkill = classSkillIds.Contains(skill.Id);
+                    var displayRanks = isClassSkill ? ranks : ranks * 0.5;
+
+                    var attributeModifier = GetAttributeModifier(skill.Attribute, character);
+                    var modifier = attributeModifier + (int)Math.Floor(displayRanks);
+
+                    return new CharacterSkillDisplay
+                    {
+                        Name = skill.Name,
+                        Ranks = (int)Math.Floor(displayRanks),
+                        Modifier = modifier,
+                        IsTrainedOnly = skill.IsTrainedOnly
+                    };
+                })
+                .Where(skill =>
+                {
+                    if (hideTrainedOnly && skill.IsTrainedOnly && skill.Ranks == 0)
+                    {
+                        return false;
+                    }
+                    return true;
+                })
+                .ToList();
 
             _characterName = character.Name;
             _characterExperience = $"{character.Experience}/";
@@ -611,6 +685,20 @@
 
             _characterLuckMod = ConversionHelper.ConvertStatToBonus(_characterLuck.Value);
         }
+    }
+    
+    private int GetAttributeModifier(string? attribute, CharacterData character)
+    {
+        return attribute switch
+        {
+            "STR" or "Strength" => ConversionHelper.ConvertStatToBonus(character.Strength),
+            "DEX" or "Dexterity" => ConversionHelper.ConvertStatToBonus(character.Dexterity),
+            "CON" or "Constitution" => ConversionHelper.ConvertStatToBonus(character.Constitution),
+            "INT" or "Intelligence" => ConversionHelper.ConvertStatToBonus(character.Intelligence),
+            "WIS" or "Wisdom" => ConversionHelper.ConvertStatToBonus(character.Wisdom),
+            "CHA" or "Charisma" => ConversionHelper.ConvertStatToBonus(character.Charisma),
+            _ => 0
+        };
     }
 
     #endregion
