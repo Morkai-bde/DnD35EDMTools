@@ -131,7 +131,7 @@
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-content"></div>
-        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content">@_characterSpeed</div>
         <div class="load-speed-list-row-content"></div>
     </div>
     <div class="load-speed-list">
@@ -438,6 +438,13 @@
 
     private string[] _characterLanguages = new string[21];
 
+    private int? _characterPlatinum;
+    private int? _characterGold;
+    private int? _characterSilver;
+    private int? _characterCopper;
+
+    private string _characterSpeed = string.Empty;
+    
     private double? _characterLightLoad;
     private double? _characterMediumLoad;
     private double? _characterHeavyLoad;
@@ -463,11 +470,6 @@
     private double? _characterFortSave;
     private double? _characterRefSave;
     private double? _characterWillSave;
-
-    private int? _characterPlatinum;
-    private int? _characterGold;
-    private int? _characterSilver;
-    private int? _characterCopper;
 
     #endregion
 
@@ -537,7 +539,7 @@
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == character.Class);
 
-            var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
+            var raceTask = db.Races.AsNoTracking().FirstOrDefaultAsync(r => r.Id == character.Race);
             var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
             var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
 
@@ -568,7 +570,8 @@
             
             var classSkillIds = characterClass?.ClassSkills?.Select(s => s.Id).ToHashSet() ?? [];
 
-            _characterRace = await raceTask ?? string.Empty;
+            var race = await raceTask;
+
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
 
@@ -584,7 +587,7 @@
                     ? characterLanguageNames[i]
                     : string.Empty;
             }
-            
+
             var allSkills = await skillsTask;
             Skills = allSkills
                 .Select(skill =>
@@ -616,6 +619,7 @@
                 .ToList();
 
             _characterName = character.Name;
+            _characterRace = race?.Race ?? string.Empty;
             _characterExperience = $"{character.Experience}/";
             _characterHitPoints = character.HitPoints;
             _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
@@ -623,6 +627,13 @@
             _characterWeight = $"{character.Weight} lbs.";
             _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
             _characterPlayerName = character.PlayerName ?? string.Empty;
+
+            _characterPlatinum = character.PlatinumPieces;
+            _characterGold = character.GoldPieces;
+            _characterSilver = character.SilverPieces;
+            _characterCopper = character.CopperPieces;
+
+            _characterSpeed = $"{race?.BaseSpeed} ft.";
 
             _characterLightLoad = character.LightLoad;
             _characterMediumLoad = character.MediumLoad;
@@ -649,11 +660,6 @@
             _characterFortSave = character.BaseFortitudeSave;
             _characterRefSave = character.BaseReflexSave;
             _characterWillSave = character.BaseWillSave;
-
-            _characterPlatinum = character.PlatinumPieces;
-            _characterGold = character.GoldPieces;
-            _characterSilver = character.SilverPieces;
-            _characterCopper = character.CopperPieces;
 
             StateHasChanged();
         }
