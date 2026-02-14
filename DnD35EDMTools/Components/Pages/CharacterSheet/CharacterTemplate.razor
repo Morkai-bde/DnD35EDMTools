@@ -531,8 +531,12 @@
                 .AsNoTracking()
                 .Where(c => c.Id == character.CampaignId)
                 .FirstOrDefaultAsync();
-            
-            var classTask = db.Classes.Where(c => c.Id == character.Class).Select(c => c.Name).FirstOrDefaultAsync();
+
+            var classTask = db.Classes
+                .Include(c => c.ClassSkills)
+                .AsNoTracking()
+                .FirstOrDefaultAsync(c => c.Id == character.Class);
+
             var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
             var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
             var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
@@ -559,7 +563,11 @@
             var campaign = await campaignTask;
             var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
             
-            _characterClass = await classTask ?? string.Empty;
+            var characterClass = await classTask;
+            _characterClass = characterClass?.Name ?? string.Empty;
+            
+            var classSkillIds = characterClass?.ClassSkills?.Select(s => s.Id).ToHashSet() ?? [];
+
             _characterRace = await raceTask ?? string.Empty;
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
@@ -582,14 +590,17 @@
                 .Select(skill =>
                 {
                     var ranks = character.Skills.TryGetValue(skill.Id, out var r) ? r : 0;
-                
+
+                    var isClassSkill = classSkillIds.Contains(skill.Id);
+                    var displayRanks = isClassSkill ? ranks : ranks * 0.5;
+
                     var attributeModifier = GetAttributeModifier(skill.Attribute, character);
-                    var modifier = attributeModifier + ranks;
+                    var modifier = attributeModifier + (int)Math.Floor(displayRanks);
 
                     return new CharacterSkillDisplay
                     {
                         Name = skill.Name,
-                        Ranks = ranks,
+                        Ranks = (int)Math.Floor(displayRanks),
                         Modifier = modifier,
                         IsTrainedOnly = skill.IsTrainedOnly
                     };

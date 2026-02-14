@@ -6,5 +6,5 @@ public class CharacterSkills
     public string SkillName { get; set; }
     public int Ranks { get; set; }
     public bool IsClassSkill { get; set; }
-    public int RankCost => IsClassSkill ? 1 : 2;
+    public int RankCost => 1;
 }

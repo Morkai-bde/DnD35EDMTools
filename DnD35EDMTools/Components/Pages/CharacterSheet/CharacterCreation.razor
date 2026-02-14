@@ -379,17 +379,17 @@
                         var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skill.Id);
                         if (characterSkill != null)
                         {
-                            var maxRanks = GetMaxRanks(characterSkill.IsClassSkill);
+                            var maxRanks = GetMaxRanks();
                             var classSkillIndicator = characterSkill.IsClassSkill ? " ★" : "";
                             
                             <div class="cc-list-text-item">
                                 @skill.Name@classSkillIndicator
                             </div>
                             <div>
-                                <input class="cc-input-small" type="text" value="@characterSkill.Ranks" readonly/><input class="cc-input-small" type="text" value="@maxRanks" readonly/>
+                                <input class="cc-input-small" type="text" value="@GetDisplayRanks(characterSkill).ToString("0.#")" readonly/><input class="cc-input-small" type="text" value="@GetDisplayMaxRanks(characterSkill.IsClassSkill)" readonly/>
                             </div>
                             <div>
-                                <button class="cc-button-square-small" @onclick="() => AddRank(skill.Id)"disabled="@(characterSkill.Ranks >= maxRanks || RemainingSkillPoints < characterSkill.RankCost)">+</button><button class="cc-button-square-small" @onclick="() => RemoveRank(skill.Id)"disabled="@(characterSkill.Ranks <= 0)">-</button>
+                                <button class="cc-button-square-small" @onclick="() => AddRank(skill.Id)" disabled="@(characterSkill.Ranks >= maxRanks || RemainingSkillPoints < characterSkill.RankCost)">+</button><button class="cc-button-square-small" @onclick="() => RemoveRank(skill.Id)" disabled="@(characterSkill.Ranks <= 0)">-</button>
                             </div>
                         }
                     }
@@ -480,6 +480,7 @@
     private const int MinStatValue = 8;
     private const int MaxStatValue = 18;
     private const int StatThresholdForBonus = 13;
+    private const int CurrentLevel = 1;
 
     private bool _dryRun = true;
     private int _selectedTab;
@@ -695,7 +696,7 @@
             }));
 
     private int PointsSpent =>
-        _characterSkills.Sum(s => s.Ranks * s.RankCost);
+        _characterSkills.Sum(s => s.Ranks);
     
     private int TotalSkillPoints
     {
@@ -869,13 +870,6 @@
 
             SetWealthToZero();
         }
-    }
-
-    private List<SkillData> GetClassSkills()
-    {
-        if (_selectedClassId == NoSelectionId)
-            return new List<SkillData>();
-        return SelectedClass?.ClassSkills.ToList() ?? new List<SkillData>();
     }
 
     #endregion
@@ -1207,8 +1201,8 @@
         if (SelectedClassId <= NoSelectionId || SelectedClass == null)
             return;
     
-        var classSkillIds = SelectedClass.ClassSkills?.Select(s => s.Id).ToHashSet() 
-                            ?? new HashSet<int>();
+        var classSkillIds = SelectedClass.ClassSkills.Select(s => s.Id).ToHashSet(); 
+                            //?? [];
     
         foreach (var skill in Skills)
         {
@@ -1222,12 +1216,9 @@
         }
     }
 
-    private int GetMaxRanks(bool isClassSkill)
+    private int GetMaxRanks()
     {
-        int currentLevel = 1;
-        return isClassSkill 
-            ? currentLevel + 3
-            : (currentLevel + 3) / 2;
+        return CurrentLevel + 3;
     }
 
     private void AddRank(int skillId)
@@ -1235,7 +1226,7 @@
         var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skillId);
         if (characterSkill == null) return;
 
-        int maxRanks = GetMaxRanks(characterSkill.IsClassSkill);
+        int maxRanks = GetMaxRanks();
         int costToAdd = characterSkill.RankCost;
 
         if (characterSkill.Ranks >= maxRanks)
@@ -1266,6 +1257,16 @@
         characterSkill.Ranks--;
     }
 
+    private double GetDisplayRanks(CharacterSkills skill)
+    {
+        return skill.IsClassSkill ? skill.Ranks : skill.Ranks * 0.5;
+    }
+
+    private int GetDisplayMaxRanks(bool isClassSkill)
+    {
+        return isClassSkill ? CurrentLevel + 3 : (CurrentLevel + 3) / 2;
+    }
+    
     private void ToggleLanguageSelection(int languageId)
     {
         var lang = FilteredLanguages.FirstOrDefault(l => l.Id == languageId);
