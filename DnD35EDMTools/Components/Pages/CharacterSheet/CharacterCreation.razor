@@ -372,7 +372,7 @@
                         <strong>Skill points remaining: @RemainingSkillPoints / @(TotalSkillPoints)</strong>
                     </div>
                     <div><strong>Skill Name</strong></div>
-                    <div><strong>Ranks / Max</strong></div>
+                    <div style="align-content: center"><strong>Ranks / Max</strong></div>
                     <div><strong>Actions</strong></div>
                     @foreach (var skill in Skills)
                     {
@@ -1201,9 +1201,8 @@
         if (SelectedClassId <= NoSelectionId || SelectedClass == null)
             return;
     
-        var classSkillIds = SelectedClass.ClassSkills.Select(s => s.Id).ToHashSet(); 
-                            //?? [];
-    
+        var classSkillIds = SelectedClass.ClassSkills.Select(s => s.Id).ToHashSet();
+
         foreach (var skill in Skills)
         {
             _characterSkills.Add(new CharacterSkills
