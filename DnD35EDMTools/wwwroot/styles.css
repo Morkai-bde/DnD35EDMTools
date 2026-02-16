@@ -518,10 +518,14 @@
     border-color: var(--cellbordercolour);
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-template-columns: 70px 120px 120px;
+    grid-template-columns: 70px 50px 50px 50px 120px;
     grid-auto-rows: 20px;
     max-height: var(--dnd-viewheight);
     padding: 20px;
+}
+
+.dnd-cc-tab-stats-empty-row {
+    grid-column: span 5;
 }
 
 .dnd-cc-tab-appearance {
@@ -609,17 +613,10 @@
     padding: 3px;
 }
 
-.cc-point-buy-stat-input {
-    width: 60px;
+.cc-input-50-c {
+    width: 50px;
     height: 20px;
-    border-width: thin;
-    border-radius: 3px;
-    padding: 3px;
-}
-
-.cc-point-buy-modifier-input {
-    width: 60px;
-    height: 20px;
+    text-align: center;
     border-width: thin;
     border-radius: 3px;
     padding: 3px;
@@ -653,8 +650,8 @@
     border-radius: 3px;
 }
 
-.cc-pb-randomize-button {
-    width: 60px;
+.cc-button-50 {
+    width: 50px;
     height: 20px;
     border-width: thin;
     border-radius: 3px;

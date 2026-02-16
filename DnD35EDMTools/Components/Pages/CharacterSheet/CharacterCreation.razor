@@ -152,18 +152,29 @@
                 {
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
+                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
+                            var racialBonus = GetRacialBonus(statName);
+                            var finalValue = statValue + racialBonus;
+                            var modifierValue = ConversionHelper.ConvertStatToBonus(finalValue);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
                             <div>
-                                <input class="cc-input" type="text" id="@statName" @bind="statValue"/>
+                                <input class="cc-input-50-c" type="text" id="@statName" @bind="statValue" readonly/>
                             </div>
                             <div>
-                                <button class="cc-randomize-button" @onclick="RollFunction">Roll</button>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
+                            </div>
+                            <div>
+                                <button class="cc-button-50" @onclick="RollFunction">Roll</button>
                             </div>
                             continue;
                             void RollFunction() => RollStat(SelectedCampaignStatRollingMethod, statName);
@@ -172,16 +183,26 @@
 
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
+                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
-                            var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
+                            var racialBonus = GetRacialBonus(statName);
+                            var finalValue = statValue + racialBonus;
+                            var modifierValue = ConversionHelper.ConvertStatToBonus(finalValue);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
                             <div>
-                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                                <input class="cc-input-50-c" type="text" id="@statName" @bind="statValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
                             </div>
                             <div>
                                 @foreach (var number in _standardArray)
@@ -204,26 +225,35 @@
                             <label for="points">Points:</label>
                         </div>
                         <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="points" value="@_characterStatPoints" readonly/>
+                            <input class="cc-input-50-c" type="text" id="points" value="@_characterStatPoints" readonly/>
+                        </div>
+                        <div>
                             @if (SelectedCampaignStatRollingMethod == "PBR")
                             {
-                                <button class="cc-pb-randomize-button" @onclick="RollRandomStatPoints">Roll</button>
+                                <button class="cc-button-50" @onclick="RollRandomStatPoints">Roll</button>
                             }
                             &nbsp;
                         </div>
-                        <div>
-                            &nbsp;
-                        </div>
+                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
-                            var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
+                            var racialBonus = GetRacialBonus(statName);
+                            var finalValue = statValue + racialBonus;
+                            var modifierValue = ConversionHelper.ConvertStatToBonus(finalValue);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
                             <div>
-                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                                <input class="cc-input-50-c" type="text" id="@statName" @bind="statValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
                             </div>
                             <div>
                                 <button class="cc-point-buy-button" @onclick="IncreaseAction">+</button><button class="cc-point-buy-button" @onclick="DecreaseAction">-</button>
@@ -236,31 +266,36 @@
 
                     @if (SelectedCampaign?.AllowLuck == true)
                     {
+                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
                         <div>
                             <label for="luck">Luck:</label>
                         </div>
                         <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="luck" @bind="_characterLuck"/><input class="cc-point-buy-stat-input" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)"/>
+                            <input class="cc-input-50-c" type="text" id="luck" @bind="_characterLuck" readonly/>
+                        </div>
+                        <div>
+                            <input class="cc-input-50-c" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)" readonly/>
+                        </div>
+                        <div>
+                            &nbsp;
                         </div>
                         <div>
                             &nbsp;
                         </div>
                     }
 
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
                     <div>
                         <label for="fortitude">Fortitude</label>
                     </div>
                     <div>
-                        <input class="cc-point-buy-stat-input" type="text" id="fortitude" @bind="_calculatedBaseFortitude">
+                        <input class="cc-input-50-c" type="text" id="fortitude" @bind="_displayBaseFortitude">
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                     <div>
                         &nbsp;
@@ -269,7 +304,13 @@
                         <label for="reflex">Reflex</label>
                     </div>
                     <div>
-                        <input class="cc-point-buy-stat-input" type="text" id="reflex" @bind="_calculatedBaseReflex">
+                        <input class="cc-input-50-c" type="text" id="reflex" @bind="_displayBaseReflex">
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                     <div>
                         &nbsp;
@@ -278,7 +319,13 @@
                         <label for="will">Will</label>
                     </div>
                     <div>
-                        <input class="cc-point-buy-stat-input" type="text" id="will" @bind="_calculatedBaseWill">
+                        <input class="cc-input-50-c" type="text" id="will" @bind="_displayBaseWill">
+                    </div>
+                    <div>
+                        &nbsp;
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                     <div>
                         &nbsp;
@@ -537,6 +584,9 @@
     private double _calculatedBaseFortitude;
     private double _calculatedBaseReflex;
     private double _calculatedBaseWill;
+    private double _displayBaseFortitude;
+    private double _displayBaseReflex;
+    private double _displayBaseWill;
     private int _platinumPieces;
     private int _goldPieces;
     private int _silverPieces;
@@ -686,7 +736,7 @@
     private string SelectedClassStartingGold =>
         SelectedClass?.StartingGold ?? "";
 
-    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence));
+    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence")));
 
     private int RemainingLanguageSelections
         => Math.Max(0, BonusLanguageSlots - _selectedLanguageIds.Count(id =>
@@ -710,7 +760,7 @@
 
             var baseSkillPoints = SelectedClass.SkillPoints;
             var humanBonus = SelectedRace.Race == "Human" ? 1 : 0;
-            var intModifier = ConversionHelper.ConvertStatToBonus(CharacterIntelligence);
+            var intModifier = ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence"));
 
             var skillPointsPerLevel = Math.Max(1, baseSkillPoints + humanBonus + intModifier);
 
@@ -765,6 +815,22 @@
             { "Intelligence", val => CharacterIntelligence = val },
             { "Wisdom", val => CharacterWisdom = val },
             { "Charisma", val => CharacterCharisma = val },
+        };
+    }
+    
+    private int GetRacialBonus(string statName)
+    {
+        if (SelectedRace == null) return 0;
+    
+        return statName switch
+        {
+            "Strength" => SelectedRace.StrengthBonus,
+            "Dexterity" => SelectedRace.DexterityBonus,
+            "Constitution" => SelectedRace.ConstitutionBonus,
+            "Intelligence" => SelectedRace.IntelligenceBonus,
+            "Wisdom" => SelectedRace.WisdomBonus,
+            "Charisma" => SelectedRace.CharismaBonus,
+            _ => 0
         };
     }
 
@@ -1063,6 +1129,8 @@
     {
         if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
 
+        var tempCharacterConstitution = CharacterConstitution + GetRacialBonus("Constitution");
+        _displayBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, tempCharacterConstitution);
         _calculatedBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, CharacterConstitution);
     }
 
@@ -1070,6 +1138,8 @@
     {
         if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
 
+        var tempCharacterDexterity = CharacterDexterity + GetRacialBonus("Dexterity");
+        _displayBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, tempCharacterDexterity);
         _calculatedBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, CharacterDexterity);
     }
 
@@ -1077,6 +1147,8 @@
     {
         if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
 
+        var tempCharacterWisdom = CharacterWisdom + GetRacialBonus("Wisdom");
+        _displayBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, tempCharacterWisdom);
         _calculatedBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, CharacterWisdom);
     }
 
@@ -1514,7 +1586,7 @@
             Wisdom = CharacterWisdom,
             Intelligence = CharacterIntelligence,
             Charisma = CharacterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
+            HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice),
             Deity = SelectedDeity!.Id,
             Order = SelectedOrder!.Midpoint,
             Morality = SelectedMorality!.Midpoint,

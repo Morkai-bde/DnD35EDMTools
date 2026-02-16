@@ -619,9 +619,9 @@
                 .ToList();
 
             _characterName = character.Name;
-            _characterRace = race?.Race ?? string.Empty;
+            _characterRace = race.Race;
             _characterExperience = $"{character.Experience}/";
-            _characterHitPoints = character.HitPoints;
+            _characterHitPoints = character.HitPoints + ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
             _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
             _characterAge = character.Age;
             _characterWeight = $"{character.Weight} lbs.";
@@ -633,7 +633,7 @@
             _characterSilver = character.SilverPieces;
             _characterCopper = character.CopperPieces;
 
-            _characterSpeed = $"{race?.BaseSpeed} ft.";
+            _characterSpeed = $"{race.BaseSpeed} ft.";
 
             _characterLightLoad = character.LightLoad;
             _characterMediumLoad = character.MediumLoad;
@@ -642,24 +642,24 @@
             _characterLiftOffGround = character.LiftOffGround;
             _characterPushOrDrag = character.PushOrDrag;
 
-            _characterStrength = character.Strength;
-            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength);
-            _characterDexterity = character.Dexterity;
-            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity);
-            _characterConstitution = character.Constitution;
-            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution);
-            _characterIntelligence = character.Intelligence;
-            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence);
-            _characterWisdom = character.Wisdom;
-            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom);
-            _characterCharisma = character.Charisma;
-            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma);
+            _characterStrength = character.Strength  + race.StrengthBonus;
+            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength + race.StrengthBonus);
+            _characterDexterity = character.Dexterity + race.DexterityBonus;
+            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity + race.DexterityBonus);
+            _characterConstitution = character.Constitution + race.ConstitutionBonus;
+            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
+            _characterIntelligence = character.Intelligence + race.IntelligenceBonus;
+            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence + race.IntelligenceBonus);
+            _characterWisdom = character.Wisdom + race.WisdomBonus;
+            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom + race.WisdomBonus);
+            _characterCharisma = character.Charisma + race.CharismaBonus;
+            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma + race.CharismaBonus);
 
             CalculateLuck();
 
-            _characterFortSave = character.BaseFortitudeSave;
-            _characterRefSave = character.BaseReflexSave;
-            _characterWillSave = character.BaseWillSave;
+            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0); // character.BaseFortitudeSave; // replace with Fortitude Calculation
+            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0); // character.BaseReflexSave; // replace with Reflex Calculation
+            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0); //character.BaseWillSave; // replace with Will Calculation
 
             StateHasChanged();
         }
