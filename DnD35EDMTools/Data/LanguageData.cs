@@ -13,9 +13,8 @@ public class LanguageData
     [Required]
     [MaxLength(10)]
     public string Type { get; set; } = "Living";
-    public string RequiredRace { get; set; } = "Any";
-    public string RequiredClass { get; set; } = "Any";
-    public bool IsBonus { get; set; } = false;
+    [MaxLength(10)]
+    public bool IsAutomatic { get; set; }
     [Required]
     [MaxLength(5)]
     public string Sourcebook { get; set; }

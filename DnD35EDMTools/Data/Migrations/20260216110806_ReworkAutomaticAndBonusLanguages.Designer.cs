@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216110806_ReworkAutomaticAndBonusLanguages")]
+    partial class ReworkAutomaticAndBonusLanguages
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -44,7 +47,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("ClassDataId");
 
-                    b.ToTable("JoinTableClassAutomaticLanguages", (string)null);
+                    b.ToTable("ClassAutomaticLanguages", (string)null);
                 });
 
             modelBuilder.Entity("ClassDataLanguageData1", b =>
@@ -59,7 +62,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("ClassData1Id");
 
-                    b.ToTable("JoinTableClassBonusLanguages", (string)null);
+                    b.ToTable("ClassBonusLanguages", (string)null);
                 });
 
             modelBuilder.Entity("ClassDataSkillData", b =>
@@ -138,7 +141,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Alignments", (string)null);
+                    b.ToTable("Alignments");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.ApplicationUser", b =>
@@ -252,7 +255,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Campaigns", (string)null);
+                    b.ToTable("Campaigns");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.CarryingCapacityData", b =>
@@ -281,7 +284,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("CarryingCapacity", (string)null);
+                    b.ToTable("CarryingCapacity");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.CharacterData", b =>
@@ -411,7 +414,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Characters", (string)null);
+                    b.ToTable("Characters");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.ClassData", b =>
@@ -461,7 +464,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Classes", (string)null);
+                    b.ToTable("Classes");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.Classes.SkillData", b =>
@@ -498,7 +501,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Skills", (string)null);
+                    b.ToTable("Skills");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.ColourData", b =>
@@ -517,7 +520,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Colours", (string)null);
+                    b.ToTable("Colours");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.DeityData", b =>
@@ -548,7 +551,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Deities", (string)null);
+                    b.ToTable("Deities");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.FeatsTraitsData", b =>
@@ -614,7 +617,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceDataId");
 
-                    b.ToTable("FeatsTraits", (string)null);
+                    b.ToTable("FeatsTraits");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.GenderData", b =>
@@ -633,7 +636,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Genders", (string)null);
+                    b.ToTable("Genders");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.LanguageData", b =>
@@ -669,7 +672,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Languages", (string)null);
+                    b.ToTable("Languages");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.MoralityData", b =>
@@ -697,7 +700,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Moralities", (string)null);
+                    b.ToTable("Moralities");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.OrderData", b =>
@@ -725,7 +728,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Orders", (string)null);
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.RaceData", b =>
@@ -1008,7 +1011,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Races", (string)null);
+                    b.ToTable("Races");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.SourceBookData", b =>
@@ -1037,7 +1040,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("SourceBooks", (string)null);
+                    b.ToTable("SourceBooks");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.SpellsSLAData", b =>
@@ -1341,7 +1344,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceDataId");
 
-                    b.ToTable("SpellsSla", (string)null);
+                    b.ToTable("SpellsSla");
                 });
 
             modelBuilder.Entity("GenderDataRaceData", b =>
@@ -1371,7 +1374,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("AllowedAlignmentId");
 
-                    b.ToTable("JoinTableAllowedAlignments", (string)null);
+                    b.ToTable("JoinTableAllowedAlignments");
                 });
 
             modelBuilder.Entity("LanguageDataRaceData", b =>
@@ -1386,7 +1389,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceDataId");
 
-                    b.ToTable("JoinTableRaceAutomaticLanguages", (string)null);
+                    b.ToTable("RaceAutomaticLanguages", (string)null);
                 });
 
             modelBuilder.Entity("LanguageDataRaceData1", b =>
@@ -1401,7 +1404,7 @@ namespace DnD35EDMTools.Data.Migrations
 
                     b.HasIndex("RaceData1Id");
 
-                    b.ToTable("JoinTableRaceBonusLanguages", (string)null);
+                    b.ToTable("RaceBonusLanguages", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>

@@ -76,6 +76,10 @@ public class RaceData
     public int UsePsionicDeviceBonus { get; set; }
     public int UseRopeBonus { get; set; }
     
+    // Racial Language Bonuses
+    public List<LanguageData> AutomaticLanguages { get; set; } = [];
+    public List<LanguageData> BonusLanguages { get; set; } = [];
+    
     // Save bonuses
     public int FortitudeBonus { get; set; }
     public int ReflexBonus { get; set; }
@@ -114,8 +118,6 @@ public class RaceData
     [MaxLength(5)]
     public string WeightDice { get; set; }
     // public List<ClassData> FavoredClass { get; set; }
-    // public List<LanguagesData> AutomaticLanguages{ get; set}
-    // Public List<LanguageData> BonusLanguages { get; set}
     public string? Description { get; set; }
     [MaxLength(64)]
     public string Source { get; set; }

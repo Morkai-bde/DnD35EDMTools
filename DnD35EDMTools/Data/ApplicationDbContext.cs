@@ -39,7 +39,7 @@ namespace DnD35EDMTools.Data
                 {
                     joinEntity.ToTable("JoinTableRaceEyeColour");
                 });
-                
+
                 modelBuilder.Entity<RaceData>()
                     .HasMany(c => c.HairColours)
                     .WithMany(c => c.RaceHairColours)
@@ -47,7 +47,7 @@ namespace DnD35EDMTools.Data
                     {
                         joinEntity.ToTable("JoinTableRaceHairColour");
                     });
-                
+
                 modelBuilder.Entity<RaceData>()
                     .HasMany(c => c.SkinColours)
                     .WithMany(c => c.RaceSkinColours)
@@ -55,7 +55,7 @@ namespace DnD35EDMTools.Data
                     {
                         joinEntity.ToTable("JoinTableRaceSkinColour");
                     });
-                
+
                 modelBuilder.Entity<RaceData>()
                     .HasMany(c => c.Genders)
                     .WithMany(c => c.RaceGenders)
@@ -63,7 +63,17 @@ namespace DnD35EDMTools.Data
                     {
                         joinEntity.ToTable("JoinTableRaceGenders");
                     });
-                
+
+                modelBuilder.Entity<RaceData>()
+                    .HasMany(r => r.AutomaticLanguages)
+                    .WithMany()
+                    .UsingEntity(j => j.ToTable("JoinTableRaceAutomaticLanguages"));
+
+                modelBuilder.Entity<RaceData>()
+                    .HasMany(r => r.BonusLanguages)
+                    .WithMany()
+                    .UsingEntity(j => j.ToTable("JoinTableRaceBonusLanguages"));
+
                 modelBuilder.Entity<AlignmentData>()
                     .HasMany(a => a.AllowedAlignments)
                     .WithMany()
@@ -86,7 +96,17 @@ namespace DnD35EDMTools.Data
                     {
                         joinEntity.ToTable("JoinTableClassSkills");
                     });
-                
+
+                modelBuilder.Entity<ClassData>()
+                    .HasMany(c => c.AutomaticLanguages)
+                    .WithMany()
+                    .UsingEntity(j => j.ToTable("JoinTableClassAutomaticLanguages"));
+
+                modelBuilder.Entity<ClassData>()
+                    .HasMany(c => c.BonusLanguages)
+                    .WithMany()
+                    .UsingEntity(j => j.ToTable("JoinTableClassBonusLanguages"));
+
                 modelBuilder.Entity<CampaignData>()
                     .HasMany(c => c.AllowedSources)
                     .WithMany(s => s.CampaignSourceBooks)
@@ -94,7 +114,7 @@ namespace DnD35EDMTools.Data
                     {
                         joinEntity.ToTable("JoinTableCampaignSourceBooks");
                     });
-                
+
                 modelBuilder.Entity<CharacterData>()
                     .Property(c => c.Skills)
                     .HasConversion(
