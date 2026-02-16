@@ -753,8 +753,7 @@
     private string SelectedClassStartingGold =>
         SelectedClass?.StartingGold ?? "";
 
-    //private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence")));
-    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence)) + GetSpeakLanguageRanks();
+    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence")) + GetSpeakLanguageRanks());
 
     private int RemainingLanguageSelections
         => Math.Max(0, BonusLanguageSlots - _selectedLanguageIds.Count(id =>
