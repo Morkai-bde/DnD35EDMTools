@@ -74,6 +74,15 @@ namespace DnD35EDMTools.Data
                     .WithMany()
                     .UsingEntity(j => j.ToTable("JoinTableRaceBonusLanguages"));
 
+                modelBuilder.Entity<RaceData>()
+                    .Property(c => c.SkillBonuses)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        v => JsonSerializer.Deserialize<Dictionary<string, int>>(v, (JsonSerializerOptions?)null) 
+                             ?? new Dictionary<string, int>()
+                    )
+                    .HasColumnType("TEXT");
+                
                 modelBuilder.Entity<AlignmentData>()
                     .HasMany(a => a.AllowedAlignments)
                     .WithMany()
