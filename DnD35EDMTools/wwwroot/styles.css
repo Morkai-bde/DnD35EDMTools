@@ -518,14 +518,14 @@
     border-color: var(--cellbordercolour);
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-template-columns: 70px 50px 50px 50px 120px;
+    grid-template-columns: 70px 50px 50px 50px 50px 120px;
     grid-auto-rows: 20px;
     max-height: var(--dnd-viewheight);
     padding: 20px;
 }
 
 .dnd-cc-tab-stats-empty-row {
-    grid-column: span 5;
+    grid-column: span 6;
 }
 
 .dnd-cc-tab-appearance {

@@ -153,12 +153,13 @@
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
                         <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
-                        <div>Ability</div><div>Base</div><div>Race</div><div>Modifier</div><div>&nbsp;</div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
                             var racialBonus = GetRacialBonus(statName);
+                            var totalValue = GetDisplayStatValue(statName);
                             var modifierValue = GetDisplayStatModifier(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
@@ -168,6 +169,9 @@
                             </div>
                             <div>
                                 <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-total")" value="@totalValue" readonly/>
                             </div>
                             <div>
                                 <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
@@ -183,12 +187,13 @@
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
                         <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
-                        <div>Ability</div><div>Base</div><div>Race</div><div>Modifier</div><div>&nbsp;</div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
                             var racialBonus = GetRacialBonus(statName);
+                            var totalValue = GetDisplayStatValue(statName);
                             var modifierValue = GetDisplayStatModifier(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
@@ -198,6 +203,9 @@
                             </div>
                             <div>
                                 <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-total")" value="@totalValue" readonly/>
                             </div>
                             <div>
                                 <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
@@ -233,12 +241,13 @@
                             &nbsp;
                         </div>
                         <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
-                        <div>Ability</div><div>Base</div><div>Race</div><div>Modifier</div><div>&nbsp;</div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
                             var racialBonus = GetRacialBonus(statName);
+                            var totalValue = GetDisplayStatValue(statName);
                             var modifierValue = GetDisplayStatModifier(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
@@ -248,6 +257,9 @@
                             </div>
                             <div>
                                 <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-total")" value="@totalValue" readonly/>
                             </div>
                             <div>
                                 <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
@@ -298,6 +310,9 @@
                         &nbsp;
                     </div>
                     <div>
+                        &nbsp;
+                    </div>
+                    <div>
                         <label for="reflex">Reflex</label>
                     </div>
                     <div>
@@ -313,10 +328,16 @@
                         &nbsp;
                     </div>
                     <div>
+                        &nbsp;
+                    </div>
+                    <div>
                         <label for="will">Will</label>
                     </div>
                     <div>
                         <input class="cc-input-50-c" type="text" id="will" @bind="_displayBaseWill">
+                    </div>
+                    <div>
+                        &nbsp;
                     </div>
                     <div>
                         &nbsp;
