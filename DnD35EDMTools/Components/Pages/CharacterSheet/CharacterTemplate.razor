@@ -564,29 +564,67 @@
 
             var campaign = await campaignTask;
             var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
-            
             var characterClass = await classTask;
-            _characterClass = characterClass?.Name ?? string.Empty;
-            
             var classSkillIds = characterClass?.ClassSkills?.Select(s => s.Id).ToHashSet() ?? [];
-
             var race = await raceTask;
+            var colors = await colorsTask;
+            var characterLanguageNames = await languagesTask;
 
+            _characterName = character.Name;
+            _characterClass = characterClass?.Name ?? string.Empty;
+            _characterRace = race.Race;
+            _characterExperience = $"{character.Experience}/";
+            _characterHitPoints = character.HitPoints + ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
+            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
-
-            var colors = await colorsTask;
+            _characterAge = character.Age;
             _characterEyes = colors.GetValueOrDefault(character.Eyes) ?? string.Empty;
             _characterHair = colors.GetValueOrDefault(character.Hair) ?? string.Empty;
             _characterSkin = colors.GetValueOrDefault(character.Skin) ?? string.Empty;
-
-            var characterLanguageNames = await languagesTask;
+            _characterWeight = $"{character.Weight} lbs.";
+            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
+            _characterPlayerName = character.PlayerName ?? string.Empty;
+            
             for (var i = 0; i < 21; i++)
             {
                 _characterLanguages[i] = i < characterLanguageNames.Count
                     ? characterLanguageNames[i]
                     : string.Empty;
             }
+
+            _characterPlatinum = character.PlatinumPieces;
+            _characterGold = character.GoldPieces;
+            _characterSilver = character.SilverPieces;
+            _characterCopper = character.CopperPieces;
+
+            _characterSpeed = $"{race.BaseSpeed} ft.";
+
+            _characterLightLoad = character.LightLoad;
+            _characterMediumLoad = character.MediumLoad;
+            _characterHeavyLoad = character.HeavyLoad;
+            _characterLiftOverHead = character.LiftOverHead;
+            _characterLiftOffGround = character.LiftOffGround;
+            _characterPushOrDrag = character.PushOrDrag;
+
+            _characterStrength = character.Strength + race.StrengthBonus;
+            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength + race.StrengthBonus);
+            _characterDexterity = character.Dexterity + race.DexterityBonus;
+            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity + race.DexterityBonus);
+            _characterConstitution = character.Constitution + race.ConstitutionBonus;
+            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
+            _characterIntelligence = character.Intelligence + race.IntelligenceBonus;
+            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence + race.IntelligenceBonus);
+            _characterWisdom = character.Wisdom + race.WisdomBonus;
+            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom + race.WisdomBonus);
+            _characterCharisma = character.Charisma + race.CharismaBonus;
+            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma + race.CharismaBonus);
+
+            CalculateLuck();
+
+            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0) + race.FortitudeBonus; // character.BaseFortitudeSave; // replace with Fortitude Calculation
+            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0) + race.ReflexBonus; // character.BaseReflexSave; // replace with Reflex Calculation
+            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0) + race.WillBonus; //character.BaseWillSave; // replace with Will Calculation
 
             var allSkills = await skillsTask;
             Skills = allSkills
@@ -597,8 +635,8 @@
                     var isClassSkill = classSkillIds.Contains(skill.Id);
                     var displayRanks = isClassSkill ? ranks : ranks * 0.5;
 
-                    var attributeModifier = GetAttributeModifier(skill.Attribute, character);
-                    var racialBonus = race?.SkillBonuses.GetValueOrDefault(skill.Name, 0) ?? 0;
+                    var attributeModifier = GetAttributeModifier(skill.Attribute);
+                    var racialBonus = race.SkillBonuses.GetValueOrDefault(skill.Name, 0);
                     var modifier = attributeModifier + (int)Math.Floor(displayRanks) + racialBonus;
 
                     return new CharacterSkillDisplay
@@ -618,49 +656,6 @@
                     return true;
                 })
                 .ToList();
-
-            _characterName = character.Name;
-            _characterRace = race.Race;
-            _characterExperience = $"{character.Experience}/";
-            _characterHitPoints = character.HitPoints + ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
-            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
-            _characterAge = character.Age;
-            _characterWeight = $"{character.Weight} lbs.";
-            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
-            _characterPlayerName = character.PlayerName ?? string.Empty;
-
-            _characterPlatinum = character.PlatinumPieces;
-            _characterGold = character.GoldPieces;
-            _characterSilver = character.SilverPieces;
-            _characterCopper = character.CopperPieces;
-
-            _characterSpeed = $"{race.BaseSpeed} ft.";
-
-            _characterLightLoad = character.LightLoad;
-            _characterMediumLoad = character.MediumLoad;
-            _characterHeavyLoad = character.HeavyLoad;
-            _characterLiftOverHead = character.LiftOverHead;
-            _characterLiftOffGround = character.LiftOffGround;
-            _characterPushOrDrag = character.PushOrDrag;
-
-            _characterStrength = character.Strength  + race.StrengthBonus;
-            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength + race.StrengthBonus);
-            _characterDexterity = character.Dexterity + race.DexterityBonus;
-            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity + race.DexterityBonus);
-            _characterConstitution = character.Constitution + race.ConstitutionBonus;
-            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
-            _characterIntelligence = character.Intelligence + race.IntelligenceBonus;
-            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence + race.IntelligenceBonus);
-            _characterWisdom = character.Wisdom + race.WisdomBonus;
-            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom + race.WisdomBonus);
-            _characterCharisma = character.Charisma + race.CharismaBonus;
-            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma + race.CharismaBonus);
-
-            CalculateLuck();
-
-            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0) + race.FortitudeBonus; // character.BaseFortitudeSave; // replace with Fortitude Calculation
-            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0) + race.ReflexBonus; // character.BaseReflexSave; // replace with Reflex Calculation
-            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0) + race.WillBonus; //character.BaseWillSave; // replace with Will Calculation
 
             StateHasChanged();
         }
@@ -694,16 +689,16 @@
         }
     }
     
-    private int GetAttributeModifier(string? attribute, CharacterData character)
+    private int GetAttributeModifier(string? attribute)
     {
         return attribute switch
         {
-            "STR" or "Strength" => ConversionHelper.ConvertStatToBonus(character.Strength),
-            "DEX" or "Dexterity" => ConversionHelper.ConvertStatToBonus(character.Dexterity),
-            "CON" or "Constitution" => ConversionHelper.ConvertStatToBonus(character.Constitution),
-            "INT" or "Intelligence" => ConversionHelper.ConvertStatToBonus(character.Intelligence),
-            "WIS" or "Wisdom" => ConversionHelper.ConvertStatToBonus(character.Wisdom),
-            "CHA" or "Charisma" => ConversionHelper.ConvertStatToBonus(character.Charisma),
+            "Strength" => _characterStrengthMod ?? 0,
+            "Dexterity" => _characterDexterityMod ?? 0,
+            "Constitution" => _characterConstitutionMod ?? 0,
+            "Intelligence" => _characterIntelligenceMod ?? 0,
+            "Wisdom" => _characterWisdomMod ?? 0,
+            "Charisma" => _characterCharismaMod ?? 0,
             _ => 0
         };
     }
