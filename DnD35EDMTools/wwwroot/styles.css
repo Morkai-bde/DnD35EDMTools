@@ -542,7 +542,7 @@
     border-color: var(--cellbordercolour);
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-template-columns: 160px 120px 40px;
+    grid-template-columns: 160px 50px 50px 50px 40px;
     grid-auto-rows: 20px;
     grid-auto-flow: row;
     max-height: var(--dnd-viewheight);
@@ -551,7 +551,7 @@
 }
 
 .dnd-cc-tab-skills-header {
-    grid-column: span 3; 
+    grid-column: span 5; 
 }
 
 .dnd-cc-tab-languages {

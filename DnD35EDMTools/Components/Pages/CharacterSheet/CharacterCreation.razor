@@ -419,21 +419,32 @@
                         <strong>Skill points remaining: @RemainingSkillPoints / @(TotalSkillPoints)</strong>
                     </div>
                     <div><strong>Skill Name</strong></div>
-                    <div><strong>Ranks / Max</strong></div>
-                    <div><strong>Actions</strong></div>
+                    <div><strong>Ranks</strong></div>
+                    <div><strong>Racial</strong></div>
+                    <div><strong>Total</strong></div>
+                    <div><strong>&nbsp;</strong></div>
                     @foreach (var skill in Skills)
                     {
                         var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skill.Id);
                         if (characterSkill != null)
                         {
                             var maxRanks = GetMaxRanks();
+                            var racialBonus = SelectedRace?.SkillBonuses.GetValueOrDefault(skill.Name, 0) ?? 0;
+                            var displayRanks = GetDisplayRanks(characterSkill);
+                            var finalModifier = GetAttributeModifier(skill.Attribute) + (int)Math.Floor(displayRanks) + racialBonus;
                             var classSkillIndicator = characterSkill.IsClassSkill ? " ★" : "";
                             
                             <div class="cc-list-text-item">
                                 @skill.Name@classSkillIndicator
                             </div>
                             <div>
-                                <input class="cc-input-small" type="text" value="@GetDisplayRanks(characterSkill).ToString("0.#")" readonly/><input class="cc-input-small" type="text" value="@GetDisplayMaxRanks(characterSkill.IsClassSkill)" readonly/>
+                                <input class="cc-input-50-c" type="text" value="@GetDisplayRanks(characterSkill).ToString("0.#")" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" value="@finalModifier" readonly/>
                             </div>
                             <div>
                                 <button class="cc-button-square-small" @onclick="() => AddRank(skill.Id)" disabled="@(characterSkill.Ranks >= maxRanks || RemainingSkillPoints < characterSkill.RankCost)">+</button><button class="cc-button-square-small" @onclick="() => RemoveRank(skill.Id)" disabled="@(characterSkill.Ranks <= 0)">-</button>
@@ -1148,28 +1159,28 @@
 
     private void CalculatedBaseFortitude()
     {
-        if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
+        if (SelectedClassId == NoSelectionId || SelectedClass == null || SelectedRaceId == NoSelectionId || SelectedRace == null) return;
 
         var tempCharacterConstitution = CharacterConstitution + GetRacialBonus("Constitution");
-        _displayBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, tempCharacterConstitution);
+        _displayBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, tempCharacterConstitution) + SelectedRace.FortitudeBonus;
         _calculatedBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, CharacterConstitution);
     }
 
     private void CalculatedBaseReflex()
     {
-        if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
+        if (SelectedClassId == NoSelectionId || SelectedClass == null || SelectedRaceId == NoSelectionId || SelectedRace == null) return;
 
         var tempCharacterDexterity = CharacterDexterity + GetRacialBonus("Dexterity");
-        _displayBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, tempCharacterDexterity);
+        _displayBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, tempCharacterDexterity) + SelectedRace.ReflexBonus;
         _calculatedBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, CharacterDexterity);
     }
 
     private void CalculatedBaseWill()
     {
-        if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
+        if (SelectedClassId == NoSelectionId || SelectedClass == null || SelectedRaceId == NoSelectionId || SelectedRace == null) return;
 
         var tempCharacterWisdom = CharacterWisdom + GetRacialBonus("Wisdom");
-        _displayBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, tempCharacterWisdom);
+        _displayBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, tempCharacterWisdom) + SelectedRace.WillBonus;
         _calculatedBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, CharacterWisdom);
     }
 
@@ -1370,7 +1381,21 @@
     {
         return isClassSkill ? CurrentLevel + 3 : (CurrentLevel + 3) / 2;
     }
-    
+
+    private int GetAttributeModifier(string? attribute)
+    {
+        return attribute switch
+        {
+            "STR" or "Strength" => ConversionHelper.ConvertStatToBonus(CharacterStrength + GetRacialBonus("Strength")),
+            "DEX" or "Dexterity" => ConversionHelper.ConvertStatToBonus(CharacterDexterity + GetRacialBonus("Dexterity")),
+            "CON" or "Constitution" => ConversionHelper.ConvertStatToBonus(CharacterConstitution + GetRacialBonus("Constitution")),
+            "INT" or "Intelligence" => ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence")),
+            "WIS" or "Wisdom" => ConversionHelper.ConvertStatToBonus(CharacterWisdom + GetRacialBonus("Wisdom")),
+            "CHA" or "Charisma" => ConversionHelper.ConvertStatToBonus(CharacterCharisma + GetRacialBonus("Charisma")),
+            _ => 0
+        };
+    }
+
     private int GetSpeakLanguageRanks()
     {
         var speakLangSkill = _characterSkills.FirstOrDefault(s => s.SkillName == "Speak Language");
