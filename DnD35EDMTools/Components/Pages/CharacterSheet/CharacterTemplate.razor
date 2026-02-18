@@ -598,7 +598,8 @@
                     var displayRanks = isClassSkill ? ranks : ranks * 0.5;
 
                     var attributeModifier = GetAttributeModifier(skill.Attribute, character);
-                    var modifier = attributeModifier + (int)Math.Floor(displayRanks);
+                    var racialBonus = race?.SkillBonuses.GetValueOrDefault(skill.Name, 0) ?? 0;
+                    var modifier = attributeModifier + (int)Math.Floor(displayRanks) + racialBonus;
 
                     return new CharacterSkillDisplay
                     {
@@ -657,9 +658,9 @@
 
             CalculateLuck();
 
-            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0); // character.BaseFortitudeSave; // replace with Fortitude Calculation
-            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0); // character.BaseReflexSave; // replace with Reflex Calculation
-            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0); //character.BaseWillSave; // replace with Will Calculation
+            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0) + race.FortitudeBonus; // character.BaseFortitudeSave; // replace with Fortitude Calculation
+            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0) + race.ReflexBonus; // character.BaseReflexSave; // replace with Reflex Calculation
+            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0) + race.WillBonus; //character.BaseWillSave; // replace with Will Calculation
 
             StateHasChanged();
         }
