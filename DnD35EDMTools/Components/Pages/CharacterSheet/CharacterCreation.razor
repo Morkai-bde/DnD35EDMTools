@@ -152,7 +152,7 @@
                 {
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
-                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
                         <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
@@ -186,8 +186,8 @@
 
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
-                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
-                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div></div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
@@ -238,10 +238,9 @@
                             {
                                 <button class="cc-button-50" @onclick="RollRandomStatPoints">Roll</button>
                             }
-                            &nbsp;
                         </div>
-                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
-                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div></div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
@@ -275,7 +274,7 @@
 
                     @if (SelectedCampaign?.AllowLuck == true)
                     {
-                        <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
                         <div>
                             <label for="luck">Luck:</label>
                         </div>
@@ -285,69 +284,31 @@
                         <div>
                             <input class="cc-input-50-c" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)" readonly/>
                         </div>
-                        <div>
-                            &nbsp;
-                        </div>
-                        <div>
-                            &nbsp;
-                        </div>
+                        <div class="dnd-cc-tab-stats-empty-c3"></div>
                     }
 
-                    <div class="dnd-cc-tab-stats-empty-row">&nbsp;</div>
+                    <div class="dnd-cc-tab-stats-empty-c6"></div>
                     <div>
                         <label for="fortitude">Fortitude</label>
                     </div>
                     <div>
                         <input class="cc-input-50-c" type="text" id="fortitude" @bind="_displayBaseFortitude">
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c4"></div>
                     <div>
                         <label for="reflex">Reflex</label>
                     </div>
                     <div>
                         <input class="cc-input-50-c" type="text" id="reflex" @bind="_displayBaseReflex">
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c4"></div>
                     <div>
                         <label for="will">Will</label>
                     </div>
                     <div>
                         <input class="cc-input-50-c" type="text" id="will" @bind="_displayBaseWill">
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c4"></div>
                 }
             </div>
         }
