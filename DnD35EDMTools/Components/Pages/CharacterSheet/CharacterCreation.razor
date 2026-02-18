@@ -1512,7 +1512,7 @@
 
             var cc = await db.CarryingCapacity
                 .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == CharacterStrength);
+                .SingleOrDefaultAsync(x => x.Id == DisplayStrength);
 
             if (cc is null)
             {
