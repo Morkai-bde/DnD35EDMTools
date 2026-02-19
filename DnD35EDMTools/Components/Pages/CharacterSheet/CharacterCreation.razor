@@ -1695,12 +1695,14 @@
             if (!_dryRun)
                 await db.SaveChangesAsync();
 
-            var skillRanks = selectedSkills
-                .Select(kvp => new CharacterLevelSkillRank
+            var skillRanks = _characterSkills
+                .Where(cs => cs.Ranks > 0)
+                .Select(cs => new CharacterLevelSkillRank
                 {
                     CharacterLevelId = levelOne.Id,
-                    SkillId = kvp.Key,
-                    RanksPurchased = kvp.Value
+                    SkillId = cs.SkillId,
+                    RanksPurchased = cs.Ranks,
+                    IsClassSkill = cs.IsClassSkill
                 })
                 .ToList();
 
