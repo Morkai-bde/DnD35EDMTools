@@ -915,6 +915,10 @@
             if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
             {
                 GetAgeDiceType();
+                InitializeCharacterSkills();
+                CalculatedBaseFortitude();
+                CalculatedBaseReflex();
+                CalculatedBaseWill();
             }
 
             PopulateStartingEquipmentMethods();
