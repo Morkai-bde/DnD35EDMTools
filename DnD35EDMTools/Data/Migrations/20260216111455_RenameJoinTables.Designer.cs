@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260216111455_RenameJoinTables")]
+    partial class RenameJoinTables
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -647,7 +650,6 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<bool>("IsAutomatic")
-                        .HasMaxLength(10)
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
@@ -738,10 +740,25 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("AdulthoodAge")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("AppraiseBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("AutohypnosisBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("BalanceBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("BaseSpeed")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("BluffBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("CharismaBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ClimbBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("ComplexDice")
@@ -749,13 +766,37 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("ConcentrationBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("ConstitutionBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ControlShapeBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("CraftAlchemyBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DecipherScriptBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Description")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("DexterityBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DiplomacyBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DisableDeviceBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("DisguiseBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("EscapeArtistBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("FeatBonus")
@@ -767,7 +808,19 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("FemaleWeight")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("ForgeryBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("FortitudeBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("GatherInformationBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HandleAnimalBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HealBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("HeightDice")
@@ -775,13 +828,70 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("HideBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HypnosisBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("IntelligenceBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("IntimidateBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("JumpBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeArcanaBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeArchAndEngBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeDungeoneeringBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeGeographyBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeHistoryBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeLocalBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeMonsterLoreBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeNatureBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeNobilityBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgePsionicsBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeRavenloftBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeReligionBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("KnowledgeThePlanesBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ListenBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaleHeight")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("MaleWeight")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("MartialLoreBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("MaxAge")
@@ -796,10 +906,19 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(5)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("MoveSilentlyBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("OldAge")
                         .HasColumnType("INTEGER");
 
+                    b.Property<int>("OpenLockBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("Page")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PsicraftBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Race")
@@ -808,6 +927,15 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasColumnType("TEXT");
 
                     b.Property<int>("ReflexBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("RideBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SearchBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SenseMotiveBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("SimpleDice")
@@ -820,14 +948,16 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(10)
                         .HasColumnType("TEXT");
 
-                    b.Property<string>("SkillBonuses")
-                        .IsRequired()
-                        .HasColumnType("TEXT");
-
                     b.Property<int>("SkillPointBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("SkillPointsPerLevelBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SkillTricksBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SleightofHandBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<string>("Source")
@@ -835,7 +965,34 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("TEXT");
 
+                    b.Property<int>("SpeakLanguageBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SpellcraftBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SpotBonus")
+                        .HasColumnType("INTEGER");
+
                     b.Property<int>("StrengthBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SurvivalBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("SwimBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("TumbleBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UseMagicDeviceBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UsePsionicDeviceBonus")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("UseRopeBonus")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("VenerableAge")

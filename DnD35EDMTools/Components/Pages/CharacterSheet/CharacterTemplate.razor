@@ -131,7 +131,7 @@
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-content"></div>
-        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content">@_characterSpeed</div>
         <div class="load-speed-list-row-content"></div>
     </div>
     <div class="load-speed-list">
@@ -438,6 +438,13 @@
 
     private string[] _characterLanguages = new string[21];
 
+    private int? _characterPlatinum;
+    private int? _characterGold;
+    private int? _characterSilver;
+    private int? _characterCopper;
+
+    private string _characterSpeed = string.Empty;
+    
     private double? _characterLightLoad;
     private double? _characterMediumLoad;
     private double? _characterHeavyLoad;
@@ -463,11 +470,6 @@
     private double? _characterFortSave;
     private double? _characterRefSave;
     private double? _characterWillSave;
-
-    private int? _characterPlatinum;
-    private int? _characterGold;
-    private int? _characterSilver;
-    private int? _characterCopper;
 
     #endregion
 
@@ -537,7 +539,7 @@
                 .AsNoTracking()
                 .FirstOrDefaultAsync(c => c.Id == character.Class);
 
-            var raceTask = db.Races.Where(r => r.Id == character.Race).Select(r => r.Race).FirstOrDefaultAsync();
+            var raceTask = db.Races.AsNoTracking().FirstOrDefaultAsync(r => r.Id == character.Race);
             var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
             var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
 
@@ -562,29 +564,68 @@
 
             var campaign = await campaignTask;
             var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
-            
             var characterClass = await classTask;
-            _characterClass = characterClass?.Name ?? string.Empty;
-            
             var classSkillIds = characterClass?.ClassSkills?.Select(s => s.Id).ToHashSet() ?? [];
+            var race = await raceTask;
+            var colors = await colorsTask;
+            var characterLanguageNames = await languagesTask;
 
-            _characterRace = await raceTask ?? string.Empty;
+            _characterName = character.Name;
+            _characterClass = characterClass?.Name ?? string.Empty;
+            _characterRace = race.Race;
+            _characterExperience = $"{character.Experience}/";
+            _characterHitPoints = character.HitPoints + ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
+            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
-
-            var colors = await colorsTask;
+            _characterAge = character.Age;
             _characterEyes = colors.GetValueOrDefault(character.Eyes) ?? string.Empty;
             _characterHair = colors.GetValueOrDefault(character.Hair) ?? string.Empty;
             _characterSkin = colors.GetValueOrDefault(character.Skin) ?? string.Empty;
-
-            var characterLanguageNames = await languagesTask;
+            _characterWeight = $"{character.Weight} lbs.";
+            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
+            _characterPlayerName = character.PlayerName ?? string.Empty;
+            
             for (var i = 0; i < 21; i++)
             {
                 _characterLanguages[i] = i < characterLanguageNames.Count
                     ? characterLanguageNames[i]
                     : string.Empty;
             }
-            
+
+            _characterPlatinum = character.PlatinumPieces;
+            _characterGold = character.GoldPieces;
+            _characterSilver = character.SilverPieces;
+            _characterCopper = character.CopperPieces;
+
+            _characterSpeed = $"{race.BaseSpeed} ft.";
+
+            _characterLightLoad = character.LightLoad;
+            _characterMediumLoad = character.MediumLoad;
+            _characterHeavyLoad = character.HeavyLoad;
+            _characterLiftOverHead = character.LiftOverHead;
+            _characterLiftOffGround = character.LiftOffGround;
+            _characterPushOrDrag = character.PushOrDrag;
+
+            _characterStrength = character.Strength + race.StrengthBonus;
+            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength + race.StrengthBonus);
+            _characterDexterity = character.Dexterity + race.DexterityBonus;
+            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity + race.DexterityBonus);
+            _characterConstitution = character.Constitution + race.ConstitutionBonus;
+            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
+            _characterIntelligence = character.Intelligence + race.IntelligenceBonus;
+            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence + race.IntelligenceBonus);
+            _characterWisdom = character.Wisdom + race.WisdomBonus;
+            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom + race.WisdomBonus);
+            _characterCharisma = character.Charisma + race.CharismaBonus;
+            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma + race.CharismaBonus);
+
+            CalculateLuck();
+
+            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0) + race.FortitudeBonus; // character.BaseFortitudeSave; // replace with Fortitude Calculation
+            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0) + race.ReflexBonus; // character.BaseReflexSave; // replace with Reflex Calculation
+            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0) + race.WillBonus; //character.BaseWillSave; // replace with Will Calculation
+
             var allSkills = await skillsTask;
             Skills = allSkills
                 .Select(skill =>
@@ -594,8 +635,9 @@
                     var isClassSkill = classSkillIds.Contains(skill.Id);
                     var displayRanks = isClassSkill ? ranks : ranks * 0.5;
 
-                    var attributeModifier = GetAttributeModifier(skill.Attribute, character);
-                    var modifier = attributeModifier + (int)Math.Floor(displayRanks);
+                    var attributeModifier = GetAttributeModifier(skill.Attribute);
+                    var racialBonus = race.SkillBonuses.GetValueOrDefault(skill.Name, 0);
+                    var modifier = attributeModifier + (int)Math.Floor(displayRanks) + racialBonus;
 
                     return new CharacterSkillDisplay
                     {
@@ -614,46 +656,6 @@
                     return true;
                 })
                 .ToList();
-
-            _characterName = character.Name;
-            _characterExperience = $"{character.Experience}/";
-            _characterHitPoints = character.HitPoints;
-            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
-            _characterAge = character.Age;
-            _characterWeight = $"{character.Weight} lbs.";
-            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
-            _characterPlayerName = character.PlayerName ?? string.Empty;
-
-            _characterLightLoad = character.LightLoad;
-            _characterMediumLoad = character.MediumLoad;
-            _characterHeavyLoad = character.HeavyLoad;
-            _characterLiftOverHead = character.LiftOverHead;
-            _characterLiftOffGround = character.LiftOffGround;
-            _characterPushOrDrag = character.PushOrDrag;
-
-            _characterStrength = character.Strength;
-            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength);
-            _characterDexterity = character.Dexterity;
-            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity);
-            _characterConstitution = character.Constitution;
-            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution);
-            _characterIntelligence = character.Intelligence;
-            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence);
-            _characterWisdom = character.Wisdom;
-            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom);
-            _characterCharisma = character.Charisma;
-            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma);
-
-            CalculateLuck();
-
-            _characterFortSave = character.BaseFortitudeSave;
-            _characterRefSave = character.BaseReflexSave;
-            _characterWillSave = character.BaseWillSave;
-
-            _characterPlatinum = character.PlatinumPieces;
-            _characterGold = character.GoldPieces;
-            _characterSilver = character.SilverPieces;
-            _characterCopper = character.CopperPieces;
 
             StateHasChanged();
         }
@@ -687,16 +689,16 @@
         }
     }
     
-    private int GetAttributeModifier(string? attribute, CharacterData character)
+    private int GetAttributeModifier(string? attribute)
     {
         return attribute switch
         {
-            "STR" or "Strength" => ConversionHelper.ConvertStatToBonus(character.Strength),
-            "DEX" or "Dexterity" => ConversionHelper.ConvertStatToBonus(character.Dexterity),
-            "CON" or "Constitution" => ConversionHelper.ConvertStatToBonus(character.Constitution),
-            "INT" or "Intelligence" => ConversionHelper.ConvertStatToBonus(character.Intelligence),
-            "WIS" or "Wisdom" => ConversionHelper.ConvertStatToBonus(character.Wisdom),
-            "CHA" or "Charisma" => ConversionHelper.ConvertStatToBonus(character.Charisma),
+            "Strength" => _characterStrengthMod ?? 0,
+            "Dexterity" => _characterDexterityMod ?? 0,
+            "Constitution" => _characterConstitutionMod ?? 0,
+            "Intelligence" => _characterIntelligenceMod ?? 0,
+            "Wisdom" => _characterWisdomMod ?? 0,
+            "Charisma" => _characterCharismaMod ?? 0,
             _ => 0
         };
     }

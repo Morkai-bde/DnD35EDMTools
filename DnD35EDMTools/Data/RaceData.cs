@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Runtime.CompilerServices;
 
 namespace DnD35EDMTools.Data;
 
@@ -22,59 +23,11 @@ public class RaceData
     public int CharismaBonus { get; set; }
     
     // Racial Skill Bonuses
-    public int AppraiseBonus { get; set; }
-    public int AutohypnosisBonus { get; set; }
-    public int BalanceBonus { get; set; }
-    public int BluffBonus { get; set; }
-    public int ClimbBonus { get; set; }
-    public int ControlShapeBonus { get; set; }
-    public int ConcentrationBonus { get; set; }
-    public int CraftAlchemyBonus { get; set; }
-    public int DecipherScriptBonus { get; set; }
-    public int DiplomacyBonus { get; set; }
-    public int DisableDeviceBonus { get; set; }
-    public int DisguiseBonus { get; set; }
-    public int EscapeArtistBonus { get; set; }
-    public int ForgeryBonus { get; set; }
-    public int GatherInformationBonus { get; set; }
-    public int HandleAnimalBonus { get; set; }
-    public int HealBonus { get; set; }
-    public int HideBonus { get; set; }
-    public int HypnosisBonus { get; set; }
-    public int IntimidateBonus { get; set; }
-    public int JumpBonus { get; set; }
-    public int KnowledgeArcanaBonus { get; set; }
-    public int KnowledgeArchAndEngBonus { get; set; }
-    public int KnowledgeDungeoneeringBonus { get; set; }
-    public int KnowledgeGeographyBonus { get; set; }
-    public int KnowledgeHistoryBonus { get; set; }
-    public int KnowledgeLocalBonus { get; set; }
-    public int KnowledgeMonsterLoreBonus { get; set; }
-    public int KnowledgeNatureBonus { get; set; }
-    public int KnowledgeNobilityBonus { get; set; }
-    public int KnowledgePsionicsBonus { get; set; }
-    public int KnowledgeRavenloftBonus { get; set; }
-    public int KnowledgeReligionBonus { get; set; }
-    public int KnowledgeThePlanesBonus { get; set; }
-    public int ListenBonus { get; set; }
-    public int MartialLoreBonus { get; set; }
-    public int MoveSilentlyBonus { get; set; }
-    public int OpenLockBonus { get; set; }
-    public int PsicraftBonus { get; set; }
-    public int RideBonus { get; set; }
-    public int SearchBonus { get; set; }
-    public int SenseMotiveBonus { get; set; }
-    public int SkillTricksBonus { get; set; }
-    public int SleightofHandBonus { get; set; }
-    public int SpeakLanguageBonus { get; set; }
-    public int SpellcraftBonus { get; set; }
-    public int SpotBonus { get; set; }
-    public int SurvivalBonus { get; set; }
-    public int SwimBonus { get; set; }
-    public int TumbleBonus { get; set; }
-    public int UseMagicDeviceBonus { get; set; }
-    public int UsePsionicDeviceBonus { get; set; }
-    public int UseRopeBonus { get; set; }
+    public Dictionary<string, int> SkillBonuses { get; set; } = [];
+    
+    // Racial Language Bonuses
+    public List<LanguageData> AutomaticLanguages { get; set; } = [];
+    public List<LanguageData> BonusLanguages { get; set; } = [];
     
     // Save bonuses
     public int FortitudeBonus { get; set; }
@@ -114,8 +67,6 @@ public class RaceData
     [MaxLength(5)]
     public string WeightDice { get; set; }
     // public List<ClassData> FavoredClass { get; set; }
-    // public List<LanguagesData> AutomaticLanguages{ get; set}
-    // Public List<LanguageData> BonusLanguages { get; set}
     public string? Description { get; set; }
     [MaxLength(64)]
     public string Source { get; set; }

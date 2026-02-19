@@ -152,18 +152,32 @@
                 {
                     @if (SelectedCampaignStatRollingMethod is "3D6" or "3D6R1" or "4D6DL")
                     {
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div>&nbsp;</div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
+                            var racialBonus = GetRacialBonus(statName);
+                            var totalValue = GetDisplayStatValue(statName);
+                            var modifierValue = GetDisplayStatModifier(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
                             <div>
-                                <input class="cc-input" type="text" id="@statName" @bind="statValue"/>
+                                <input class="cc-input-50-c" type="text" id="@statName" @bind="statValue" readonly/>
                             </div>
                             <div>
-                                <button class="cc-randomize-button" @onclick="RollFunction">Roll</button>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-total")" value="@totalValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
+                            </div>
+                            <div>
+                                <button class="cc-button-50" @onclick="RollFunction">Roll</button>
                             </div>
                             continue;
                             void RollFunction() => RollStat(SelectedCampaignStatRollingMethod, statName);
@@ -172,16 +186,29 @@
 
                     @if (SelectedCampaignStatRollingMethod is "SAL" or "SAA" or "SAH")
                     {
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div></div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
-                            var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
+                            var racialBonus = GetRacialBonus(statName);
+                            var totalValue = GetDisplayStatValue(statName);
+                            var modifierValue = GetDisplayStatModifier(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
                             <div>
-                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                                <input class="cc-input-50-c" type="text" id="@statName" @bind="statValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-total")" value="@totalValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
                             </div>
                             <div>
                                 @foreach (var number in _standardArray)
@@ -204,26 +231,37 @@
                             <label for="points">Points:</label>
                         </div>
                         <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="points" value="@_characterStatPoints" readonly/>
-                            @if (SelectedCampaignStatRollingMethod == "PBR")
-                            {
-                                <button class="cc-pb-randomize-button" @onclick="RollRandomStatPoints">Roll</button>
-                            }
-                            &nbsp;
+                            <input class="cc-input-50-c" type="text" id="points" value="@_characterStatPoints" readonly/>
                         </div>
                         <div>
-                            &nbsp;
+                            @if (SelectedCampaignStatRollingMethod == "PBR")
+                            {
+                                <button class="cc-button-50" @onclick="RollRandomStatPoints">Roll</button>
+                            }
                         </div>
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
+                        <div>Ability</div><div>Base</div><div>Race</div><div>Total</div><div>Modifier</div><div></div>
                         @foreach (var statField in _statFields)
                         {
                             var statName = statField.Key;
                             var statValue = GetStatValue(statName);
-                            var modifierValue = ConversionHelper.ConvertStatToBonus(statValue);
+                            var racialBonus = GetRacialBonus(statName);
+                            var totalValue = GetDisplayStatValue(statName);
+                            var modifierValue = GetDisplayStatModifier(statName);
                             <div>
                                 <label for="@statName">@statName:</label>
                             </div>
                             <div>
-                                <input class="cc-point-buy-stat-input" type="text" id="@statName" @bind="statValue"/><input class="cc-point-buy-modifier-input" type="text" id="@($"{statName}-modifier")" value="@modifierValue"/>
+                                <input class="cc-input-50-c" type="text" id="@statName" @bind="statValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-bonus")" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-total")" value="@totalValue" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" id="@($"{statName}-modifier")" value="@modifierValue" readonly/>
                             </div>
                             <div>
                                 <button class="cc-point-buy-button" @onclick="IncreaseAction">+</button><button class="cc-point-buy-button" @onclick="DecreaseAction">-</button>
@@ -236,53 +274,41 @@
 
                     @if (SelectedCampaign?.AllowLuck == true)
                     {
+                        <div class="dnd-cc-tab-stats-empty-c6"></div>
                         <div>
                             <label for="luck">Luck:</label>
                         </div>
                         <div>
-                            <input class="cc-point-buy-stat-input" type="text" id="luck" @bind="_characterLuck"/><input class="cc-point-buy-stat-input" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)"/>
+                            <input class="cc-input-50-c" type="text" id="luck" @bind="_characterLuck" readonly/>
                         </div>
                         <div>
-                            &nbsp;
+                            <input class="cc-input-50-c" type="text" id="luck-modifier" value="@ConversionHelper.ConvertStatToBonus(_characterLuck)" readonly/>
                         </div>
+                        <div class="dnd-cc-tab-stats-empty-c3"></div>
                     }
 
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c6"></div>
                     <div>
                         <label for="fortitude">Fortitude</label>
                     </div>
                     <div>
-                        <input class="cc-point-buy-stat-input" type="text" id="fortitude" @bind="_calculatedBaseFortitude">
+                        <input class="cc-input-50-c" type="text" id="fortitude" @bind="_displayBaseFortitude">
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c4"></div>
                     <div>
                         <label for="reflex">Reflex</label>
                     </div>
                     <div>
-                        <input class="cc-point-buy-stat-input" type="text" id="reflex" @bind="_calculatedBaseReflex">
+                        <input class="cc-input-50-c" type="text" id="reflex" @bind="_displayBaseReflex">
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c4"></div>
                     <div>
                         <label for="will">Will</label>
                     </div>
                     <div>
-                        <input class="cc-point-buy-stat-input" type="text" id="will" @bind="_calculatedBaseWill">
+                        <input class="cc-input-50-c" type="text" id="will" @bind="_displayBaseWill">
                     </div>
-                    <div>
-                        &nbsp;
-                    </div>
+                    <div class="dnd-cc-tab-stats-empty-c4"></div>
                 }
             </div>
         }
@@ -372,21 +398,32 @@
                         <strong>Skill points remaining: @RemainingSkillPoints / @(TotalSkillPoints)</strong>
                     </div>
                     <div><strong>Skill Name</strong></div>
-                    <div><strong>Ranks / Max</strong></div>
-                    <div><strong>Actions</strong></div>
+                    <div><strong>Ranks</strong></div>
+                    <div><strong>Racial</strong></div>
+                    <div><strong>Total</strong></div>
+                    <div><strong>&nbsp;</strong></div>
                     @foreach (var skill in Skills)
                     {
                         var characterSkill = _characterSkills.FirstOrDefault(cs => cs.SkillId == skill.Id);
                         if (characterSkill != null)
                         {
                             var maxRanks = GetMaxRanks();
+                            var racialBonus = SelectedRace?.SkillBonuses.GetValueOrDefault(skill.Name, 0) ?? 0;
+                            var displayRanks = GetDisplayRanks(characterSkill);
+                            var finalModifier = GetDisplayStatModifier(skill.Attribute) + (int)Math.Floor(displayRanks) + racialBonus;
                             var classSkillIndicator = characterSkill.IsClassSkill ? " ★" : "";
                             
                             <div class="cc-list-text-item">
                                 @skill.Name@classSkillIndicator
                             </div>
                             <div>
-                                <input class="cc-input-small" type="text" value="@GetDisplayRanks(characterSkill).ToString("0.#")" readonly/><input class="cc-input-small" type="text" value="@GetDisplayMaxRanks(characterSkill.IsClassSkill)" readonly/>
+                                <input class="cc-input-50-c" type="text" value="@GetDisplayRanks(characterSkill).ToString("0.#")" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" value="@racialBonus" readonly/>
+                            </div>
+                            <div>
+                                <input class="cc-input-50-c" type="text" value="@finalModifier" readonly/>
                             </div>
                             <div>
                                 <button class="cc-button-square-small" @onclick="() => AddRank(skill.Id)" disabled="@(characterSkill.Ranks >= maxRanks || RemainingSkillPoints < characterSkill.RankCost)">+</button><button class="cc-button-square-small" @onclick="() => RemoveRank(skill.Id)" disabled="@(characterSkill.Ranks <= 0)">-</button>
@@ -406,8 +443,8 @@
                     </div>
                     @foreach (var language in FilteredLanguages)
                     {
-                        var isChecked = _selectedLanguageIds.Contains(language.Id) || language.IsBonus;
-                        var isDisabled = language.IsBonus || (!isChecked && RemainingLanguageSelections <= 0);
+                        var isChecked = _selectedLanguageIds.Contains(language.Id) || language.IsAutomatic;
+                        var isDisabled = language.IsAutomatic || (!isChecked && RemainingLanguageSelections <= 0);
                         <div class="language-item">
                             <input type="checkbox"
                                    id="@language.Name.ToLower()"
@@ -537,6 +574,9 @@
     private double _calculatedBaseFortitude;
     private double _calculatedBaseReflex;
     private double _calculatedBaseWill;
+    private double _displayBaseFortitude;
+    private double _displayBaseReflex;
+    private double _displayBaseWill;
     private int _platinumPieces;
     private int _goldPieces;
     private int _silverPieces;
@@ -574,6 +614,20 @@
 
     private MoralityData? SelectedMorality =>
         _selectedMoralityId > NoSelectionId ? _moralities.SingleOrDefault(m => m.Id == _selectedMoralityId) : null;
+
+    private int DisplayStrength => CharacterStrength + GetRacialBonus("Strength");
+    private int DisplayDexterity => CharacterDexterity + GetRacialBonus("Dexterity");
+    private int DisplayConstitution => CharacterConstitution + GetRacialBonus("Constitution");
+    private int DisplayIntelligence => CharacterIntelligence + GetRacialBonus("Intelligence");
+    private int DisplayWisdom => CharacterWisdom + GetRacialBonus("Wisdom");
+    private int DisplayCharisma => CharacterCharisma + GetRacialBonus("Charisma");
+
+    private int DisplayStrengthMod => ConversionHelper.ConvertStatToBonus(DisplayStrength);
+    private int DisplayDexterityMod => ConversionHelper.ConvertStatToBonus(DisplayDexterity);
+    private int DisplayConstitutionMod => ConversionHelper.ConvertStatToBonus(DisplayConstitution);
+    private int DisplayIntelligenceMod => ConversionHelper.ConvertStatToBonus(DisplayIntelligence);
+    private int DisplayWisdomMod => ConversionHelper.ConvertStatToBonus(DisplayWisdom);
+    private int DisplayCharismaMod => ConversionHelper.ConvertStatToBonus(DisplayCharisma);
 
     #endregion
 
@@ -650,30 +704,47 @@
             }
 
             var selectedCampaign = SelectedCampaign;
-
             if (selectedCampaign is null || SelectedRace is null || SelectedClass is null)
             {
                 return filteredLanguages;
             }
 
-            if (SelectedRaceId > NoSelectionId && SelectedClassId > NoSelectionId)
+            var allowedSourceBooks = selectedCampaign.AllowedSources.Select(s => s.Abbreviation).ToHashSet();
+            var automaticLanguages = SelectedRace.AutomaticLanguages
+                .Concat(SelectedClass.AutomaticLanguages)
+                .Where(l => allowedSourceBooks.Contains(l.Sourcebook))
+                .Select(l => new LanguageData 
+                { 
+                    Id = l.Id, 
+                    Name = l.Name, 
+                    Description = l.Description,
+                    IsAutomatic = true,
+                    Sourcebook = l.Sourcebook,
+                    Page = l.Page,
+                    Type = l.Type
+                })
+                .ToList();
+
+            var bonusLanguages = SelectedRace.BonusLanguages
+                .Concat(SelectedClass.BonusLanguages)
+                .Where(l => allowedSourceBooks.Contains(l.Sourcebook))
+                .ToList();
+
+            if (SelectedClass?.Name == "Wizard")
             {
-                var allowedSourceBooks = selectedCampaign.AllowedSources;
-                foreach (var language in _languages)
-                {
-                    foreach (var sourceBook in allowedSourceBooks)
-                    {
-                        var isAllowedBySourceBook = language.Sourcebook == sourceBook.Abbreviation;
-                        var isAllowedByRace = language.RequiredRace == "Any" || language.RequiredRace == SelectedRace.Race;
-                        var isAllowedByClass = language.RequiredClass == "Any" || language.RequiredClass == SelectedClass.Name;
-                        if (isAllowedBySourceBook && isAllowedByRace && isAllowedByClass)
-                        {
-                            filteredLanguages.Add(language);
-                            break;
-                        }
-                    }
-                }
+                var allNonSecretLanguages = _languages
+                    .Where(l => l.Type != "Secret" && allowedSourceBooks.Contains(l.Sourcebook))
+                    .ToList();
+
+                bonusLanguages = allNonSecretLanguages;
             }
+
+            filteredLanguages = automaticLanguages
+                .Concat(bonusLanguages)
+                .GroupBy(l => l.Id)
+                .Select(g => g.First())
+                .OrderBy(l => l.Name)
+                .ToList();
 
             _selectedLanguageIds.RemoveAll(id => !filteredLanguages.Any(l => l.Id == id));
             return filteredLanguages;
@@ -686,13 +757,13 @@
     private string SelectedClassStartingGold =>
         SelectedClass?.StartingGold ?? "";
 
-    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence));
+    private int BonusLanguageSlots => Math.Max(0, ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence")) + GetSpeakLanguageRanks());
 
     private int RemainingLanguageSelections
         => Math.Max(0, BonusLanguageSlots - _selectedLanguageIds.Count(id =>
             {
                 var lang = FilteredLanguages.FirstOrDefault(l => l.Id == id);
-                return lang != null && !lang.IsBonus;
+                return lang != null && !lang.IsAutomatic;
             }));
 
     private int PointsSpent =>
@@ -710,7 +781,7 @@
 
             var baseSkillPoints = SelectedClass.SkillPoints;
             var humanBonus = SelectedRace.Race == "Human" ? 1 : 0;
-            var intModifier = ConversionHelper.ConvertStatToBonus(CharacterIntelligence);
+            var intModifier = ConversionHelper.ConvertStatToBonus(CharacterIntelligence + GetRacialBonus("Intelligence"));
 
             var skillPointsPerLevel = Math.Max(1, baseSkillPoints + humanBonus + intModifier);
 
@@ -737,11 +808,15 @@
                 .Include(r => r.EyeColours)
                 .Include(r => r.SkinColours)
                 .Include(r => r.Genders)
+                .Include(r => r.AutomaticLanguages)
+                .Include(r => r.BonusLanguages)
                 .ToListAsync();
             _orders = await db.Orders.ToListAsync();
             _moralities = await db.Moralities.ToListAsync();
             _classes = await db.Classes
                 .Include(c => c.ClassSkills)
+                .Include(c => c.AutomaticLanguages)
+                .Include(c => c.BonusLanguages)
                 .ToListAsync();
             _genders = await db.Genders.ToListAsync();
             _deities = await db.Deities.ToListAsync();
@@ -765,6 +840,22 @@
             { "Intelligence", val => CharacterIntelligence = val },
             { "Wisdom", val => CharacterWisdom = val },
             { "Charisma", val => CharacterCharisma = val },
+        };
+    }
+    
+    private int GetRacialBonus(string statName)
+    {
+        if (SelectedRace == null) return 0;
+    
+        return statName switch
+        {
+            "Strength" => SelectedRace.StrengthBonus,
+            "Dexterity" => SelectedRace.DexterityBonus,
+            "Constitution" => SelectedRace.ConstitutionBonus,
+            "Intelligence" => SelectedRace.IntelligenceBonus,
+            "Wisdom" => SelectedRace.WisdomBonus,
+            "Charisma" => SelectedRace.CharismaBonus,
+            _ => 0
         };
     }
 
@@ -824,6 +915,10 @@
             if (SelectedRaceId > NoSelectionId && _selectedClassId > NoSelectionId)
             {
                 GetAgeDiceType();
+                InitializeCharacterSkills();
+                CalculatedBaseFortitude();
+                CalculatedBaseReflex();
+                CalculatedBaseWill();
             }
 
             PopulateStartingEquipmentMethods();
@@ -1053,6 +1148,34 @@
         }
     }
 
+    private int GetDisplayStatValue(string statName)
+    {
+        return statName switch
+        {
+            "Strength" => DisplayStrength,
+            "Dexterity" => DisplayDexterity,
+            "Constitution" => DisplayConstitution,
+            "Intelligence" => DisplayIntelligence,
+            "Wisdom" => DisplayWisdom,
+            "Charisma" => DisplayCharisma,
+            _ => 0
+        };
+    }
+
+    private int GetDisplayStatModifier(string? statName)
+    {
+        return statName switch
+        {
+            "Strength" => DisplayStrengthMod,
+            "Dexterity" => DisplayDexterityMod,
+            "Constitution" => DisplayConstitutionMod,
+            "Intelligence" => DisplayIntelligenceMod,
+            "Wisdom" => DisplayWisdomMod,
+            "Charisma" => DisplayCharismaMod,
+            _ => 0
+        };
+    }
+
     private void CalculateLuck()
     {
         if (CharacterStrength != 0 && CharacterDexterity != 0 && CharacterConstitution != 0 && CharacterIntelligence != 0 && CharacterWisdom != 0 && CharacterCharisma != 0)
@@ -1061,22 +1184,25 @@
 
     private void CalculatedBaseFortitude()
     {
-        if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
+        if (SelectedClassId == NoSelectionId || SelectedClass == null || SelectedRaceId == NoSelectionId || SelectedRace == null) return;
 
+        _displayBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, GetDisplayStatValue("Constitution")) + SelectedRace.FortitudeBonus;
         _calculatedBaseFortitude = SaveHelper.GetBaseSave(SelectedClass.FortitudeSavePerLevel, CharacterConstitution);
     }
 
     private void CalculatedBaseReflex()
     {
-        if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
+        if (SelectedClassId == NoSelectionId || SelectedClass == null || SelectedRaceId == NoSelectionId || SelectedRace == null) return;
 
+        _displayBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, GetDisplayStatValue("Dexterity")) + SelectedRace.ReflexBonus;
         _calculatedBaseReflex = SaveHelper.GetBaseSave(SelectedClass.ReflexSavePerLevel, CharacterDexterity);
     }
 
     private void CalculatedBaseWill()
     {
-        if (SelectedClassId == NoSelectionId || SelectedClass == null) return;
+        if (SelectedClassId == NoSelectionId || SelectedClass == null || SelectedRaceId == NoSelectionId || SelectedRace == null) return;
 
+        _displayBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, GetDisplayStatValue("Wisdom")) + SelectedRace.WillBonus;
         _calculatedBaseWill = SaveHelper.GetBaseSave(SelectedClass.WillSavePerLevel, CharacterWisdom);
     }
 
@@ -1254,6 +1380,18 @@
             return;
 
         characterSkill.Ranks--;
+
+        if (characterSkill.SkillName != "Speak Language") return;
+        while (_selectedLanguageIds.Count > BonusLanguageSlots)
+        {
+            var lastSelected = _selectedLanguageIds
+                .LastOrDefault(id => !FilteredLanguages.First(l => l.Id == id).IsAutomatic);
+            
+            if (lastSelected > 0)
+                _selectedLanguageIds.Remove(lastSelected);
+            else
+                break;
+        }
     }
 
     private double GetDisplayRanks(CharacterSkills skill)
@@ -1261,15 +1399,18 @@
         return skill.IsClassSkill ? skill.Ranks : skill.Ranks * 0.5;
     }
 
-    private int GetDisplayMaxRanks(bool isClassSkill)
+    private int GetSpeakLanguageRanks()
     {
-        return isClassSkill ? CurrentLevel + 3 : (CurrentLevel + 3) / 2;
+        var speakLangSkill = _characterSkills.FirstOrDefault(s => s.SkillName == "Speak Language");
+        if (speakLangSkill == null) return 0;
+
+        return (int)Math.Floor(GetDisplayRanks(speakLangSkill));
     }
     
     private void ToggleLanguageSelection(int languageId)
     {
         var lang = FilteredLanguages.FirstOrDefault(l => l.Id == languageId);
-        if (lang != null && lang.IsBonus)
+        if (lang != null && lang.IsAutomatic)
         {
             return;
         }
@@ -1375,7 +1516,7 @@
 
             var cc = await db.CarryingCapacity
                 .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == CharacterStrength);
+                .SingleOrDefaultAsync(x => x.Id == DisplayStrength);
 
             if (cc is null)
             {
@@ -1494,9 +1635,8 @@
 
         await GetCarryingCapacityForStrengthAsync();
 
-        var bonusLanguageIds = FilteredLanguages.Where(l => l.IsBonus).Select(l => l.Id);
+        var bonusLanguageIds = FilteredLanguages.Where(l => l.IsAutomatic).Select(l => l.Id);
         var finalLanguageIds = _selectedLanguageIds.Union(bonusLanguageIds).ToList();
-        
         var selectedSkills = _characterSkills
             .Where(cs => cs.Ranks > 0)
             .ToDictionary(cs => cs.SkillId, cs => cs.Ranks);
@@ -1514,7 +1654,7 @@
             Wisdom = CharacterWisdom,
             Intelligence = CharacterIntelligence,
             Charisma = CharacterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice) + ConversionHelper.ConvertStatToBonus(CharacterConstitution),
+            HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice),
             Deity = SelectedDeity!.Id,
             Order = SelectedOrder!.Midpoint,
             Morality = SelectedMorality!.Midpoint,

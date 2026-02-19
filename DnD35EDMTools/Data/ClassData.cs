@@ -9,6 +9,8 @@ public class ClassData
     public string HitDice { get; set; }
     public int SkillPoints { get; set; }
     public List<SkillData> ClassSkills { get; set; }
+    public List<LanguageData> AutomaticLanguages { get; set; } = [];
+    public List<LanguageData> BonusLanguages { get; set; } = [];
     public string AgeCategory { get; set; }
     public double FortitudeSavePerLevel { get; set; }
     public double ReflexSavePerLevel { get; set; }
