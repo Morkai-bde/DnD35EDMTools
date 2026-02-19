@@ -128,15 +128,6 @@ namespace DnD35EDMTools.Data
                         joinEntity.ToTable("JoinTableCampaignSourceBooks");
                     });
 
-                modelBuilder.Entity<CharacterData>()
-                    .Property(c => c.Skills)
-                    .HasConversion(
-                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                        v => JsonSerializer.Deserialize<Dictionary<int, int>>(v, (JsonSerializerOptions?)null) 
-                             ?? new Dictionary<int, int>()
-                    )
-                    .HasColumnType("TEXT");
-                
                 #region Character Levels Configuration
 
                 modelBuilder.Entity<CharacterLevel>()
@@ -175,6 +166,8 @@ namespace DnD35EDMTools.Data
                     .HasIndex(sr => new { sr.CharacterLevelId, sr.SkillId })
                     .IsUnique();
 
+                modelBuilder.Entity<CharacterLevelSkillRank>()
+                    .ToTable("JoinTableCharacterLevelSkillRanks");
                 #endregion
             }
     }

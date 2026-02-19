@@ -8,10 +8,9 @@ public class CharacterData
     public int CampaignId { get; set; } = 1;
     [MaxLength(100)]
     public string Name { get; set; } = null!;
-    public int Class { get; set; } // remove
     public int Race { get; set; }
     public int Experience { get; set; }
-    public int HitPoints { get; set; } // remove
+    public int Level { get; set; }
     public int Order { get; set; }
     public int Morality { get; set; }
     public int? Deity { get; set; }
@@ -28,21 +27,11 @@ public class CharacterData
     public int Intelligence { get; set; }
     public int Wisdom { get; set; }
     public int Charisma { get; set; }
-    public Dictionary<int, int> Skills { get; set; } = new(); // remove
     public List<int> Languages { get; set; } = [1];
-    public double BaseFortitudeSave { get; set; } // remove
-    public double BaseReflexSave { get; set; } // remove
-    public double BaseWillSave { get; set; } // remove
     public int PlatinumPieces { get; set; }
     public int GoldPieces { get; set; }
     public int SilverPieces { get; set; }
     public int CopperPieces { get; set; }
-    public double LightLoad { get; set; } // remove
-    public double MediumLoad { get; set; } // remove
-    public double HeavyLoad { get; set; } // remove
-    public double LiftOverHead { get; set; } // remove
-    public double LiftOffGround { get; set; } // remove
-    public double PushOrDrag { get; set; } // remove
     [MaxLength(100)]
     public string? PlayerName { get; set; }
     // public int WeightCarried { get; set; }

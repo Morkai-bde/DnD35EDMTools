@@ -7,7 +7,7 @@ public class CharacterLevel
     public int Level { get; set; }
     public int ClassId { get; set; }
     public int HitPointsRolled { get; set; }
-    public DateTime Created { get; set; }
+    public DateTime CreatedDate { get; set; }
     
     public CharacterData Character { get; set; }
     public ClassData Class { get; set; }
