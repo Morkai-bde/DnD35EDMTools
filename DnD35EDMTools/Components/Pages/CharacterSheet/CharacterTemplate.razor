@@ -586,13 +586,6 @@
             var primaryClass = levels.FirstOrDefault()?.Class;
             _characterClass = primaryClass?.Name ?? string.Empty;
 
-            var classSkillIds = new HashSet<int>();
-            foreach (var level in levels)
-            {
-                var levelClassSkills = level.Class?.ClassSkills?.Select(s => s.Id) ?? [];
-                classSkillIds.UnionWith(levelClassSkills);
-            }
-
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
 
@@ -609,7 +602,7 @@
                     : string.Empty;
             }
 
-            _characterStrength = character.Strength + race.StrengthBonus;
+            _characterStrength = character.Strength + race!.StrengthBonus;
             _characterStrengthMod = ConversionHelper.ConvertStatToBonus(_characterStrength.Value);
             _characterDexterity = character.Dexterity + race.DexterityBonus;
             _characterDexterityMod = ConversionHelper.ConvertStatToBonus(_characterDexterity.Value);
@@ -650,7 +643,7 @@
                     var totalRanks = totalSkillRanks.GetValueOrDefault(skill.Id, 0.0);
 
                     var attributeModifier = GetAttributeModifier(skill.Attribute);
-                    var racialBonus = race?.SkillBonuses.GetValueOrDefault(skill.Name, 0) ?? 0;
+                    var racialBonus = race.SkillBonuses.GetValueOrDefault(skill.Name, 0);
                     var modifier = attributeModifier + (int)Math.Floor(totalRanks) + racialBonus;
 
                     return new CharacterSkillDisplay
