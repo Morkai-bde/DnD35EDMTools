@@ -152,7 +152,7 @@
     <div class="load-speed-list">
         <div class="load-speed-list-row-content">@_characterMediumLoad</div>
         <div class="load-speed-list-row-content">@_characterLiftOffGround</div>
-        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content">@_characterBaseAttackBonus</div>
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-header">Heavy Load</div>
@@ -452,6 +452,8 @@
     private double? _characterLiftOffGround;
     private double? _characterPushOrDrag;
 
+    private string _characterBaseAttackBonus = "";
+    
     private int? _characterStrength;
     private int? _characterStrengthMod;
     private int? _characterDexterity;
@@ -694,6 +696,9 @@
                 _characterLiftOffGround = WeightHelper.GetWeight(carryingCapacity.LiftOffGround, race.Size);
                 _characterPushOrDrag = WeightHelper.GetWeight(carryingCapacity.PushOrDrag, race.Size);
             }
+            
+            var totalBab = AttackBonusHelper.GetTotalBaseAttackBonus(levels);
+            _characterBaseAttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalBab);
 
             StateHasChanged();
         }

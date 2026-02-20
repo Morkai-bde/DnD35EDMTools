@@ -12,6 +12,7 @@ public class ClassData
     public List<LanguageData> AutomaticLanguages { get; set; } = [];
     public List<LanguageData> BonusLanguages { get; set; } = [];
     public string AgeCategory { get; set; }
+    public double BaseAttackBonusPerLevel { get; set; }
     public double FortitudeSavePerLevel { get; set; }
     public double ReflexSavePerLevel { get; set; }
     public double WillSavePerLevel { get; set; }
