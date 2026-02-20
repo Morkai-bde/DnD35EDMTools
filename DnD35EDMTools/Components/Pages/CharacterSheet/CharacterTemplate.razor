@@ -667,7 +667,7 @@
 
             _characterName = character.Name;
             _characterRace = race.Race;
-            _characterExperience = $"{character.Experience}/";
+            _characterExperience = $"{character.Experience}/{500 * (levels.Count + 1) * levels.Count}";
             _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
             _characterAge = character.Age;
             _characterWeight = $"{character.Weight} lbs.";
