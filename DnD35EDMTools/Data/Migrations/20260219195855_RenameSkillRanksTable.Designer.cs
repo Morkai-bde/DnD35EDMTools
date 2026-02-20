@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260219195855_RenameSkillRanksTable")]
+    partial class RenameSkillRanksTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -390,9 +393,6 @@ namespace DnD35EDMTools.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<double>("BaseAttackBonusPerLevel")
-                        .HasColumnType("REAL");
-
                     b.Property<string>("Description")
                         .IsRequired()
                         .HasColumnType("TEXT");
@@ -471,9 +471,6 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("CharacterLevelId")
-                        .HasColumnType("INTEGER");
-
-                    b.Property<bool>("IsClassSkill")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("RanksPurchased")

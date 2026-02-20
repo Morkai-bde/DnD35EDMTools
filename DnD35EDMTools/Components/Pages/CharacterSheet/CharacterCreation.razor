@@ -1633,8 +1633,6 @@
             return;
         }
 
-        await GetCarryingCapacityForStrengthAsync();
-
         var bonusLanguageIds = FilteredLanguages.Where(l => l.IsAutomatic).Select(l => l.Id);
         var finalLanguageIds = _selectedLanguageIds.Union(bonusLanguageIds).ToList();
         var selectedSkills = _characterSkills
@@ -1645,16 +1643,15 @@
         {
             Name = _characterName,
             CampaignId = _selectedCampaignId,
-            Class = SelectedClass!.Id,
             Race = SelectedRace!.Id,
             Experience = 0,
+            Level = 1,
             Strength = CharacterStrength,
             Dexterity = CharacterDexterity,
             Constitution = CharacterConstitution,
             Wisdom = CharacterWisdom,
             Intelligence = CharacterIntelligence,
             Charisma = CharacterCharisma,
-            HitPoints = RollHp.LevelOneHitPoints(SelectedClass.HitDice),
             Deity = SelectedDeity!.Id,
             Order = SelectedOrder!.Midpoint,
             Morality = SelectedMorality!.Midpoint,
@@ -1665,21 +1662,11 @@
             Age = _characterAge!.Value,
             Height = ConversionHelper.ConvertFeetAndInchesToInches(_characterHeight),
             Weight = _characterWeight,
-            Skills = selectedSkills,
             Languages = finalLanguageIds,
-            BaseFortitudeSave = _calculatedBaseFortitude,
-            BaseReflexSave = _calculatedBaseReflex,
-            BaseWillSave = _calculatedBaseWill,
             PlatinumPieces = _platinumPieces,
             GoldPieces = _goldPieces,
             SilverPieces = _silverPieces,
             CopperPieces = _copperPieces,
-            LightLoad = _lightLoad,
-            MediumLoad = _mediumLoad,
-            HeavyLoad = _heavyLoad,
-            LiftOverHead = _liftOverHead,
-            LiftOffGround = _liftOffGround,
-            PushOrDrag = _pushOrDrag,
             PlayerName = "Shaun" // To Be Implemented (get from active account creating the character)
         };
 
@@ -1691,7 +1678,42 @@
 
             if (!_dryRun)
                 await db.SaveChangesAsync();
-            
+
+            var startingHitPoints = RollHp.LevelOneHitPoints(SelectedClass!.HitDice);
+
+            var levelOne = new CharacterLevel
+            {
+                CharacterId = newCharacter.Id,
+                Level = CurrentLevel,
+                ClassId = SelectedClass.Id,
+                HitPointsRolled = startingHitPoints,
+                CreatedDate = DateTime.UtcNow
+            };
+
+            db.CharacterLevels.Add(levelOne);
+
+            if (!_dryRun)
+                await db.SaveChangesAsync();
+
+            var skillRanks = _characterSkills
+                .Where(cs => cs.Ranks > 0)
+                .Select(cs => new CharacterLevelSkillRank
+                {
+                    CharacterLevelId = levelOne.Id,
+                    SkillId = cs.SkillId,
+                    RanksPurchased = cs.Ranks,
+                    IsClassSkill = cs.IsClassSkill
+                })
+                .ToList();
+
+            if (skillRanks.Any())
+            {
+                db.CharacterLevelSkillRanks.AddRange(skillRanks);
+
+                if (!_dryRun)
+                    await db.SaveChangesAsync();
+            }
+
             var sb = new StringBuilder();
 
             foreach (var property in newCharacter.GetType().GetProperties())

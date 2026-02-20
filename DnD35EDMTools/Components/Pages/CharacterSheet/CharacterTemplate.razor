@@ -152,7 +152,7 @@
     <div class="load-speed-list">
         <div class="load-speed-list-row-content">@_characterMediumLoad</div>
         <div class="load-speed-list-row-content">@_characterLiftOffGround</div>
-        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content">@_characterBaseAttackBonus</div>
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-header">Heavy Load</div>
@@ -340,19 +340,19 @@
 
         @for (int i = 0; i < MaxRows; i++)
         {
-        var skill = i < Skills.Count ? Skills[i] : null;
+            var skill = i < Skills.Count ? Skills[i] : null;
 
-        <div class="@RowHeaderClass(i)">
-            @(skill?.Name ?? "")
-        </div>
+            <div class="@RowHeaderClass(i)">
+                @(skill?.Name ?? "")
+            </div>
 
-        <div class="@RowContentClass(i)">
-            @(skill?.Ranks.ToString() ?? "")
-        </div>
+            <div class="@RowContentClass(i)">
+                @(skill?.Ranks.ToString() ?? "")
+            </div>
 
-        <div class="@RowContentClass(i)">
-            @(skill?.Modifier.ToString() ?? "")
-        </div>
+            <div class="@RowContentClass(i)">
+                @(skill?.Modifier.ToString() ?? "")
+            </div>
         }
     </div>
 
@@ -418,7 +418,7 @@
     private List<MoralityData> _moralities = [];
     private List<CharacterData> _characters = [];
     private List<CharacterSkillDisplay> Skills { get; set; } = [];
-    
+
     private string _characterName = string.Empty;
     private string _characterClass = string.Empty;
     private string _characterRace = string.Empty;
@@ -444,7 +444,7 @@
     private int? _characterCopper;
 
     private string _characterSpeed = string.Empty;
-    
+
     private double? _characterLightLoad;
     private double? _characterMediumLoad;
     private double? _characterHeavyLoad;
@@ -452,6 +452,8 @@
     private double? _characterLiftOffGround;
     private double? _characterPushOrDrag;
 
+    private string _characterBaseAttackBonus = "";
+    
     private int? _characterStrength;
     private int? _characterStrengthMod;
     private int? _characterDexterity;
@@ -486,7 +488,7 @@
             : "skills-list-row-content";
 
     #endregion
-    
+
     #region Lifecycle Methods
 
     protected override async Task OnInitializedAsync()
@@ -529,19 +531,25 @@
 
             if (character is null)
                 return;
+
             var campaignTask = db.Campaigns
                 .AsNoTracking()
                 .Where(c => c.Id == character.CampaignId)
                 .FirstOrDefaultAsync();
 
-            var classTask = db.Classes
-                .Include(c => c.ClassSkills)
+            var raceTask = db.Races
                 .AsNoTracking()
-                .FirstOrDefaultAsync(c => c.Id == character.Class);
+                .FirstOrDefaultAsync(r => r.Id == character.Race);
 
-            var raceTask = db.Races.AsNoTracking().FirstOrDefaultAsync(r => r.Id == character.Race);
-            var deityTask = db.Deities.Where(d => d.Id == character.Deity).Select(d => d.Name).FirstOrDefaultAsync();
-            var genderTask = db.Genders.Where(g => g.Id == character.Gender).Select(g => g.Gender).FirstOrDefaultAsync();
+            var deityTask = db.Deities
+                .Where(d => d.Id == character.Deity)
+                .Select(d => d.Name)
+                .FirstOrDefaultAsync();
+
+            var genderTask = db.Genders
+                .Where(g => g.Id == character.Gender)
+                .Select(g => g.Gender)
+                .FirstOrDefaultAsync();
 
             var colorIds = new[] { character.Eyes, character.Hair, character.Skin };
             var colorsTask = db.Colours
@@ -554,38 +562,41 @@
                 .Where(l => character.Languages.Contains(l.Id))
                 .Select(l => l.Name)
                 .ToListAsync();
-            
+
             var skillsTask = db.Skills
                 .AsNoTracking()
                 .OrderBy(s => s.Name)
                 .ToListAsync();
-            
-            await Task.WhenAll(campaignTask, classTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask);
+
+            var levelsTask = db.CharacterLevels
+                .AsNoTracking()
+                .Include(cl => cl.Class)
+                .Include(cl => cl.SkillRanks)
+                .ThenInclude(sr => sr.Skill)
+                .Where(cl => cl.CharacterId == characterId)
+                .OrderBy(cl => cl.Level)
+                .ToListAsync();
+
+            await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, levelsTask);
 
             var campaign = await campaignTask;
             var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
-            var characterClass = await classTask;
-            var classSkillIds = characterClass?.ClassSkills?.Select(s => s.Id).ToHashSet() ?? [];
-            var race = await raceTask;
-            var colors = await colorsTask;
-            var characterLanguageNames = await languagesTask;
 
-            _characterName = character.Name;
-            _characterClass = characterClass?.Name ?? string.Empty;
-            _characterRace = race.Race;
-            _characterExperience = $"{character.Experience}/";
-            _characterHitPoints = character.HitPoints + ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
-            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
+            var race = await raceTask;
+            var levels = await levelsTask;
+
+            var primaryClass = levels.FirstOrDefault()?.Class;
+            _characterClass = primaryClass?.Name ?? string.Empty;
+
             _characterDeity = await deityTask ?? string.Empty;
             _characterGender = await genderTask ?? string.Empty;
-            _characterAge = character.Age;
+
+            var colors = await colorsTask;
             _characterEyes = colors.GetValueOrDefault(character.Eyes) ?? string.Empty;
             _characterHair = colors.GetValueOrDefault(character.Hair) ?? string.Empty;
             _characterSkin = colors.GetValueOrDefault(character.Skin) ?? string.Empty;
-            _characterWeight = $"{character.Weight} lbs.";
-            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
-            _characterPlayerName = character.PlayerName ?? string.Empty;
-            
+
+            var characterLanguageNames = await languagesTask;
             for (var i = 0; i < 21; i++)
             {
                 _characterLanguages[i] = i < characterLanguageNames.Count
@@ -593,56 +604,54 @@
                     : string.Empty;
             }
 
-            _characterPlatinum = character.PlatinumPieces;
-            _characterGold = character.GoldPieces;
-            _characterSilver = character.SilverPieces;
-            _characterCopper = character.CopperPieces;
-
-            _characterSpeed = $"{race.BaseSpeed} ft.";
-
-            _characterLightLoad = character.LightLoad;
-            _characterMediumLoad = character.MediumLoad;
-            _characterHeavyLoad = character.HeavyLoad;
-            _characterLiftOverHead = character.LiftOverHead;
-            _characterLiftOffGround = character.LiftOffGround;
-            _characterPushOrDrag = character.PushOrDrag;
-
-            _characterStrength = character.Strength + race.StrengthBonus;
-            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(character.Strength + race.StrengthBonus);
+            _characterStrength = character.Strength + race!.StrengthBonus;
+            _characterStrengthMod = ConversionHelper.ConvertStatToBonus(_characterStrength.Value);
             _characterDexterity = character.Dexterity + race.DexterityBonus;
-            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(character.Dexterity + race.DexterityBonus);
+            _characterDexterityMod = ConversionHelper.ConvertStatToBonus(_characterDexterity.Value);
             _characterConstitution = character.Constitution + race.ConstitutionBonus;
-            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(character.Constitution + race.ConstitutionBonus);
+            _characterConstitutionMod = ConversionHelper.ConvertStatToBonus(_characterConstitution.Value);
             _characterIntelligence = character.Intelligence + race.IntelligenceBonus;
-            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(character.Intelligence + race.IntelligenceBonus);
+            _characterIntelligenceMod = ConversionHelper.ConvertStatToBonus(_characterIntelligence.Value);
             _characterWisdom = character.Wisdom + race.WisdomBonus;
-            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(character.Wisdom + race.WisdomBonus);
+            _characterWisdomMod = ConversionHelper.ConvertStatToBonus(_characterWisdom.Value);
             _characterCharisma = character.Charisma + race.CharismaBonus;
-            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(character.Charisma + race.CharismaBonus);
+            _characterCharismaMod = ConversionHelper.ConvertStatToBonus(_characterCharisma.Value);
 
             CalculateLuck();
 
-            _characterFortSave = SaveHelper.GetBaseSave(characterClass.FortitudeSavePerLevel, _characterConstitution ?? 0) + race.FortitudeBonus; // character.BaseFortitudeSave; // replace with Fortitude Calculation
-            _characterRefSave = SaveHelper.GetBaseSave(characterClass.ReflexSavePerLevel, _characterDexterity ?? 0) + race.ReflexBonus; // character.BaseReflexSave; // replace with Reflex Calculation
-            _characterWillSave = SaveHelper.GetBaseSave(characterClass.WillSavePerLevel, _characterWisdom ?? 0) + race.WillBonus; //character.BaseWillSave; // replace with Will Calculation
+            var totalHpRolled = levels.Sum(l => l.HitPointsRolled);
+            var hpFromConstitution = _characterConstitutionMod * levels.Count;
+            _characterHitPoints = totalHpRolled + hpFromConstitution;
+
+            if (primaryClass != null)
+            {
+                _characterFortSave = SaveHelper.GetBaseSave(primaryClass.FortitudeSavePerLevel, _characterConstitution.Value) + race.FortitudeBonus;
+                _characterRefSave = SaveHelper.GetBaseSave(primaryClass.ReflexSavePerLevel, _characterDexterity.Value) + race.ReflexBonus;
+                _characterWillSave = SaveHelper.GetBaseSave(primaryClass.WillSavePerLevel, _characterWisdom.Value) + race.WillBonus;
+            }
+
+            var totalSkillRanks = levels
+                .SelectMany(l => l.SkillRanks)
+                .GroupBy(sr => sr.SkillId)
+                .ToDictionary(
+                    g => g.Key, 
+                    g => g.Sum(sr => sr.IsClassSkill ? sr.RanksPurchased : sr.RanksPurchased * 0.5)
+                );
 
             var allSkills = await skillsTask;
             Skills = allSkills
                 .Select(skill =>
                 {
-                    var ranks = character.Skills.TryGetValue(skill.Id, out var r) ? r : 0;
-
-                    var isClassSkill = classSkillIds.Contains(skill.Id);
-                    var displayRanks = isClassSkill ? ranks : ranks * 0.5;
+                    var totalRanks = totalSkillRanks.GetValueOrDefault(skill.Id, 0.0);
 
                     var attributeModifier = GetAttributeModifier(skill.Attribute);
                     var racialBonus = race.SkillBonuses.GetValueOrDefault(skill.Name, 0);
-                    var modifier = attributeModifier + (int)Math.Floor(displayRanks) + racialBonus;
+                    var modifier = attributeModifier + (int)Math.Floor(totalRanks) + racialBonus;
 
                     return new CharacterSkillDisplay
                     {
                         Name = skill.Name,
-                        Ranks = (int)Math.Floor(displayRanks),
+                        Ranks = (int)Math.Floor(totalRanks),
                         Modifier = modifier,
                         IsTrainedOnly = skill.IsTrainedOnly
                     };
@@ -653,9 +662,43 @@
                     {
                         return false;
                     }
+
                     return true;
                 })
                 .ToList();
+
+            _characterName = character.Name;
+            _characterRace = race.Race;
+            _characterExperience = $"{character.Experience}/{500 * (levels.Count + 1) * levels.Count}";
+            _characterAlignment = AlignmentHelper.GetAlignmentFromOrderAndMorality(_orders, _moralities, character.Order, character.Morality);
+            _characterAge = character.Age;
+            _characterWeight = $"{character.Weight} lbs.";
+            _characterHeight = ConversionHelper.ConvertInchesToFeetAndInches(character.Height);
+            _characterPlayerName = character.PlayerName ?? string.Empty;
+
+            _characterPlatinum = character.PlatinumPieces;
+            _characterGold = character.GoldPieces;
+            _characterSilver = character.SilverPieces;
+            _characterCopper = character.CopperPieces;
+
+            _characterSpeed = $"{race.BaseSpeed} ft.";
+
+            var carryingCapacity = await db.CarryingCapacity
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == _characterStrength);
+
+            if (carryingCapacity != null)
+            {
+                _characterLightLoad = WeightHelper.GetWeight(carryingCapacity.LightLoad, race.Size);
+                _characterMediumLoad = WeightHelper.GetWeight(carryingCapacity.MediumLoad, race.Size);
+                _characterHeavyLoad = WeightHelper.GetWeight(carryingCapacity.HeavyLoad, race.Size);
+                _characterLiftOverHead = WeightHelper.GetWeight(carryingCapacity.LiftOverHead, race.Size);
+                _characterLiftOffGround = WeightHelper.GetWeight(carryingCapacity.LiftOffGround, race.Size);
+                _characterPushOrDrag = WeightHelper.GetWeight(carryingCapacity.PushOrDrag, race.Size);
+            }
+            
+            var totalBab = AttackBonusHelper.GetTotalBaseAttackBonus(levels);
+            _characterBaseAttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalBab);
 
             StateHasChanged();
         }
@@ -688,7 +731,7 @@
             _characterLuckMod = ConversionHelper.ConvertStatToBonus(_characterLuck.Value);
         }
     }
-    
+
     private int GetAttributeModifier(string? attribute)
     {
         return attribute switch

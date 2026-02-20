@@ -26,6 +26,8 @@ namespace DnD35EDMTools.Data
         public DbSet<ClassData> Classes { get; set; }
         public DbSet<SkillData> Skills { get; set; } 
         public DbSet<LanguageData> Languages { get; set; }
+        public DbSet<CharacterLevel> CharacterLevels { get; set; }
+        public DbSet<CharacterLevelSkillRank> CharacterLevelSkillRanks { get; set; }
         public DbSet<CampaignData> Campaigns { get; set; }
         public DbSet<SourceBookData> SourceBooks { get; set; }
         
@@ -126,14 +128,47 @@ namespace DnD35EDMTools.Data
                         joinEntity.ToTable("JoinTableCampaignSourceBooks");
                     });
 
-                modelBuilder.Entity<CharacterData>()
-                    .Property(c => c.Skills)
-                    .HasConversion(
-                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
-                        v => JsonSerializer.Deserialize<Dictionary<int, int>>(v, (JsonSerializerOptions?)null) 
-                             ?? new Dictionary<int, int>()
-                    )
-                    .HasColumnType("TEXT");
+                #region Character Levels Configuration
+
+                modelBuilder.Entity<CharacterLevel>()
+                    .HasOne(cl => cl.Character)
+                    .WithMany()
+                    .HasForeignKey(cl => cl.CharacterId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<CharacterLevel>()
+                    .HasOne(cl => cl.Class)
+                    .WithMany()
+                    .HasForeignKey(cl => cl.ClassId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<CharacterLevel>()
+                    .HasIndex(cl => new { cl.CharacterId, cl.Level })
+                    .IsUnique();
+        
+                #endregion
+
+                #region Character Level Skill Ranks Configuration
+
+                modelBuilder.Entity<CharacterLevelSkillRank>()
+                    .HasOne(sr => sr.CharacterLevel)
+                    .WithMany(cl => cl.SkillRanks)
+                    .HasForeignKey(sr => sr.CharacterLevelId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<CharacterLevelSkillRank>()
+                    .HasOne(sr => sr.Skill)
+                    .WithMany()
+                    .HasForeignKey(sr => sr.SkillId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<CharacterLevelSkillRank>()
+                    .HasIndex(sr => new { sr.CharacterLevelId, sr.SkillId })
+                    .IsUnique();
+
+                modelBuilder.Entity<CharacterLevelSkillRank>()
+                    .ToTable("JoinTableCharacterLevelSkillRanks");
+                #endregion
             }
     }
 }

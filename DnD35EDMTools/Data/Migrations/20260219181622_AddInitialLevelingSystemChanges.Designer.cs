@@ -3,16 +3,19 @@ using System;
 using DnD35EDMTools.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace DnD35EDMTools.Data.Migrations
+namespace DnD35EDMTools.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260219181622_AddInitialLevelingSystemChanges")]
+    partial class AddInitialLevelingSystemChanges
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.1");
@@ -293,10 +296,22 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Age")
                         .HasColumnType("INTEGER");
 
+                    b.Property<double>("BaseFortitudeSave")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("BaseReflexSave")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("BaseWillSave")
+                        .HasColumnType("REAL");
+
                     b.Property<int>("CampaignId")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Charisma")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Class")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Constitution")
@@ -326,7 +341,13 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("Hair")
                         .HasColumnType("INTEGER");
 
+                    b.Property<double>("HeavyLoad")
+                        .HasColumnType("REAL");
+
                     b.Property<int>("Height")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("HitPoints")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("Intelligence")
@@ -336,8 +357,17 @@ namespace DnD35EDMTools.Data.Migrations
                         .IsRequired()
                         .HasColumnType("TEXT");
 
-                    b.Property<int>("Level")
-                        .HasColumnType("INTEGER");
+                    b.Property<double>("LiftOffGround")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("LiftOverHead")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("LightLoad")
+                        .HasColumnType("REAL");
+
+                    b.Property<double>("MediumLoad")
+                        .HasColumnType("REAL");
 
                     b.Property<int>("Morality")
                         .HasColumnType("INTEGER");
@@ -357,11 +387,18 @@ namespace DnD35EDMTools.Data.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
+                    b.Property<double>("PushOrDrag")
+                        .HasColumnType("REAL");
+
                     b.Property<int>("Race")
                         .HasColumnType("INTEGER");
 
                     b.Property<int>("SilverPieces")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("Skills")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
 
                     b.Property<int>("Skin")
                         .HasColumnType("INTEGER");
@@ -389,9 +426,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<string>("AgeCategory")
                         .IsRequired()
                         .HasColumnType("TEXT");
-
-                    b.Property<double>("BaseAttackBonusPerLevel")
-                        .HasColumnType("REAL");
 
                     b.Property<string>("Description")
                         .IsRequired()
@@ -445,7 +479,7 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("ClassId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("CreatedDate")
+                    b.Property<DateTime>("Created")
                         .HasColumnType("TEXT");
 
                     b.Property<int>("HitPointsRolled")
@@ -473,9 +507,6 @@ namespace DnD35EDMTools.Data.Migrations
                     b.Property<int>("CharacterLevelId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("IsClassSkill")
-                        .HasColumnType("INTEGER");
-
                     b.Property<int>("RanksPurchased")
                         .HasColumnType("INTEGER");
 
@@ -489,7 +520,7 @@ namespace DnD35EDMTools.Data.Migrations
                     b.HasIndex("CharacterLevelId", "SkillId")
                         .IsUnique();
 
-                    b.ToTable("JoinTableCharacterLevelSkillRanks", (string)null);
+                    b.ToTable("CharacterLevelSkillRanks");
                 });
 
             modelBuilder.Entity("DnD35EDMTools.Data.Classes.SkillData", b =>
