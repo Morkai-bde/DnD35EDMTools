@@ -7,10 +7,10 @@ public class EquipmentPack
     public int Id { get; set; }
 
     [MaxLength(50)]
-    public string Name { get; set; } // "Cleric's Pack", "Fighter's Kit", etc.
+    public string Name { get; set; }
 
     public string? Description { get; set; }
-    public double TotalValue { get; set; } // Pre-calculated total in gold
+    public double TotalValue { get; set; }
 
     [MaxLength(5)]
     public string SourceBook { get; set; } = "PHB";
