@@ -34,6 +34,8 @@ namespace DnD35EDMTools.Data
         public DbSet<PropertyDefinition> PropertyDefinitions { get; set; }
         public DbSet<ItemProperty> ItemProperties { get; set; }
         public DbSet<CharacterInventoryItem> CharacterInventoryItems { get; set; }
+        public DbSet<EquipmentPack> EquipmentPacks { get; set; }
+        public DbSet<EquipmentPackItem> EquipmentPackItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);
@@ -217,6 +219,25 @@ namespace DnD35EDMTools.Data
 
                 modelBuilder.Entity<CharacterInventoryItem>()
                     .ToTable("JoinTableCharacterInventory");
+
+                #endregion
+
+                #region Equipment Packs Configuration
+
+                modelBuilder.Entity<EquipmentPackItem>()
+                    .HasOne(epi => epi.Pack)
+                    .WithMany(ep => ep.Items)
+                    .HasForeignKey(epi => epi.EquipmentPackId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<EquipmentPackItem>()
+                    .HasOne(epi => epi.Item)
+                    .WithMany()
+                    .HasForeignKey(epi => epi.ItemId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<EquipmentPackItem>()
+                    .ToTable("JoinTableEquipmentPackItems");
 
                 #endregion
             }
