@@ -30,7 +30,10 @@ namespace DnD35EDMTools.Data
         public DbSet<CharacterLevelSkillRank> CharacterLevelSkillRanks { get; set; }
         public DbSet<CampaignData> Campaigns { get; set; }
         public DbSet<SourceBookData> SourceBooks { get; set; }
-        
+        public DbSet<ItemData> Items { get; set; }
+        public DbSet<PropertyDefinition> PropertyDefinitions { get; set; }
+        public DbSet<ItemProperty> ItemProperties { get; set; }
+        public DbSet<CharacterInventoryItem> CharacterInventoryItems { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
             {
                 base.OnModelCreating(modelBuilder);
@@ -168,6 +171,53 @@ namespace DnD35EDMTools.Data
 
                 modelBuilder.Entity<CharacterLevelSkillRank>()
                     .ToTable("JoinTableCharacterLevelSkillRanks");
+                #endregion
+
+                #region Item System Configuration
+
+                modelBuilder.Entity<ItemProperty>()
+                    .HasOne(ip => ip.Item)
+                    .WithMany(i => i.Properties)
+                    .HasForeignKey(ip => ip.ItemId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<ItemProperty>()
+                    .HasOne(ip => ip.PropertyDefinition)
+                    .WithMany()
+                    .HasForeignKey(ip => ip.PropertyDefinitionId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<ItemProperty>()
+                    .HasIndex(ip => new { ip.ItemId, ip.PropertyDefinitionId })
+                    .IsUnique();
+
+                modelBuilder.Entity<ItemProperty>()
+                    .ToTable("JoinTableItemProperties");
+
+                #endregion
+
+                #region Character Inventory Configuration
+
+                modelBuilder.Entity<CharacterInventoryItem>()
+                    .HasOne(cii => cii.Character)
+                    .WithMany()
+                    .HasForeignKey(cii => cii.CharacterId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                modelBuilder.Entity<CharacterInventoryItem>()
+                    .HasOne(cii => cii.Item)
+                    .WithMany()
+                    .HasForeignKey(cii => cii.ItemId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
+                modelBuilder.Entity<CharacterInventoryItem>()
+                    .HasIndex(cii => new { cii.CharacterId, cii.EquippedSlot })
+                    .IsUnique()
+                    .HasFilter("[EquippedSlot] IS NOT NULL AND [Location] = 'Equipped'");
+
+                modelBuilder.Entity<CharacterInventoryItem>()
+                    .ToTable("JoinTableCharacterInventory");
+
                 #endregion
             }
     }
