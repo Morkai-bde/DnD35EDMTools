@@ -204,6 +204,12 @@ namespace DnD35EDMTools.Data
                     )
                     .HasColumnType("TEXT");
 
+                modelBuilder.Entity<PropertyDefinition>()
+                    .HasOne(pd => pd.AppliedToSpecificSkill)
+                    .WithMany()
+                    .HasForeignKey(pd => pd.AppliedToSpecificSkillId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 modelBuilder.Entity<ItemProperty>()
                     .HasOne(ip => ip.Item)
                     .WithMany(i => i.Properties)
