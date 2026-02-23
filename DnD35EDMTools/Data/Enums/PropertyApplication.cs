@@ -5,7 +5,7 @@ public enum PropertyApplication
     // Armor/Defense
     ArmourClass = 1,
     MaxDexBonus = 2,
-    ArmorCheckPenalty = 3,
+    ArmourCheckPenalty = 3,
     ArcaneSpellFailure = 4,
     
     // Weapon/Attack
