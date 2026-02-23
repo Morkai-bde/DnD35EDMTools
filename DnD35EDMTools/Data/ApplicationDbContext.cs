@@ -1,5 +1,6 @@
 using System.Text.Json;
 using DnD35EDMTools.Data.Classes;
+using DnD35EDMTools.Data.Enums;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -176,6 +177,32 @@ namespace DnD35EDMTools.Data
                 #endregion
 
                 #region Item System Configuration
+
+                modelBuilder.Entity<ItemData>()
+                    .Property(i => i.LootCategories)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v.Select(c => (int)c).ToList(), (JsonSerializerOptions?)null),
+                        v => (JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions?)null) ?? new List<int>())
+                            .Select(i => (LootCategory)i)
+                            .ToList()
+                    )
+                    .HasColumnType("TEXT");
+
+                modelBuilder.Entity<PropertyDefinition>()
+                    .Property(pd => pd.ApplicableItemTypeIds)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        v => (JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions?)null) ?? new List<int>())
+                    )
+                    .HasColumnType("TEXT");
+
+                modelBuilder.Entity<PropertyDefinition>()
+                    .Property(pd => pd.ApplicableItemSubtypeIds)
+                    .HasConversion(
+                        v => JsonSerializer.Serialize(v, (JsonSerializerOptions?)null),
+                        v => (JsonSerializer.Deserialize<List<int>>(v, (JsonSerializerOptions?)null) ?? new List<int>())
+                    )
+                    .HasColumnType("TEXT");
 
                 modelBuilder.Entity<ItemProperty>()
                     .HasOne(ip => ip.Item)

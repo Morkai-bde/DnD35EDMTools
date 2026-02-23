@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using DnD35EDMTools.Data.Enums;
 
 namespace DnD35EDMTools.Data.Classes;
 
@@ -10,10 +11,9 @@ public class ItemData
     public string? Description { get; set; }
     public double Weight { get; set; }
     public int Enchantment { get; set; }
-    [MaxLength(20)]
-    public string LootCategory { get; set; } = "Mundane";
-    [MaxLength(20)]
-    public string ItemCategory { get; set; } = "Miscellaneous";
+    public List<LootCategory> LootCategories { get; set; } = [LootCategory.Mundane];
+    public ItemType ItemType { get; set; }
+    public ItemSubtype? ItemSubtype { get; set; }
     public double BaseGoldValue { get; set; }
     [MaxLength(100)]
     public string? CraftRequiredFeats { get; set; }
