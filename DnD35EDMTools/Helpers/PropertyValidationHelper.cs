@@ -76,15 +76,6 @@ public static class PropertyValidationHelper
         { PropertyApplication.SpellLevel, [ItemType.Scroll, ItemType.Potion, ItemType.Wand] }
     };
 
-
-    public static bool IsValidItemType(PropertyApplication application, ItemType itemType)
-    {
-        if (!ValidItemTypes.TryGetValue(application, out var validTypes))
-            return false;
-        
-        return validTypes.Contains(itemType);
-    }
-
     public static string GetValueTypeForApplication(PropertyApplication application)
     {
         return ValueTypeForApplication.GetValueOrDefault(application, "String");
