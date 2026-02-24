@@ -12,9 +12,10 @@ public class PropertyDefinition
     public List<int> ApplicableItemSubtypeIds { get; set; } = [];
     public PropertyApplication AppliesTo { get; set; }
     public int? AppliedToSpecificSkillId { get; set; }
-    
     [MaxLength(50)]
     public string ValueType { get; set; }
+    public int EnchantmentCost { get; set; } = 0;
+    public double GoldCostMultiplier { get; set; } = 0;
     [MaxLength(50)]
     public string Description { get; set; }
     
