@@ -13,7 +13,7 @@
     <label>Filter by Item Type:</label>
     <select @bind="SelectedItemTypeFilter" class="filter-select">
         <option value="">All Types</option>
-        @foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
+        @foreach (ItemType type in Enum.GetValues(typeof(ItemType)).Cast<ItemType>().OrderBy(ItemTypeHelper.GetDisplayName))
         {
             <option value="@((int)type)">@ItemTypeHelper.GetDisplayName(type)</option>
         }
@@ -66,7 +66,7 @@
                 <div class="dnd-dm-ip-form-group">
                     <label>Applies To:</label>
                     <select @bind="CurrentProperty.AppliesTo" @bind:after="OnApplicationChanged">
-                        @foreach (PropertyApplication app in Enum.GetValues(typeof(PropertyApplication)))
+                        @foreach (PropertyApplication app in Enum.GetValues(typeof(PropertyApplication)).Cast<PropertyApplication>().OrderBy(a => a.ToString()))
                         {
                             <option value="@app">@app.ToString()</option>
                         }
@@ -90,7 +90,7 @@
                 <div class="dnd-dm-ip-form-group">
                     <label>Applicable Item Types:</label>
                     <div class="dnd-dm-ip-checkbox-list">
-                        @foreach (var type in GetValidItemTypesForApplication())
+                        @foreach (var type in GetValidItemTypesForApplication().OrderBy(ItemTypeHelper.GetDisplayName))
                         {
                             var typeId = (int)type;
                             var isChecked = _selectedApplicableTypes.Contains(typeId);
@@ -226,8 +226,8 @@
         {
             Id = property.Id,
             Name = property.Name,
-            ApplicableItemTypeIds = new List<int>(property.ApplicableItemTypeIds),
-            ApplicableItemSubtypeIds = new List<int>(property.ApplicableItemSubtypeIds),
+            ApplicableItemTypeIds = [..property.ApplicableItemTypeIds],
+            ApplicableItemSubtypeIds = [..property.ApplicableItemSubtypeIds],
             AppliedToSpecificSkillId = property.AppliedToSpecificSkillId,
             EnchantmentCost = property.EnchantmentCost,
             GoldCostMultiplier = property.GoldCostMultiplier,
@@ -236,7 +236,7 @@
             Description = property.Description
         };
 
-        _selectedApplicableTypes = new HashSet<int>(property.ApplicableItemTypeIds);
+        _selectedApplicableTypes = [..property.ApplicableItemTypeIds];
         CurrentMode = ModalMode.Edit;
         IsModalOpen = true;
     }

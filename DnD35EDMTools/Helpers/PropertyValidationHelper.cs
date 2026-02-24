@@ -37,15 +37,16 @@ public static class PropertyValidationHelper
         
         { PropertyApplication.Enhancement, "Integer" },
         { PropertyApplication.Charges, "Integer" },
-        { PropertyApplication.SpellLevel, "Integer" }
+        { PropertyApplication.SpellLevel, "Integer" },
+        { PropertyApplication.SpeedAdjustment, "Integer" }
     };
 
     private static readonly Dictionary<PropertyApplication, List<ItemType>> ValidItemTypes = new()
     {
         { PropertyApplication.ArmourClass, [ItemType.Armour, ItemType.Shield] },
         { PropertyApplication.MaxDexBonus, [ItemType.Armour, ItemType.Shield] },
-        { PropertyApplication.ArcaneSpellFailure, [ItemType.Armour] },
-        { PropertyApplication.ArmourCheckPenalty, [ItemType.Armour] },
+        { PropertyApplication.ArcaneSpellFailure, [ItemType.Armour, ItemType.Shield] },
+        { PropertyApplication.ArmourCheckPenalty, [ItemType.Armour, ItemType.Shield] },
         
         { PropertyApplication.AttackBonus, [ItemType.Weapon] },
         { PropertyApplication.DamageBonus, [ItemType.Weapon, ItemType.Ammunition] },
@@ -73,7 +74,8 @@ public static class PropertyValidationHelper
         
         { PropertyApplication.Enhancement, [ItemType.Weapon, ItemType.Armour, ItemType.Shield] },
         { PropertyApplication.Charges, [ItemType.Wand, ItemType.Staff, ItemType.Rod] },
-        { PropertyApplication.SpellLevel, [ItemType.Scroll, ItemType.Potion, ItemType.Wand] }
+        { PropertyApplication.SpellLevel, [ItemType.Scroll, ItemType.Potion, ItemType.Wand] },
+        { PropertyApplication.SpeedAdjustment, [ItemType.Armour, ItemType.WondrousItem] }
     };
 
     public static string GetValueTypeForApplication(PropertyApplication application)
