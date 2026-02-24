@@ -59,62 +59,69 @@
 
             @if (CurrentMode != ModalMode.Delete)
             {
-                <div class="dnd-dm-ip-form-group">
-                    <label>Name:</label>
-                    <input @bind="CurrentProperty.Name" maxlength="50"/>
-                </div>
-                <div class="dnd-dm-ip-form-group">
-                    <label>Applies To:</label>
-                    <select @bind="CurrentProperty.AppliesTo" @bind:after="OnApplicationChanged">
-                        @foreach (PropertyApplication app in Enum.GetValues(typeof(PropertyApplication)).Cast<PropertyApplication>().OrderBy(a => a.ToString()))
-                        {
-                            <option value="@app">@app.ToString()</option>
-                        }
-                    </select>
-                </div>
-
-                @if (RequiresSpecificSkill(CurrentProperty.AppliesTo))
-                {
+                <div class="dnd-dm-ip-form-grid">
                     <div class="dnd-dm-ip-form-group">
-                        <label>Specific Skill:</label>
-                        <select @bind="CurrentProperty.AppliedToSpecificSkillId">
-                            <option value="">Select Skill</option>
-                            @foreach (var skill in _skillList)
+                        <label>Name:</label>
+                        <input @bind="CurrentProperty.Name" maxlength="50"/>
+                    </div>
+                    <div class="dnd-dm-ip-form-group">
+                        <label>Applies To:</label>
+                        <select @bind="CurrentProperty.AppliesTo" @bind:after="OnApplicationChanged">
+                            @foreach (PropertyApplication app in Enum.GetValues(typeof(PropertyApplication)).Cast<PropertyApplication>().OrderBy(a => a.ToString()))
                             {
-                                <option value="@skill.Id">@skill.Name</option>
+                                <option value="@app">@app.ToString()</option>
                             }
                         </select>
                     </div>
-                }
 
-                <div class="dnd-dm-ip-form-group">
-                    <label>Applicable Item Types:</label>
-                    <div class="dnd-dm-ip-checkbox-list">
-                        @foreach (var type in GetValidItemTypesForApplication().OrderBy(ItemTypeHelper.GetDisplayName))
-                        {
-                            var typeId = (int)type;
-                            var isChecked = _selectedApplicableTypes.Contains(typeId);
+                    <div class="dnd-dm-ip-form-group">
+                        <label>Applicable Item Types:</label>
+                        <div class="dnd-dm-ip-checkbox-list">
+                            @foreach (var type in GetValidItemTypesForApplication().OrderBy(ItemTypeHelper.GetDisplayName))
+                            {
+                                var typeId = (int)type;
+                                var isChecked = _selectedApplicableTypes.Contains(typeId);
 
-                            <div class="dnd-dm-ip-checkbox-item">
-                                <input type="checkbox"
-                                       id="type-@typeId"
-                                       checked="@isChecked"
-                                       @onchange="@(e => ToggleItemType(typeId, (bool)e.Value!))"/>
-                                <label for="type-@typeId">@ItemTypeHelper.GetDisplayName(type)</label>
-                            </div>
-                        }
+                                <div class="dnd-dm-ip-checkbox-item">
+                                    <input type="checkbox"
+                                           id="type-@typeId"
+                                           checked="@isChecked"
+                                           @onchange="@(e => ToggleItemType(typeId, (bool)e.Value!))"/>
+                                    <label for="type-@typeId">@ItemTypeHelper.GetDisplayName(type)</label>
+                                </div>
+                            }
+                        </div>
                     </div>
-                </div>
-                <div class="dnd-dm-ip-form-group">
-                    <label>Enchantment Cost:</label>
-                    <input type="number" @bind="CurrentProperty.EnchantmentCost" min="0" max="10"/>
-                    <small>Counts against max enchantment (0 for base properties, max 10)</small>
-                </div>
 
-                <div class="dnd-dm-ip-form-group">
-                    <label>Gold Cost:</label>
-                    <input type="number" step="0.01" @bind="CurrentProperty.GoldCostMultiplier" min="0"/>
-                    <small>Additional flat gold cost (0 for standard properties)</small>
+                    @if (RequiresSpecificSkill(CurrentProperty.AppliesTo))
+                    {
+                        <div class="dnd-dm-ip-form-group">
+                            <label>Specific Skill:</label>
+                            <select @bind="CurrentProperty.AppliedToSpecificSkillId">
+                                <option value="">Select Skill</option>
+                                @foreach (var skill in _skillList)
+                                {
+                                <option value="@skill.Id">@skill.Name</option>
+                                }
+                            </select>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="dnd-dm-ip-form-group"></div>
+                    }
+
+                    <div class="dnd-dm-ip-form-group">
+                        <label>Enchantment Cost:</label>
+                        <input type="number" @bind="CurrentProperty.EnchantmentCost" min="0" max="10"/>
+                        <small>Counts against max enchantment (0 for base properties, max 10)</small>
+                    </div>
+
+                    <div class="dnd-dm-ip-form-group">
+                        <label>Gold Cost:</label>
+                        <input type="number" step="0.01" @bind="CurrentProperty.GoldCostMultiplier" min="0"/>
+                        <small>Additional flat gold cost (0 for standard properties)</small>
+                    </div>
                 </div>
                 <div class="dnd-dm-ip-form-group">
                     <label>Description:</label>
