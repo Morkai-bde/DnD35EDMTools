@@ -1,0 +1,558 @@
+﻿@page "/ManageEquipment"
+@using DnD35EDMTools.Data.Classes
+@using DnD35EDMTools.Data.Enums
+@using DnD35EDMTools.Helpers
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<PageTitle>Items</PageTitle>
+
+<h3>Items Management</h3>
+
+<div class="dnd-dm-manage-equipment-header">
+    <label>Filter by Item Type:</label>
+    <select @bind="SelectedTypeFilter" class="filter-select">
+        <option value="">All Types</option>
+        @foreach (ItemType type in Enum.GetValues(typeof(ItemType)).Cast<ItemType>().OrderBy(ItemTypeHelper.GetDisplayName))
+        {
+            <option value="@((int)type)">@ItemTypeHelper.GetDisplayName(type)</option>
+        }
+    </select>
+
+    <label>Filter by Category:</label>
+    <select @bind="SelectedCategoryFilter" class="filter-select">
+        <option value="">All Categories</option>
+        @foreach (LootCategory category in Enum.GetValues(typeof(LootCategory)))
+        {
+            <option value="@((int)category)">@category.ToString()</option>
+        }
+    </select>
+
+    <button class="btn-add" @onclick="OpenAddModal">Add New Item</button>
+</div>
+
+<div class="dnd-dm-manage-equipment-container">
+    <div class="dnd-dm-manage-equipment-main-content">
+        <div class="dnd-dm-me-top-section">
+            <div>Name</div>
+            <div>Type</div>
+            <div>Subtype</div>
+            <div>Value (gp)</div>
+            <div>Enchantment</div>
+            <div>Categories</div>
+            <div>Description</div>
+            <div>Actions</div>
+        </div>
+        <div class="dnd-dm-me-mid-section">
+            @foreach (var item in FilteredItems)
+            {
+                <div>@item.Name</div>
+                <div>@ItemTypeHelper.GetDisplayName(item.ItemType)</div>
+                <div>@(item.ItemSubtype.HasValue ? ItemTypeHelper.GetDisplayName(item.ItemSubtype.Value) : "-")</div>
+                <div>@item.BaseGoldValue</div>
+                <div>@item.Enchantment</div>
+                <div>@GetCategoriesDisplay(item)</div>
+                <div>@item.Description</div>
+                <div>
+                    <button class="dm-button-50" @onclick="() => OpenEditModal(item)">Edit</button>
+                    <button class="dm-button-50" @onclick="() => OpenDeleteModal(item)">Delete</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (IsModalOpen)
+{
+    <div class="dnd-dm-me-modal-overlay" @onclick="CloseModal">
+        <div class="dnd-dm-me-modal-content" @onclick:stopPropagation="true">
+            <h4>@GetModalTitle()</h4>
+
+            @if (CurrentMode != ModalMode.Delete)
+            {
+                <div class="dnd-dm-me-form-grid">
+                    <div class="dnd-dm-me-form-group">
+                        <label>Name:</label>
+                        <input @bind="CurrentItem.Name" maxlength="100"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Item Type:</label>
+                        <select @bind="CurrentItem.ItemType" @bind:after="OnItemTypeChanged">
+                            @foreach (ItemType type in Enum.GetValues(typeof(ItemType)).Cast<ItemType>().OrderBy(ItemTypeHelper.GetDisplayName))
+                            {
+                                <option value="@type">@ItemTypeHelper.GetDisplayName(type)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Item Subtype:</label>
+                        <select @bind="CurrentItem.ItemSubtype">
+                            <option value="">None</option>
+                            @foreach (var subtype in GetAvailableSubtypes())
+                            {
+                                <option value="@subtype">@ItemTypeHelper.GetDisplayName(subtype)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Weight (lbs):</label>
+                        <input type="number" step="0.1" @bind="CurrentItem.Weight" min="0"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Base Gold Value:</label>
+                        <input type="number" step="0.01" @bind="CurrentItem.BaseGoldValue" min="0"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Enchantment Level:</label>
+                        <input type="number" @bind="CurrentItem.Enchantment" min="0" max="10"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Loot Categories:</label>
+                        <div class="dnd-dm-me-checkbox-list">
+                            @foreach (LootCategory category in Enum.GetValues(typeof(LootCategory)))
+                            {
+                                var categoryId = (int)category;
+                                var isChecked = _selectedLootCategories.Contains(category);
+
+                                <div class="dnd-dm-me-checkbox-item">
+                                    <input type="checkbox"
+                                           id="cat-@categoryId"
+                                           checked="@isChecked"
+                                           @onchange="@(e => ToggleLootCategory(category, (bool)e.Value!))"/>
+                                    <label for="cat-@categoryId">@category.ToString()</label>
+                                </div>
+                            }
+                        </div>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Craft Feats Required:</label>
+                        <input @bind="CurrentItem.CraftRequiredFeats" maxlength="100" placeholder="Comma-separated"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Craft Skill Required:</label>
+                        <input @bind="CurrentItem.CraftSkillRequired" maxlength="50" placeholder="e.g., Craft (Weaponsmithing)"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Craft DC:</label>
+                        <input type="number" @bind="CurrentItem.CraftDC" min="0"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Craft Gold Cost:</label>
+                        <input type="number" step="0.01" @bind="CurrentItem.CraftGoldCost" min="0"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Craft XP Cost:</label>
+                        <input type="number" @bind="CurrentItem.CraftCostXp" min="0"/>
+                    </div>
+                </div>
+                
+                <div class="dnd-dm-me-properties-section">
+                    <h5>Properties</h5>
+
+                    <div class="dnd-dm-me-property-add">
+                        <select @bind="SelectedPropertyToAdd" class="property-select">
+                            <option value="">Select Property to Add</option>
+                            @foreach (var prop in GetAvailableProperties())
+                            {
+                                <option value="@prop.Id">@prop.Name (@prop.AppliesTo)</option>
+                            }
+                        </select>
+                        <button class="dm-button-20" @onclick="AddProperty" disabled="@(string.IsNullOrEmpty(SelectedPropertyToAdd))">+</button>
+                    </div>
+
+                    @if (_currentItemProperties.Any())
+                    {
+                        <div class="dnd-dm-me-properties-list">
+                            @foreach (var itemProp in _currentItemProperties)
+                            {
+                                var propDef = _allPropertyDefinitions.FirstOrDefault(p => p.Id == itemProp.PropertyDefinitionId);
+                                if (propDef != null)
+                                {
+                                    <div class="dnd-dm-me-property-row">
+                                        <span class="property-name">@propDef.Name:</span>
+                                        <input type="text"
+                                               class="property-value"
+                                               @bind="itemProp.Value"
+                                               placeholder="@GetPlaceholderForValueType(propDef.ValueType)"/>
+                                        <button class="dm-button-20" @onclick="() => RemoveProperty(itemProp)">-</button>
+                                    </div>
+                                }
+                            }
+                        </div>
+                    }
+                </div>
+                
+                <div class="dnd-dm-me-form-grid">
+                    <div class="dnd-dm-me-form-group full-width">
+                        <label>Description:</label>
+                        <textarea @bind="CurrentItem.Description" rows="4"></textarea>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Source Book:</label>
+                        <input @bind="CurrentItem.SourceBook" maxlength="5" placeholder="e.g., PH"/>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
+                        <label>Page:</label>
+                        <input type="number" @bind="CurrentItem.Page" min="0"/>
+                    </div>
+                </div>
+
+                <div class="dnd-dm-me-modal-actions">
+                    <button class="dm-button-50" @onclick="SaveItem">Save</button>
+                    <button class="dm-button-50" @onclick="CloseModal">Cancel</button>
+                </div>
+            }
+            else
+            {
+                <p>Are you sure you want to delete "@CurrentItem.Name"?</p>
+                <div class="dnd-dm-me-modal-actions">
+                    <button class="dm-button-50" @onclick="DeleteItem">Delete</button>
+                    <button class="dm-button-50" @onclick="CloseModal">Cancel</button>
+                </div>
+            }
+        </div>
+    </div>
+}
+@code {
+
+    #region Fields
+
+    private List<ItemData> _items = [];
+    private List<PropertyDefinition> _allPropertyDefinitions = [];
+    private ItemData CurrentItem { get; set; } = new();
+    private List<ItemProperty> _currentItemProperties = [];
+    private HashSet<LootCategory> _selectedLootCategories = [];
+
+    private bool IsModalOpen { get; set; }
+    private ModalMode CurrentMode { get; set; }
+    private string SelectedTypeFilter { get; set; } = "";
+    private string SelectedCategoryFilter { get; set; } = "";
+    private string SelectedPropertyToAdd { get; set; } = "";
+
+    #endregion
+
+    #region Computed Properties
+
+    private List<ItemData> FilteredItems
+    {
+        get
+        {
+            var filtered = _items.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(SelectedTypeFilter))
+            {
+                int typeId = int.Parse(SelectedTypeFilter);
+                filtered = filtered.Where(i => (int)i.ItemType == typeId);
+            }
+
+            if (!string.IsNullOrEmpty(SelectedCategoryFilter))
+            {
+                int categoryId = int.Parse(SelectedCategoryFilter);
+                var category = (LootCategory)categoryId;
+                filtered = filtered.Where(i => i.LootCategories.Contains(category));
+            }
+
+            return filtered.OrderBy(i => i.Name).ToList();
+        }
+    }
+
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadItems();
+        await LoadPropertyDefinitions();
+    }
+
+    private async Task LoadItems()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            _items = await db.Items
+                .Include(i => i.Properties)
+                .ThenInclude(p => p.PropertyDefinition)
+                .OrderBy(i => i.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load items: {ex.Message}");
+        }
+    }
+
+    private async Task LoadPropertyDefinitions()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            _allPropertyDefinitions = await db.PropertyDefinitions
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load property definitions: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Modal Methods
+
+    private void OpenAddModal()
+    {
+        CurrentItem = new ItemData();
+        _currentItemProperties.Clear();
+        _selectedLootCategories = [LootCategory.Mundane];
+        CurrentMode = ModalMode.Add;
+        IsModalOpen = true;
+    }
+
+    private void OpenEditModal(ItemData item)
+    {
+        CurrentItem = new ItemData
+        {
+            Id = item.Id,
+            Name = item.Name,
+            ItemType = item.ItemType,
+            ItemSubtype = item.ItemSubtype,
+            Weight = item.Weight,
+            BaseGoldValue = item.BaseGoldValue,
+            Enchantment = item.Enchantment,
+            LootCategories = [..item.LootCategories],
+            CraftRequiredFeats = item.CraftRequiredFeats,
+            CraftSkillRequired = item.CraftSkillRequired,
+            CraftDC = item.CraftDC,
+            CraftGoldCost = item.CraftGoldCost,
+            CraftCostXp = item.CraftCostXp,
+            Description = item.Description,
+            SourceBook = item.SourceBook,
+            Page = item.Page
+        };
+
+        _selectedLootCategories = [..item.LootCategories];
+
+// Clone properties
+        _currentItemProperties = item.Properties.Select(p => new ItemProperty
+        {
+            Id = p.Id,
+            ItemId = p.ItemId,
+            PropertyDefinitionId = p.PropertyDefinitionId,
+            Value = p.Value,
+            PropertyDefinition = p.PropertyDefinition
+        }).ToList();
+
+        CurrentMode = ModalMode.Edit;
+        IsModalOpen = true;
+    }
+
+    private void OpenDeleteModal(ItemData item)
+    {
+        CurrentItem = item;
+        CurrentMode = ModalMode.Delete;
+        IsModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        IsModalOpen = false;
+        CurrentItem = new();
+        _currentItemProperties.Clear();
+        _selectedLootCategories.Clear();
+        SelectedPropertyToAdd = "";
+    }
+
+    private string GetModalTitle() => CurrentMode switch
+    {
+        ModalMode.Add => "Add New Item",
+        ModalMode.Edit => "Edit Item",
+        ModalMode.Delete => "Delete Item",
+        _ => ""
+    };
+
+    #endregion
+
+    #region CRUD Operations
+
+    private async Task SaveItem()
+    {
+        try
+        {
+            CurrentItem.LootCategories = _selectedLootCategories.ToList();
+
+            await using var db = CreateDbContext();
+
+            if (CurrentMode == ModalMode.Add)
+            {
+
+                db.Items.Add(CurrentItem);
+                await db.SaveChangesAsync();
+
+                foreach (var prop in _currentItemProperties)
+                {
+                    db.ItemProperties.Add(new ItemProperty
+                    {
+                        ItemId = CurrentItem.Id,
+                        PropertyDefinitionId = prop.PropertyDefinitionId,
+                        Value = prop.Value
+                    });
+                }
+
+                await db.SaveChangesAsync();
+            }
+            else if (CurrentMode == ModalMode.Edit)
+            {
+
+                db.Items.Update(CurrentItem);
+
+                var existingProperties = await db.ItemProperties
+                    .Where(p => p.ItemId == CurrentItem.Id)
+                    .ToListAsync();
+                db.ItemProperties.RemoveRange(existingProperties);
+
+                foreach (var prop in _currentItemProperties)
+                {
+                    db.ItemProperties.Add(new ItemProperty
+                    {
+                        ItemId = CurrentItem.Id,
+                        PropertyDefinitionId = prop.PropertyDefinitionId,
+                        Value = prop.Value
+                    });
+                }
+
+                await db.SaveChangesAsync();
+            }
+
+            await LoadItems();
+            CloseModal();
+
+            await NotificationService.AddNotification(NotificationType.Success, CurrentMode == ModalMode.Add ? "Item created successfully" : "Item updated successfully");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to save item: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteItem()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            db.Items.Remove(CurrentItem);
+            await db.SaveChangesAsync();
+            await LoadItems();
+            CloseModal();
+
+            await NotificationService.AddNotification(NotificationType.Success, "Item deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to delete item: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region UI Helper Methods
+
+    private void OnItemTypeChanged()
+    {
+
+        CurrentItem.ItemSubtype = null;
+    }
+
+    private void ToggleLootCategory(LootCategory category, bool isChecked)
+    {
+        if (isChecked)
+            _selectedLootCategories.Add(category);
+        else
+            _selectedLootCategories.Remove(category);
+    }
+
+    private void AddProperty()
+    {
+        if (string.IsNullOrEmpty(SelectedPropertyToAdd)) return;
+
+        int propId = int.Parse(SelectedPropertyToAdd);
+
+        if (_currentItemProperties.Any(p => p.PropertyDefinitionId == propId))
+        {
+            _ = NotificationService.AddNotification(NotificationType.Warning, "Property already added");
+            return;
+        }
+
+        var propDef = _allPropertyDefinitions.FirstOrDefault(p => p.Id == propId);
+        if (propDef == null) return;
+
+        _currentItemProperties.Add(new ItemProperty
+        {
+            PropertyDefinitionId = propId,
+            Value = "",
+            PropertyDefinition = propDef
+        });
+
+        SelectedPropertyToAdd = "";
+    }
+
+    private void RemoveProperty(ItemProperty property)
+    {
+        _currentItemProperties.Remove(property);
+    }
+
+    private List<ItemSubtype> GetAvailableSubtypes()
+    {
+        return ItemTypeHelper.GetSubtypesForType(CurrentItem.ItemType);
+    }
+
+    private List<PropertyDefinition> GetAvailableProperties()
+    {
+        return _allPropertyDefinitions
+            .Where(p => p.ApplicableItemTypeIds.Contains((int)CurrentItem.ItemType))
+            .OrderBy(p => p.Name)
+            .ToList();
+    }
+
+    private string GetCategoriesDisplay(ItemData item)
+    {
+        return string.Join(", ", item.LootCategories.Select(c => c.ToString()));
+    }
+
+    private string GetPlaceholderForValueType(string valueType) => valueType switch
+    {
+        "Integer" => "e.g., 5",
+        "Dice" => "e.g., 1d8",
+        "String" => "e.g., Slashing",
+        _ => "Enter value"
+    };
+
+    #endregion
+
+    #region Enums
+
+    private enum ModalMode
+    {
+        Add,
+        Edit,
+        Delete
+    }
+
+    #endregion
+
+}
