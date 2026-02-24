@@ -1,0 +1,335 @@
+﻿@page "/PropertyDefinitions"
+@using DnD35EDMTools.Data.Classes
+@using DnD35EDMTools.Data.Enums
+@using DnD35EDMTools.Helpers
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<PageTitle>Property Definitions</PageTitle>
+
+<h3>Property Definitions Management</h3>
+
+<div class="dnd-dm-item-properties-header">
+    <label>Filter by Item Type:</label>
+    <select @bind="SelectedItemTypeFilter" class="filter-select">
+        <option value="">All Types</option>
+        @foreach (ItemType type in Enum.GetValues(typeof(ItemType)))
+        {
+            <option value="@((int)type)">@ItemTypeHelper.GetDisplayName(type)</option>
+        }
+    </select>
+
+    <button class="btn-add" @onclick="OpenAddModal">Add New Property</button>
+</div>
+<div class="dnd-dm-item-properties-container">
+    <div class="dnd-dm-item-properties-main-content">
+        <div class="dnd-dm-ip-top-section">
+            <div>Name</div><div>Applicable Types</div><div>Value Types</div><div>Applies To</div><div>Enchantment Cost</div><div>Gold Cost</div><div>Description</div><div>Actions</div>
+        </div>
+        <div class="dnd-dm-ip-mid-section">
+            @foreach (var property in FilteredProperties)
+            {
+                <div>@property.Name</div>
+                <div>@GetApplicableTypesDisplay(property)</div>
+                <div>@property.ValueType</div>
+                <div>@property.AppliesTo</div>
+                <div>@property.EnchantmentCost</div>
+                <div>@property.GoldCostMultiplier</div>
+                <div>@property.Description</div>
+                <div>
+                    <button class="dm-button-50" @onclick="() => OpenEditModal(property)">Edit</button>
+                    <button class="dm-button-50" @onclick="() => OpenDeleteModal(property)">Delete</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+@if (IsModalOpen)
+{
+    <div class="dnd-dm-ip-modal-overlay" @onclick="CloseModal">
+        <div class="dnd-dm-ip-modal-content" @onclick:stopPropagation="true">
+            <h4>@GetModalTitle()</h4>
+
+            @if (CurrentMode != ModalMode.Delete)
+            {
+                <div class="dnd-dm-ip-form-group">
+                    <label>Name:</label>
+                    <input @bind="CurrentProperty.Name" maxlength="50"/>
+                </div>
+                <div class="dnd-dm-ip-form-group">
+                    <label>Applies To:</label>
+                    <select @bind="CurrentProperty.AppliesTo" @bind:after="OnApplicationChanged">
+                        @foreach (PropertyApplication app in Enum.GetValues(typeof(PropertyApplication)))
+                        {
+                            <option value="@app">@app.ToString()</option>
+                        }
+                    </select>
+                </div>
+
+                @if (RequiresSpecificSkill(CurrentProperty.AppliesTo))
+                {
+                    <div class="dnd-dm-ip-form-group">
+                        <label>Specific Skill:</label>
+                        <select @bind="CurrentProperty.AppliedToSpecificSkillId">
+                            <option value="">Select Skill</option>
+                            @foreach (var skill in _skillList)
+                            {
+                                <option value="@skill.Id">@skill.Name</option>
+                            }
+                        </select>
+                    </div>
+                }
+
+                <div class="dnd-dm-ip-form-group">
+                    <label>Applicable Item Types:</label>
+                    <div class="dnd-dm-ip-checkbox-list">
+                        @foreach (var type in GetValidItemTypesForApplication())
+                        {
+                            var typeId = (int)type;
+                            var isChecked = _selectedApplicableTypes.Contains(typeId);
+            
+                            <div class="dnd-dm-ip-checkbox-item">
+                                <input type="checkbox" 
+                                       id="type-@typeId" 
+                                       checked="@isChecked"
+                                       @onchange="@(e => ToggleItemType(typeId, (bool)e.Value!))" />
+                                <label for="type-@typeId">@ItemTypeHelper.GetDisplayName(type)</label>
+                            </div>
+                        }
+                    </div>
+                </div>
+                <div class="dnd-dm-ip-form-group">
+                    <label>Enchantment Cost:</label>
+                    <input type="number" @bind="CurrentProperty.EnchantmentCost" min="0" max="10" />
+                    <small>Counts against max enchantment (0 for base properties, max 10)</small>
+                </div>
+
+                <div class="dnd-dm-ip-form-group">
+                    <label>Gold Cost:</label>
+                    <input type="number" step="0.01" @bind="CurrentProperty.GoldCostMultiplier" min="0" />
+                    <small>Additional flat gold cost (0 for standard properties)</small>
+                </div>
+                <div class="dnd-dm-ip-form-group">
+                    <label>Description:</label>
+                    <textarea @bind="CurrentProperty.Description" rows="3"></textarea>
+                </div>
+
+                <div class="dnd-dm-ip-modal-actions">
+                    <button class="dm-button-50" @onclick="SaveProperty">Save</button>
+                    <button class="dm-button-50" @onclick="CloseModal">Cancel</button>
+                </div>
+            }
+            else
+            {
+                <p>Are you sure you want to delete "@CurrentProperty.Name"?</p>
+                <div class="dnd-dm-ip-modal-actions">
+                    <button class="dm-button-50" @onclick="DeleteProperty">Delete</button>
+                    <button class="dm-button-50" @onclick="CloseModal">Cancel</button>
+                </div>
+            }
+        </div>
+    </div>
+}
+
+@code {
+    private List<PropertyDefinition> _properties = [];
+    private List<SkillData> _skillList = [];
+    private PropertyDefinition CurrentProperty { get; set; } = new();
+    private bool IsModalOpen { get; set; }
+    private ModalMode CurrentMode { get; set; }
+    private string SelectedItemTypeFilter { get; set; } = "";
+
+    private HashSet<int> _selectedApplicableTypes = new();
+
+    private List<PropertyDefinition> FilteredProperties
+    {
+        get
+        {
+            if (string.IsNullOrEmpty(SelectedItemTypeFilter))
+                return _properties;
+
+            int typeId = int.Parse(SelectedItemTypeFilter);
+            return _properties.Where(p => p.ApplicableItemTypeIds.Contains(typeId)).ToList();
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await LoadProperties();
+        try
+        {
+            await using var db = CreateDbContext();
+            _skillList = await db.Skills
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            throw;
+        }
+    }
+
+    private async Task LoadProperties()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            _properties = await db.PropertyDefinitions
+                .OrderBy(p => p.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load properties: {ex.Message}");
+        }
+    }
+
+    private void OpenAddModal()
+    {
+        CurrentProperty = new PropertyDefinition();
+        _selectedApplicableTypes.Clear();
+        CurrentProperty.ValueType = PropertyValidationHelper.GetValueTypeForApplication(CurrentProperty.AppliesTo);
+        CurrentMode = ModalMode.Add;
+        IsModalOpen = true;
+    }
+
+    private void OpenEditModal(PropertyDefinition property)
+    {
+        CurrentProperty = new PropertyDefinition
+        {
+            Id = property.Id,
+            Name = property.Name,
+            ApplicableItemTypeIds = new List<int>(property.ApplicableItemTypeIds),
+            ApplicableItemSubtypeIds = new List<int>(property.ApplicableItemSubtypeIds),
+            ValueType = property.ValueType,
+            AppliesTo = property.AppliesTo,
+            Description = property.Description
+        };
+
+        _selectedApplicableTypes = new HashSet<int>(property.ApplicableItemTypeIds);
+        CurrentMode = ModalMode.Edit;
+        IsModalOpen = true;
+    }
+
+    private void OpenDeleteModal(PropertyDefinition property)
+    {
+        CurrentProperty = property;
+        CurrentMode = ModalMode.Delete;
+        IsModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        IsModalOpen = false;
+        CurrentProperty = new();
+        _selectedApplicableTypes.Clear();
+    }
+
+    private void ToggleItemType(int typeId, bool isChecked)
+    {
+        if (isChecked)
+            _selectedApplicableTypes.Add(typeId);
+        else
+            _selectedApplicableTypes.Remove(typeId);
+    }
+
+    private async Task SaveProperty()
+    {
+        try
+        {
+            CurrentProperty.ApplicableItemTypeIds = _selectedApplicableTypes.ToList();
+
+            await using var db = CreateDbContext();
+
+            if (CurrentMode == ModalMode.Add)
+            {
+                db.PropertyDefinitions.Add(CurrentProperty);
+            }
+            else if (CurrentMode == ModalMode.Edit)
+            {
+                db.PropertyDefinitions.Update(CurrentProperty);
+            }
+
+            await db.SaveChangesAsync();
+            await LoadProperties();
+            CloseModal();
+
+            await NotificationService.AddNotification(NotificationType.Success,
+                CurrentMode == ModalMode.Add ? "Property created successfully" : "Property updated successfully");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to save property: {ex.Message}");
+        }
+    }
+
+    private async Task DeleteProperty()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            db.PropertyDefinitions.Remove(CurrentProperty);
+            await db.SaveChangesAsync();
+            await LoadProperties();
+            CloseModal();
+
+            await NotificationService.AddNotification(NotificationType.Success, "Property deleted successfully");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to delete property: {ex.Message}");
+        }
+    }
+
+    private string GetApplicableTypesDisplay(PropertyDefinition property)
+    {
+        if (!property.ApplicableItemTypeIds.Any())
+            return "None";
+
+        var typeNames = property.ApplicableItemTypeIds
+            .Select(id => ItemTypeHelper.GetDisplayName((ItemType)id))
+            .ToList();
+
+        return string.Join(", ", typeNames);
+    }
+
+    private void OnApplicationChanged()
+    {
+        CurrentProperty.ValueType = PropertyValidationHelper.GetValueTypeForApplication(CurrentProperty.AppliesTo);
+
+        _selectedApplicableTypes.Clear();
+
+        var validItemTypes = PropertyValidationHelper.GetValidItemTypes(CurrentProperty.AppliesTo);
+        if (validItemTypes.Count == 1)
+        {
+            _selectedApplicableTypes.Add((int)validItemTypes[0]);
+        }
+    }
+
+    private List<ItemType> GetValidItemTypesForApplication()
+    {
+        return PropertyValidationHelper.GetValidItemTypes(CurrentProperty.AppliesTo);
+    }
+
+    private bool RequiresSpecificSkill(PropertyApplication app)
+    {
+        return app == PropertyApplication.SkillBonus;
+    }
+
+    private string GetModalTitle() => CurrentMode switch
+    {
+        ModalMode.Add => "Add New Property",
+        ModalMode.Edit => "Edit Property",
+        ModalMode.Delete => "Delete Property",
+        _ => ""
+    };
+
+    private enum ModalMode
+    {
+        Add,
+        Edit,
+        Delete
+    }
+
+}
