@@ -18,13 +18,19 @@
             <option value="@((int)type)">@ItemTypeHelper.GetDisplayName(type)</option>
         }
     </select>
-
     <button class="btn-add" @onclick="OpenAddModal">Add New Property</button>
 </div>
 <div class="dnd-dm-item-properties-container">
     <div class="dnd-dm-item-properties-main-content">
         <div class="dnd-dm-ip-top-section">
-            <div>Name</div><div>Applicable Types</div><div>Value Types</div><div>Applies To</div><div>Enchantment Cost</div><div>Gold Cost</div><div>Description</div><div>Actions</div>
+            <div>Name</div>
+            <div>Applicable Types</div>
+            <div>Value Types</div>
+            <div>Applies To</div>
+            <div>Enchantment Cost</div>
+            <div>Gold Cost</div>
+            <div>Description</div>
+            <div>Actions</div>
         </div>
         <div class="dnd-dm-ip-mid-section">
             @foreach (var property in FilteredProperties)
@@ -44,6 +50,7 @@
         </div>
     </div>
 </div>
+
 @if (IsModalOpen)
 {
     <div class="dnd-dm-ip-modal-overlay" @onclick="CloseModal">
@@ -87,12 +94,12 @@
                         {
                             var typeId = (int)type;
                             var isChecked = _selectedApplicableTypes.Contains(typeId);
-            
+
                             <div class="dnd-dm-ip-checkbox-item">
-                                <input type="checkbox" 
-                                       id="type-@typeId" 
+                                <input type="checkbox"
+                                       id="type-@typeId"
                                        checked="@isChecked"
-                                       @onchange="@(e => ToggleItemType(typeId, (bool)e.Value!))" />
+                                       @onchange="@(e => ToggleItemType(typeId, (bool)e.Value!))"/>
                                 <label for="type-@typeId">@ItemTypeHelper.GetDisplayName(type)</label>
                             </div>
                         }
@@ -100,13 +107,13 @@
                 </div>
                 <div class="dnd-dm-ip-form-group">
                     <label>Enchantment Cost:</label>
-                    <input type="number" @bind="CurrentProperty.EnchantmentCost" min="0" max="10" />
+                    <input type="number" @bind="CurrentProperty.EnchantmentCost" min="0" max="10"/>
                     <small>Counts against max enchantment (0 for base properties, max 10)</small>
                 </div>
 
                 <div class="dnd-dm-ip-form-group">
                     <label>Gold Cost:</label>
-                    <input type="number" step="0.01" @bind="CurrentProperty.GoldCostMultiplier" min="0" />
+                    <input type="number" step="0.01" @bind="CurrentProperty.GoldCostMultiplier" min="0"/>
                     <small>Additional flat gold cost (0 for standard properties)</small>
                 </div>
                 <div class="dnd-dm-ip-form-group">
@@ -132,14 +139,21 @@
 }
 
 @code {
+    
+    #region Fields
+
     private List<PropertyDefinition> _properties = [];
     private List<SkillData> _skillList = [];
     private PropertyDefinition CurrentProperty { get; set; } = new();
+    private HashSet<int> _selectedApplicableTypes = [];
+    
     private bool IsModalOpen { get; set; }
     private ModalMode CurrentMode { get; set; }
     private string SelectedItemTypeFilter { get; set; } = "";
 
-    private HashSet<int> _selectedApplicableTypes = new();
+    #endregion
+
+    #region Computed Properties
 
     private List<PropertyDefinition> FilteredProperties
     {
@@ -153,21 +167,14 @@
         }
     }
 
+    #endregion
+
+    #region Lifecycle Methods
+
     protected override async Task OnInitializedAsync()
     {
         await LoadProperties();
-        try
-        {
-            await using var db = CreateDbContext();
-            _skillList = await db.Skills
-                .OrderBy(s => s.Name)
-                .ToListAsync();
-        }
-        catch (Exception e)
-        {
-            Console.WriteLine(e);
-            throw;
-        }
+        await LoadSkills();
     }
 
     private async Task LoadProperties()
@@ -184,6 +191,25 @@
             await NotificationService.AddNotification(NotificationType.Error, $"Failed to load properties: {ex.Message}");
         }
     }
+
+    private async Task LoadSkills()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            _skillList = await db.Skills
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load skills: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Modal Methods
 
     private void OpenAddModal()
     {
@@ -202,6 +228,9 @@
             Name = property.Name,
             ApplicableItemTypeIds = new List<int>(property.ApplicableItemTypeIds),
             ApplicableItemSubtypeIds = new List<int>(property.ApplicableItemSubtypeIds),
+            AppliedToSpecificSkillId = property.AppliedToSpecificSkillId,
+            EnchantmentCost = property.EnchantmentCost,
+            GoldCostMultiplier = property.GoldCostMultiplier,
             ValueType = property.ValueType,
             AppliesTo = property.AppliesTo,
             Description = property.Description
@@ -226,13 +255,17 @@
         _selectedApplicableTypes.Clear();
     }
 
-    private void ToggleItemType(int typeId, bool isChecked)
+    private string GetModalTitle() => CurrentMode switch
     {
-        if (isChecked)
-            _selectedApplicableTypes.Add(typeId);
-        else
-            _selectedApplicableTypes.Remove(typeId);
-    }
+        ModalMode.Add => "Add New Property",
+        ModalMode.Edit => "Edit Property",
+        ModalMode.Delete => "Delete Property",
+        _ => ""
+    };
+
+    #endregion
+
+    #region CRUD Operations
 
     private async Task SaveProperty()
     {
@@ -282,17 +315,9 @@
         }
     }
 
-    private string GetApplicableTypesDisplay(PropertyDefinition property)
-    {
-        if (!property.ApplicableItemTypeIds.Any())
-            return "None";
+    #endregion
 
-        var typeNames = property.ApplicableItemTypeIds
-            .Select(id => ItemTypeHelper.GetDisplayName((ItemType)id))
-            .ToList();
-
-        return string.Join(", ", typeNames);
-    }
+    #region Helper Methods
 
     private void OnApplicationChanged()
     {
@@ -307,6 +332,14 @@
         }
     }
 
+    private void ToggleItemType(int typeId, bool isChecked)
+    {
+        if (isChecked)
+            _selectedApplicableTypes.Add(typeId);
+        else
+            _selectedApplicableTypes.Remove(typeId);
+    }
+
     private List<ItemType> GetValidItemTypesForApplication()
     {
         return PropertyValidationHelper.GetValidItemTypes(CurrentProperty.AppliesTo);
@@ -317,13 +350,21 @@
         return app == PropertyApplication.SkillBonus;
     }
 
-    private string GetModalTitle() => CurrentMode switch
+    private string GetApplicableTypesDisplay(PropertyDefinition property)
     {
-        ModalMode.Add => "Add New Property",
-        ModalMode.Edit => "Edit Property",
-        ModalMode.Delete => "Delete Property",
-        _ => ""
-    };
+        if (!property.ApplicableItemTypeIds.Any())
+            return "None";
+
+        var typeNames = property.ApplicableItemTypeIds
+            .Select(id => ItemTypeHelper.GetDisplayName((ItemType)id))
+            .ToList();
+
+        return string.Join(", ", typeNames);
+    }
+
+    #endregion
+
+    #region Enums
 
     private enum ModalMode
     {
@@ -331,5 +372,7 @@
         Edit,
         Delete
     }
+
+    #endregion
 
 }
