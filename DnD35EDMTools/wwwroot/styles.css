@@ -1206,7 +1206,7 @@
 .dnd-dm-equipment-shop-header {
     display: grid;
     grid-template-rows: repeat(auto-fill, minmax(20px, auto));
-    grid-template-columns: 100px 110px 100px 110px 100px 110px;
+    grid-template-columns: 60px 110px 60px 110px 100px 110px;
     grid-auto-rows: 20px;
     padding: 10px;
     font-size: .7rem;
