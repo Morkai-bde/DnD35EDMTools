@@ -1259,8 +1259,17 @@
 
 .dnd-dm-es-wealth-display {
     display: grid;
-    grid-template-columns: 210px 50px 50px 50px 50px;
+    grid-template-columns: auto 50px 50px 50px 50px;
     padding-top: 10px;
+}
+
+.dnd-dm-es-wealth-display > div{
+    padding-right: 5px;
+    padding-top: 5px;
+    text-align: right;
+    border: 1px solid black;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
 }
 
 .dnd-dm-es-inventory-header,
@@ -1327,14 +1336,24 @@
 
 .dnd-dm-es-form-grid {
     display: grid;
-    grid-template-columns: 100px;
+    grid-template-columns: 1fr;
     margin-bottom: 20px;
 }
 
 .dnd-dm-es-form-group {
     display: grid;
-    grid-template-columns: 50px 50px;
-    gap: 1px;
+    grid-template-columns: auto 50px;
+    gap: 20px;
+    row-gap: 5px;
+}
+
+.dnd-dm-es-form-group > div,
+.dnd-dm-es-form-group > input {
+    text-align: right;
+}
+
+.dnd-dm-es-form-group > label {
+    text-align: left;
 }
 
 .dnd-dm-es-modal-actions {

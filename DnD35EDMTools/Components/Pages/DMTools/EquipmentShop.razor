@@ -65,7 +65,7 @@
 {
     <div class="dnd-dm-equipment-shop-container">
         <div class="dnd-dm-es-wealth-display">
-            <div>@_selectedCharacterName's Inventory:</div>
+            <label>@_selectedCharacterName's Inventory:</label>
             <div>@_characterPlatinum pp</div>
             <div>@_characterGold gp</div>
             <div>@_characterSilver sp</div>
@@ -104,7 +104,7 @@
             <h4>@GetModalTitle(): @CurrentItem.Name</h4>
             <div class="dnd-dm-es-form-grid">
                 <div class="dnd-dm-es-form-group">
-                    <label>@(CurrentMode == ModalMode.Buy ? "Cost" : "Sell Value") per item:</label>
+                    <label>@(CurrentMode == ModalMode.Buy ? "Cost" : "Value") per item:</label>
                     <div>@GetItemPrice() gp</div>
 
                     <label>Quantity:</label>
@@ -112,18 +112,14 @@
 
                     <label>Total @(CurrentMode == ModalMode.Buy ? "Cost" : "Value"):</label>
                     <div>@GetTotalCost() gp</div>
-
-                    @if (CurrentMode == ModalMode.Buy)
-                    {
-                        <label>Your Wealth:</label>
-                        <div>@_characterPlatinum pp, @_characterGold gp, @_characterSilver sp, @_characterCopper cp</div>
-
-                        @if (!CanAfford())
-                        {
-                            <div style="color: red;">Not enough gold!</div>
-                        }
-                    }
                 </div>
+                @if (CurrentMode == ModalMode.Buy)
+                {
+                    @if (!CanAfford())
+                    {
+                        <div style="color: red;">Not enough gold!</div>
+                    }
+                }
             </div>
 
             <div class="dnd-dm-es-modal-actions">
