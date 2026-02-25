@@ -991,7 +991,6 @@
     border-radius: 4px;
 }
 
-/* Properties List */
 .dnd-dm-me-properties-list {
     display: flex;
     flex-direction: column;
@@ -1202,6 +1201,150 @@
     border-radius: 3px;
 }
 
+/*Equipment Shop Styles*/
+
+.dnd-dm-equipment-shop-header {
+    display: grid;
+    grid-template-rows: repeat(auto-fill, minmax(20px, auto));
+    grid-template-columns: 100px 110px 100px 110px 100px 110px;
+    grid-auto-rows: 20px;
+    padding: 10px;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-dm-equipment-shop-container {
+    display: grid;
+    justify-content: left;
+    align-items: center;
+    height: 100%;
+    width: 80vw;
+}
+
+.dnd-dm-equipment-shop-main-content {
+    border: 1px solid #000000;
+    height: 100%;
+    width: 100%;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-dm-es-top-section,
+.dnd-dm-es-mid-section {
+    display: grid;
+    grid-template-columns: 200px 65px 350px 60px;
+    gap: 1px;
+    background-color: black;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-dm-es-mid-section > div:nth-child(8n + 1),
+.dnd-dm-es-mid-section > div:nth-child(8n + 2),
+.dnd-dm-es-mid-section > div:nth-child(8n + 3),
+.dnd-dm-es-mid-section > div:nth-child(8n + 4) {
+    background-color: #808080;
+}
+
+.dnd-dm-es-top-section > div {
+    background-color: #CCCCCC;
+    padding: 2px 4px;
+    font-weight: bold;
+}
+
+.dnd-dm-es-mid-section > div {
+    background-color: #909090;
+    padding: 2px 4px;
+}
+
+.dnd-dm-es-wealth-display {
+    display: grid;
+    grid-template-columns: 210px 50px 50px 50px 50px;
+    padding-top: 10px;
+}
+
+.dnd-dm-es-inventory-header,
+.dnd-dm-es-inventory-content {
+    display: grid;
+    grid-template-columns: 200px 40px 50px 65px 350px 60px;
+    gap: 1px;
+    background-color: black;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+}
+
+.dnd-dm-es-inventory-content > div:nth-child(12n + 1),
+.dnd-dm-es-inventory-content > div:nth-child(12n + 2),
+.dnd-dm-es-inventory-content > div:nth-child(12n + 3),
+.dnd-dm-es-inventory-content > div:nth-child(12n + 4),
+.dnd-dm-es-inventory-content > div:nth-child(12n + 5),
+.dnd-dm-es-inventory-content > div:nth-child(12n + 6) {
+    background-color: #808080;
+}
+
+.dnd-dm-es-inventory-header > div {
+    background-color: #CCCCCC;
+    padding: 2px 4px;
+    font-weight: bold;
+}
+
+.dnd-dm-es-inventory-content > div {
+    background-color: #909090;
+    padding: 2px 4px;
+}
+
+.dnd-dm-es-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .7rem;
+    font-family: Arial, sans-serif;
+    z-index: 1000;
+}
+
+.dnd-dm-es-modal-content {
+    background: white;
+    padding: 20px;
+    border-radius: 8px;
+    min-width: 100px;
+    max-width: 90%;
+    max-height: 90vh;
+    overflow-y: auto;
+}
+
+.dnd-dm-es-modal-content h4 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    border-bottom: 2px solid #333;
+    padding-bottom: 10px;
+}
+
+.dnd-dm-es-form-grid {
+    display: grid;
+    grid-template-columns: 100px;
+    margin-bottom: 20px;
+}
+
+.dnd-dm-es-form-group {
+    display: grid;
+    grid-template-columns: 50px 50px;
+    gap: 1px;
+}
+
+.dnd-dm-es-modal-actions {
+    display: flex;
+    gap: 10px;
+    justify-content: flex-end;
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #ddd;
+}
 /* Notification Styles */
 
 .dnd-notification-container {

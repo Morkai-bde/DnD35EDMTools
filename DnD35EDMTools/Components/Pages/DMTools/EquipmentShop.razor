@@ -1,0 +1,594 @@
+﻿@page "/EquipmentShop"
+@using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Classes
+@using DnD35EDMTools.Data.Enums
+@using DnD35EDMTools.Helpers
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<PageTitle>Equipment / Shop</PageTitle>
+
+<h3>Equipment / Shop</h3>
+
+<div class="dnd-dm-equipment-shop-header">
+    <label>Campaign:</label>
+    <select @bind="SelectedCampaignId" class="filter-select">
+        <option value="0">Select Campaign</option>
+        @foreach (var campaign in _campaigns)
+        {
+            <option value="@campaign.Id" title="@campaign.Description">@campaign.Name</option>
+        }
+    </select>
+
+    <label>Character:</label>
+    <select @bind="SelectedCharacterId" class="filter-select">
+        <option value="0">Select Character</option>
+        @foreach (var character in _characters)
+        {
+            <option value="@character.Id">@character.Name</option>
+        }
+    </select>
+
+    <label>Filter by Item Type:</label>
+    <select @bind="SelectedTypeFilter" class="filter-select">
+        <option value="">All Types</option>
+        @foreach (ItemType type in Enum.GetValues(typeof(ItemType)).Cast<ItemType>().OrderBy(ItemTypeHelper.GetDisplayName))
+        {
+            <option value="@((int)type)">@ItemTypeHelper.GetDisplayName(type)</option>
+        }
+    </select>
+</div>
+
+<div class="dnd-dm-equipment-shop-container">
+    <div class="dnd-dm-equipment-shop-main-content">
+        <div class="dnd-dm-es-top-section">
+            <div>Name</div>
+            <div>Value (gp)</div>
+            <div>Description</div>
+            <div>Actions</div>
+        </div>
+        <div class="dnd-dm-es-mid-section">
+            @foreach (var item in FilteredItems)
+            {
+                <div>@item.Name</div>
+                <div>@item.BaseGoldValue</div>
+                <div>@item.Description</div>
+                <div>
+                    <button class="dm-button-50" @onclick="() => OpenBuyModal(item)" disabled="@(SelectedCharacterId <= NoSelectedId)">Buy</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+@if (SelectedCharacterId > NoSelectedId && _inventory.Any())
+{
+    <div class="dnd-dm-equipment-shop-container">
+        <div class="dnd-dm-es-wealth-display">
+            <div>@_selectedCharacterName's Inventory:</div>
+            <div>@_characterPlatinum pp</div>
+            <div>@_characterGold gp</div>
+            <div>@_characterSilver sp</div>
+            <div>@_characterCopper cp</div>
+        </div>
+        <div class="dnd-dm-equipment-shop-main-content">
+            <div class="dnd-dm-es-inventory-header">
+                <div>Name</div>
+                <div>Qty</div>
+                <div>Wt (lbs)</div>
+                <div>Value (gp)</div>
+                <div>Description</div>
+                <div>Actions</div>
+            </div>
+            <div class="dnd-dm-es-inventory-content">
+                @foreach (var invItem in _inventory)
+                {
+                    <div>@invItem.Item.Name</div>
+                    <div>@invItem.Quantity</div>
+                    <div>@(invItem.Quantity * invItem.Item.Weight)</div>
+                    <div>@invItem.Item.BaseGoldValue</div>
+                    <div>@invItem.Item.Description</div>
+                    <div>
+                        <button class="dm-button-50" @onclick="() => OpenSellModal(invItem)">Sell</button>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+}
+
+@if (IsModalOpen)
+{
+    <div class="dnd-dm-es-modal-overlay" @onclick="CloseModal">
+        <div class="dnd-dm-es-modal-content" @onclick:stopPropagation="true">
+            <h4>@GetModalTitle(): @CurrentItem.Name</h4>
+            <div class="dnd-dm-es-form-grid">
+                <div class="dnd-dm-es-form-group">
+                    <label>@(CurrentMode == ModalMode.Buy ? "Cost" : "Sell Value") per item:</label>
+                    <div>@GetItemPrice() gp</div>
+
+                    <label>Quantity:</label>
+                    <input type="number" step="1" @bind="_itemQuantity" min="1" max="@GetMaxQuantity()"/>
+
+                    <label>Total @(CurrentMode == ModalMode.Buy ? "Cost" : "Value"):</label>
+                    <div>@GetTotalCost() gp</div>
+
+                    @if (CurrentMode == ModalMode.Buy)
+                    {
+                        <label>Your Wealth:</label>
+                        <div>@_characterPlatinum pp, @_characterGold gp, @_characterSilver sp, @_characterCopper cp</div>
+
+                        @if (!CanAfford())
+                        {
+                            <div style="color: red;">Not enough gold!</div>
+                        }
+                    }
+                </div>
+            </div>
+
+            <div class="dnd-dm-es-modal-actions">
+                <button class="dm-button-50" @onclick="ProcessTransaction" disabled="@(!CanAfford())">Confirm</button>
+                <button class="dm-button-50" @onclick="CloseModal">Cancel</button>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    #region Fields
+
+    private const int NoSelectedId = 0;
+    private int _selectedCampaignId;
+    private int _selectedCharacterId;
+    private int _itemQuantity = 1;
+
+    private string _selectedCharacterName = "";
+    private int _characterPlatinum;
+    private int _characterGold;
+    private int _characterSilver;
+    private int _characterCopper;
+
+    private List<CampaignData> _campaigns = [];
+    private List<CharacterData> _characters = [];
+    private List<CharacterInventoryItem> _inventory = [];
+    private List<ItemData> _items = [];
+    private CampaignData? _selectedCampaign;
+
+    private ItemData CurrentItem { get; set; } = new();
+    private CharacterInventoryItem? CurrentInventoryItem { get; set; }
+
+    private bool IsModalOpen { get; set; }
+    private ModalMode CurrentMode { get; set; }
+    private string SelectedTypeFilter { get; set; } = "";
+
+    #endregion
+
+    #region Computed Properties
+
+    private List<ItemData> FilteredItems
+    {
+        get
+        {
+            var filtered = _items.AsEnumerable();
+
+            if (!string.IsNullOrEmpty(SelectedTypeFilter))
+            {
+                int typeId = int.Parse(SelectedTypeFilter);
+                filtered = filtered.Where(i => (int)i.ItemType == typeId);
+            }
+
+            if (_selectedCampaign != null)
+            {
+                var allowedSources = _selectedCampaign.AllowedSources.Select(s => s.Abbreviation).ToHashSet();
+                filtered = filtered.Where(i => string.IsNullOrEmpty(i.SourceBook) || allowedSources.Contains(i.SourceBook));
+            }
+
+            return filtered.OrderBy(i => i.Name).ToList();
+        }
+    }
+
+    #endregion
+
+    #region Selections
+
+    private int SelectedCampaignId
+    {
+        get => _selectedCampaignId;
+        set
+        {
+            _selectedCampaignId = value;
+            _selectedCampaign = _campaigns.FirstOrDefault(c => c.Id == value);
+            _ = InvokeAsync(async () =>
+            {
+                await GetCampaignCharacters();
+                StateHasChanged();
+            });
+        }
+    }
+
+    private int SelectedCharacterId
+    {
+        get => _selectedCharacterId;
+        set
+        {
+            _selectedCharacterId = value;
+            _ = InvokeAsync(async () =>
+            {
+                await LoadCharacterData();
+                StateHasChanged();
+            });
+        }
+    }
+
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            _campaigns = await db.Campaigns
+                .Where(c => c.Id > 1)
+                .Include(c => c.AllowedSources)
+                .ToListAsync();
+
+            _items = await db.Items
+                .OrderBy(i => i.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to initialize Equipment Shop: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Modal Methods
+
+    private void OpenBuyModal(ItemData item)
+    {
+        CurrentItem = item;
+        CurrentInventoryItem = null;
+        _itemQuantity = 1;
+        CurrentMode = ModalMode.Buy;
+        IsModalOpen = true;
+    }
+
+    private void OpenSellModal(CharacterInventoryItem invItem)
+    {
+        CurrentItem = invItem.Item;
+        CurrentInventoryItem = invItem;
+        _itemQuantity = 1;
+        CurrentMode = ModalMode.Sell;
+        IsModalOpen = true;
+    }
+
+    private void CloseModal()
+    {
+        IsModalOpen = false;
+        CurrentItem = new();
+        CurrentInventoryItem = null;
+        _itemQuantity = 1;
+    }
+
+    private string GetModalTitle() => CurrentMode switch
+    {
+        ModalMode.Buy => "Buy Item",
+        ModalMode.Sell => "Sell Item",
+        _ => ""
+    };
+
+    private double GetItemPrice()
+    {
+        return CurrentMode == ModalMode.Buy
+            ? CurrentItem.BaseGoldValue
+            : CurrentItem.BaseGoldValue * 0.5;
+    }
+
+    private double GetTotalCost()
+    {
+        return GetItemPrice() * _itemQuantity;
+    }
+
+    private int GetMaxQuantity()
+    {
+        return CurrentMode == ModalMode.Sell && CurrentInventoryItem != null
+            ? CurrentInventoryItem.Quantity
+            : 999;
+    }
+
+    private bool CanAfford()
+    {
+        if (CurrentMode == ModalMode.Sell) return true;
+
+        var totalCostInCopper = (int)(GetTotalCost() * 100);
+        var characterWealthInCopper = (_characterPlatinum * 1000) + (_characterGold * 100) + (_characterSilver * 10) + _characterCopper;
+
+        return characterWealthInCopper >= totalCostInCopper;
+    }
+
+    #endregion
+
+    #region Transaction Operations
+
+    private async Task ProcessTransaction()
+    {
+        if (CurrentMode == ModalMode.Buy)
+        {
+            await BuyItem(SelectedCharacterId, CurrentItem.Id, _itemQuantity);
+        }
+        else if (CurrentMode == ModalMode.Sell && CurrentInventoryItem != null)
+        {
+            await SellItem(SelectedCharacterId, CurrentInventoryItem.ItemId, _itemQuantity);
+        }
+
+        await LoadCharacterData();
+        CloseModal();
+    }
+
+    private async Task BuyItem(int characterId, int itemId, int quantity)
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var character = await db.Characters.FindAsync(characterId);
+            var item = await db.Items.FindAsync(itemId);
+
+            if (character == null || item == null)
+            {
+                await NotificationService.AddNotification(NotificationType.Error, "Character or item not found");
+                return;
+            }
+
+            var totalCostInCopper = (int)(item.BaseGoldValue * quantity * 100);
+
+            if (!DeductCoins(character, totalCostInCopper))
+            {
+                await NotificationService.AddNotification(NotificationType.Warning, "Not enough gold");
+                return;
+            }
+
+            var existingItem = await db.CharacterInventoryItems
+                .FirstOrDefaultAsync(i => i.CharacterId == characterId && i.ItemId == itemId && i.Location == "Inventory");
+
+            if (existingItem != null)
+            {
+                existingItem.Quantity += quantity;
+                db.CharacterInventoryItems.Update(existingItem);
+            }
+            else
+            {
+                db.CharacterInventoryItems.Add(new CharacterInventoryItem
+                {
+                    CharacterId = characterId,
+                    ItemId = itemId,
+                    Quantity = quantity,
+                    Location = "Inventory"
+                });
+            }
+
+            db.Characters.Update(character);
+            await db.SaveChangesAsync();
+
+            await NotificationService.AddNotification(NotificationType.Success,
+                $"Purchased {quantity}x {item.Name}");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to buy item: {ex.Message}");
+        }
+    }
+
+    private async Task SellItem(int characterId, int itemId, int quantity)
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var inventoryItem = await db.CharacterInventoryItems
+                .Include(i => i.Item)
+                .FirstOrDefaultAsync(i => i.CharacterId == characterId && i.ItemId == itemId);
+
+            if (inventoryItem == null || inventoryItem.Quantity < quantity)
+            {
+                await NotificationService.AddNotification(NotificationType.Warning, "Not enough items to sell");
+                return;
+            }
+
+            var character = await db.Characters.FindAsync(characterId);
+            if (character == null)
+            {
+                await NotificationService.AddNotification(NotificationType.Error, "Character not found");
+                return;
+            }
+
+            var sellValueInCopper = (int)(inventoryItem.Item.BaseGoldValue * 0.5 * quantity * 100);
+
+            AddCoins(character, sellValueInCopper);
+
+            if (inventoryItem.Quantity == quantity)
+            {
+                db.CharacterInventoryItems.Remove(inventoryItem);
+            }
+            else
+            {
+                inventoryItem.Quantity -= quantity;
+                db.CharacterInventoryItems.Update(inventoryItem);
+            }
+
+            db.Characters.Update(character);
+            await db.SaveChangesAsync();
+
+            await NotificationService.AddNotification(NotificationType.Success,
+                $"Sold {quantity}x {inventoryItem.Item.Name}");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to sell item: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Coin Management
+
+    private bool DeductCoins(CharacterData character, int amountInCopper)
+    {
+        var totalCopper = (character.PlatinumPieces * 1000) + (character.GoldPieces * 100) +
+                          (character.SilverPieces * 10) + character.CopperPieces;
+
+        if (totalCopper < amountInCopper)
+            return false;
+
+        var remaining = amountInCopper;
+
+        if (character.CopperPieces >= remaining)
+        {
+            character.CopperPieces -= remaining;
+            return true;
+        }
+
+        remaining -= character.CopperPieces;
+        character.CopperPieces = 0;
+
+        var silverNeeded = (remaining + 9) / 10;
+        if (character.SilverPieces >= silverNeeded)
+        {
+            character.SilverPieces -= silverNeeded;
+            var change = (silverNeeded * 10) - remaining;
+            character.CopperPieces += change;
+            return true;
+        }
+
+        remaining -= character.SilverPieces * 10;
+        character.SilverPieces = 0;
+
+        var goldNeeded = (remaining + 99) / 100;
+        if (character.GoldPieces >= goldNeeded)
+        {
+            character.GoldPieces -= goldNeeded;
+            var change = (goldNeeded * 100) - remaining;
+            character.SilverPieces += change / 10;
+            character.CopperPieces += change % 10;
+            return true;
+        }
+
+        remaining -= character.GoldPieces * 100;
+        character.GoldPieces = 0;
+
+        var platinumNeeded = (remaining + 999) / 1000;
+        if (character.PlatinumPieces >= platinumNeeded)
+        {
+            character.PlatinumPieces -= platinumNeeded;
+            var change = (platinumNeeded * 1000) - remaining;
+            character.GoldPieces += change / 100;
+            character.SilverPieces += (change % 100) / 10;
+            character.CopperPieces += change % 10;
+            return true;
+        }
+
+        return false;
+    }
+
+    private void AddCoins(CharacterData character, int amountInCopper)
+    {
+        var remaining = amountInCopper;
+
+        if (remaining >= 1000)
+        {
+            character.PlatinumPieces += remaining / 1000;
+            remaining %= 1000;
+        }
+
+        if (remaining >= 100)
+        {
+            character.GoldPieces += remaining / 100;
+            remaining %= 100;
+        }
+
+        if (remaining >= 10)
+        {
+            character.SilverPieces += remaining / 10;
+            remaining %= 10;
+        }
+
+        if (remaining > 0)
+        {
+            character.CopperPieces += remaining;
+        }
+    }
+
+    #endregion
+
+    #region Helper Methods
+
+    private async Task GetCampaignCharacters()
+    {
+        if (SelectedCampaignId > NoSelectedId)
+        {
+            await using var db = CreateDbContext();
+            _characters = await db.Characters
+                .Where(c => c.CampaignId == SelectedCampaignId)
+                .OrderBy(c => c.Name)
+                .ToListAsync();
+        }
+        else
+        {
+            _characters.Clear();
+        }
+
+        SelectedCharacterId = NoSelectedId;
+    }
+
+    private async Task LoadCharacterData()
+    {
+        if (SelectedCharacterId > NoSelectedId)
+        {
+            await using var db = CreateDbContext();
+
+            var character = await db.Characters.FindAsync(SelectedCharacterId);
+            if (character != null)
+            {
+                _selectedCharacterName = character.Name;
+                _characterPlatinum = character.PlatinumPieces;
+                _characterGold = character.GoldPieces;
+                _characterSilver = character.SilverPieces;
+                _characterCopper = character.CopperPieces;
+            }
+
+            _inventory = await db.CharacterInventoryItems
+                .Include(i => i.Item)
+                .Where(c => c.CharacterId == SelectedCharacterId)
+                .OrderBy(i => i.Item.Name)
+                .ToListAsync();
+        }
+        else
+        {
+            _selectedCharacterName = "";
+            _characterPlatinum = 0;
+            _characterGold = 0;
+            _characterSilver = 0;
+            _characterCopper = 0;
+            _inventory.Clear();
+        }
+    }
+
+    #endregion
+
+    #region Enums
+
+    private enum ModalMode
+    {
+        Buy,
+        Sell
+    }
+
+    #endregion
+
+}
