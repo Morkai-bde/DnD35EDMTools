@@ -55,7 +55,7 @@
 .dnd-cs-top__left {
     border-color: var(--cellbordercolour);
     display: grid;
-    grid-template-rows: 1fr 160px 220px 160px 80px 60px 80px 1fr;
+    grid-template-rows: 1fr 160px 220px 160px 80px 60px 80px;
 }
 
 .dnd-cs-image-container img {
@@ -444,6 +444,88 @@
     border-bottom: 1px solid;
     border-right: 1px solid;
     border-color: var(--cellbordercolour);
+}
+
+.dnd-cc-features {
+    display: grid;
+    grid-template-columns: 50% 50%;
+    height: 100%;
+}
+
+.dnd-cc-features__left {
+    border-color: var(--cellbordercolour);
+    display: grid;
+    grid-template-columns: 100px 100px;
+}
+
+.dnd-cc-features__right{
+    display: grid;
+    grid-template-columns: 100px 100px;
+}
+
+.dnd-cc-features__right > div:not(:last-child) {
+    border-right: 1px solid;
+}
+
+.inventory-row {
+    display: grid;
+    grid-template-columns: 2fr 0.5fr 0.5fr 2fr;
+    grid-template-rows: repeat(auto-fill, var(--cellheight));
+}
+.inventory-row-header {
+    text-align: center;
+    background-color: #000;
+    color: #fff;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+}
+
+.inventory-row-content {
+    display: grid;
+    grid-template-rows: repeat(1, var(--cellheight));
+}
+
+.inventory-list-row-left {
+    padding-left: 5px;
+    text-align: start;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-list-row-center {
+    text-align: center;
+    background-color: #CCC;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+    overflow:hidden;
+}
+
+.inventory-list-row-left-alt {
+    padding-left: 5px;
+    text-align: start;
+    background-color: #E0E0E0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.inventory-list-row-center-alt {
+    text-align: center;
+    background-color: #E0E0E0;
+    border-bottom: 1px solid;
+    border-right: 1px solid;
+    border-color: var(--cellbordercolour);
+    overflow:hidden;
 }
 
 /*Character Creation Styles*/

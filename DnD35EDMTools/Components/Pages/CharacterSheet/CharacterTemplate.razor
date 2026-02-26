@@ -402,7 +402,44 @@
     </div>
 </div>
 </div>
-<div class="bottom-section"></div>
+<div class="dnd-cc-features">
+    <div class="dnd-cc-features__left">
+        <div></div>
+        <div></div>
+    </div>
+    <div class="dnd-cc-features__right">
+        <div></div>
+        <div></div>
+    </div>
+</div>
+<div class="dnd-cc-inventory">
+        <div class="inventory-row">
+            <div class="inventory-row-header">Items</div>
+            <div class="inventory-row-header">Qty</div>
+            <div class="inventory-row-header">Wt (.lbs)</div>
+            <div class="inventory-row-header">Description</div>
+
+            @for (int i = 0; i < Inventory.Count; i++)
+            {
+            var item = i < Inventory.Count ? Inventory[i] : null;
+
+            <div class="@InventoryRowLeftClass(i)">
+                @(item?.Item.Name ?? "")
+            </div>
+
+            <div class="@InventoryRowCenterClass(i)">
+                @(item?.Quantity.ToString() ?? "")
+            </div>
+
+            <div class="@InventoryRowCenterClass(i)">
+                @((item?.Item.Weight * item?.Quantity).ToString() ?? "")
+            </div>
+            <div class="@InventoryRowLeftClass(i)">
+                @(item?.Item.Description ?? "")
+            </div>
+            }
+        </div>
+</div>
 </div>
 </div>
 </div>
@@ -418,6 +455,7 @@
     private List<MoralityData> _moralities = [];
     private List<CharacterData> _characters = [];
     private List<CharacterSkillDisplay> Skills { get; set; } = [];
+    private List<CharacterInventoryItem> Inventory { get; set; } = [];
 
     private string _characterName = string.Empty;
     private string _characterClass = string.Empty;
@@ -487,6 +525,15 @@
             ? "skills-list-row-content-alt"
             : "skills-list-row-content";
 
+    private string InventoryRowLeftClass(int row)
+        => row % 2 == 1
+            ? "inventory-list-row-left-alt"
+            : "inventory-list-row-left";
+
+    private string InventoryRowCenterClass(int row)
+        => row % 2 == 1
+            ? "inventory-list-row-center-alt"
+            : "inventory-list-row-center";
     #endregion
 
     #region Lifecycle Methods
@@ -568,6 +615,13 @@
                 .OrderBy(s => s.Name)
                 .ToListAsync();
 
+            var inventoryTask = db.CharacterInventoryItems
+                .AsNoTracking()
+                .Include(i => i.Item)
+                .Where(c => c.CharacterId == characterId)
+                .OrderBy(i => i.Item.Name)
+                .ToListAsync();
+
             var levelsTask = db.CharacterLevels
                 .AsNoTracking()
                 .Include(cl => cl.Class)
@@ -577,7 +631,7 @@
                 .OrderBy(cl => cl.Level)
                 .ToListAsync();
 
-            await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, levelsTask);
+            await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, inventoryTask, levelsTask);
 
             var campaign = await campaignTask;
             var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
@@ -629,6 +683,8 @@
                 _characterRefSave = SaveHelper.GetBaseSave(primaryClass.ReflexSavePerLevel, _characterDexterity.Value) + race.ReflexBonus;
                 _characterWillSave = SaveHelper.GetBaseSave(primaryClass.WillSavePerLevel, _characterWisdom.Value) + race.WillBonus;
             }
+            
+            Inventory = await inventoryTask;
 
             var totalSkillRanks = levels
                 .SelectMany(l => l.SkillRanks)
