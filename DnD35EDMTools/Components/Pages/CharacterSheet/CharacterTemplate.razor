@@ -130,7 +130,7 @@
         <div class="load-speed-list-row-header">Initiative</div>
     </div>
     <div class="load-speed-list">
-        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content">@_characterWeightCarried</div>
         <div class="load-speed-list-row-content">@_characterSpeed</div>
         <div class="load-speed-list-row-content"></div>
     </div>
@@ -483,6 +483,7 @@
 
     private string _characterSpeed = string.Empty;
 
+    private double? _characterWeightCarried;
     private double? _characterLightLoad;
     private double? _characterMediumLoad;
     private double? _characterHeavyLoad;
@@ -686,6 +687,8 @@
             
             Inventory = await inventoryTask;
 
+            _characterWeightCarried = GetCarriedWeight();
+
             var totalSkillRanks = levels
                 .SelectMany(l => l.SkillRanks)
                 .GroupBy(sr => sr.SkillId)
@@ -800,6 +803,18 @@
             "Charisma" => _characterCharismaMod ?? 0,
             _ => 0
         };
+    }
+
+    private double? GetCarriedWeight()
+    {
+            double? sum = 0;
+            foreach (var item in Inventory)
+            {
+                var totalItemWeight = item?.Item.Weight * item?.Quantity;
+                sum += totalItemWeight;
+
+            };
+            return sum;
     }
 
     #endregion
