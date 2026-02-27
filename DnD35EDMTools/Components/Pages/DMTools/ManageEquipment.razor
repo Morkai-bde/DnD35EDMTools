@@ -77,6 +77,16 @@
                     </div>
 
                     <div class="dnd-dm-me-form-group">
+                        <label>Body Slot</label>
+                        <select @bind="CurrentItem.BodySlot" @bind:after="OnItemTypeChanged">
+                            @foreach (ItemSlot slot in Enum.GetValues(typeof(ItemSlot)).Cast<ItemSlot>())
+                            {
+                                <option value="@slot">@ItemSlotHelper.GetSlotName(slot)</option>
+                            }
+                        </select>
+                    </div>
+
+                    <div class="dnd-dm-me-form-group">
                         <label>Item Type:</label>
                         <select @bind="CurrentItem.ItemType" @bind:after="OnItemTypeChanged">
                             @foreach (ItemType type in Enum.GetValues(typeof(ItemType)).Cast<ItemType>().OrderBy(ItemTypeHelper.GetDisplayName))
@@ -332,6 +342,7 @@
             Name = item.Name,
             ItemType = item.ItemType,
             ItemSubtype = item.ItemSubtype,
+            BodySlot = item.BodySlot,
             Weight = item.Weight,
             BaseGoldValue = item.BaseGoldValue,
             Enchantment = item.Enchantment,
