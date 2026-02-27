@@ -13,7 +13,7 @@ public class EquipmentPack
     public double TotalValue { get; set; }
 
     [MaxLength(5)]
-    public string SourceBook { get; set; } = "PHB";
+    public string SourceBook { get; set; } = "PH";
     public int Page { get; set; }
 
     public List<EquipmentPackItem> Items { get; set; } = [];
