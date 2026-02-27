@@ -1,0 +1,519 @@
+﻿@page "/CharacterManagement"
+@using DnD35EDMTools.Data
+@using DnD35EDMTools.Data.Classes
+@using DnD35EDMTools.Data.Enums
+@using DnD35EDMTools.Helpers
+@using Microsoft.EntityFrameworkCore
+@inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
+
+<PageTitle>Character Management</PageTitle>
+
+<h3>Character Equipment Management</h3>
+
+<div class="dnd-character-management-header">
+    <label>Campaign:</label>
+    <select @bind="SelectedCampaignId" class="filter-select">
+        <option value="0">Select Campaign</option>
+        @foreach (var campaign in _campaigns)
+        {
+            <option value="@campaign.Id">@campaign.Name</option>
+        }
+    </select>
+
+    <label>Character:</label>
+    <select @bind="SelectedCharacterId" class="filter-select">
+        <option value="0">Select Character</option>
+        @foreach (var character in _characters)
+        {
+            <option value="@character.Id">@character.Name</option>
+        }
+    </select>
+</div>
+
+@if (SelectedCharacterId > NoSelectedId)
+{
+    <div class="dnd-character-management-container">
+        <div class="dnd-character-management-main-content">
+            <div class="dnd-cm-equipment-slots">
+                <h4>Equipment Slots</h4>
+                <div></div>
+
+                <div class="equipment-slot">
+                    <label>Head:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Head]" @bind:after="() => UpdateSlot(EquipmentSlot.Head)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Head))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Face/Eyes:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Face]" @bind:after="() => UpdateSlot(EquipmentSlot.Face)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Face))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Neck:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Neck]" @bind:after="() => UpdateSlot(EquipmentSlot.Neck)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Neck))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Shoulders:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Shoulders]" @bind:after="() => UpdateSlot(EquipmentSlot.Shoulders)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Shoulders))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Body:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Body]" @bind:after="() => UpdateSlot(EquipmentSlot.Body)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Body))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Torso:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Torso]" @bind:after="() => UpdateSlot(EquipmentSlot.Torso)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Torso))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Waist:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Waist]" @bind:after="() => UpdateSlot(EquipmentSlot.Waist)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Waist))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Wrists:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Wrists]" @bind:after="() => UpdateSlot(EquipmentSlot.Wrists)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Wrists))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Hands:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Hands]" @bind:after="() => UpdateSlot(EquipmentSlot.Hands)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Hands))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Ring (Left):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.RingLeft]" @bind:after="() => UpdateSlot(EquipmentSlot.RingLeft)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.RingLeft))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Ring (Right):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.RingRight]" @bind:after="() => UpdateSlot(EquipmentSlot.RingRight)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.RingRight))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Feet:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.Feet]" @bind:after="() => UpdateSlot(EquipmentSlot.Feet)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Feet))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+            </div>
+        </div>
+        <div class="dnd-character-management-stat-content">
+            <div class="dnd-dm-inventory-stats">
+                <div>Weight Carried:</div>
+                <div>@_totalWeight lbs</div>
+                <div>Capacity:</div>
+                <div>@_lightLoad / @_mediumLoad / @_heavyLoad lbs</div>
+                <div>Encumbrance:</div>
+                <div>@_encumbranceLevel</div>
+            </div>
+        </div>
+    </div>
+    <div>
+        &nbsp;
+    </div>
+    <div class="dnd-character-management-equipment-container">
+        <div class="dnd-character-management-equipment-content">
+            <div class="dnd-cm-inventory">
+                <h4>@_selectedCharacterName's Inventory</h4>
+                <div class="dnd-cm-inventory-grid">
+                    <div class="dnd-cm-inventory-header">
+                        <div>Item</div>
+                        <div>Qty</div>
+                        <div>Weight</div>
+                        <div>Description</div>
+                        <div>Equipped Slot</div>
+                        <div>Actions</div>
+                    </div>
+                    <div class="dnd-cm-inventory-row">
+                        @foreach (var invItem in _inventory)
+                        {
+                            <div>@invItem.Item.Name</div>
+                            <div>@invItem.Quantity</div>
+                            <div>@(invItem.Item.Weight * invItem.Quantity) lbs</div>
+                            <div>@invItem.Item.Description</div>
+                            <div>@(invItem.EquippedSlot ?? "Not Equipped")</div>
+                            <div>Placeholder</div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+
+    #region Fields
+
+    private const int NoSelectedId = 0;
+    private int _selectedCampaignId;
+    private int _selectedCharacterId;
+    private string _selectedCharacterName = "";
+
+    private List<CampaignData> _campaigns = [];
+    private List<CharacterData> _characters = [];
+    private List<CharacterInventoryItem> _inventory = [];
+
+    private Dictionary<string, int> _equippedSlots = new();
+
+    private double _totalWeight;
+    private double _lightLoad;
+    private double _mediumLoad;
+    private double _heavyLoad;
+    private string _encumbranceLevel = "Light";
+
+    #endregion
+
+    #region Equipment Slot Constants
+
+    private static class EquipmentSlot
+    {
+        public const string Head = "Head";
+        public const string Face = "Face";
+        public const string Neck = "Neck";
+        public const string Shoulders = "Shoulders";
+        public const string Body = "Body";
+        public const string Torso = "Torso";
+        public const string Waist = "Waist";
+        public const string Wrists = "Wrists";
+        public const string Hands = "Hands";
+        public const string RingLeft = "RingLeft";
+        public const string RingRight = "RingRight";
+        public const string Feet = "Feet";
+    }
+
+    #endregion
+
+    #region Selections
+
+    private int SelectedCampaignId
+    {
+        get => _selectedCampaignId;
+        set
+        {
+            _selectedCampaignId = value;
+            _ = InvokeAsync(async () =>
+            {
+                await GetCampaignCharacters();
+                StateHasChanged();
+            });
+        }
+    }
+
+    private int SelectedCharacterId
+    {
+        get => _selectedCharacterId;
+        set
+        {
+            _selectedCharacterId = value;
+            _ = InvokeAsync(async () =>
+            {
+                await LoadCharacterData();
+                StateHasChanged();
+            });
+        }
+    }
+
+    #endregion
+
+    #region Lifecycle Methods
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            _campaigns = await db.Campaigns
+                .Where(c => c.Id > 1)
+                .ToListAsync();
+
+            InitializeEquipmentSlots();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to initialize: {ex.Message}");
+        }
+    }
+
+    private void InitializeEquipmentSlots()
+    {
+        _equippedSlots[EquipmentSlot.Head] = 0;
+        _equippedSlots[EquipmentSlot.Face] = 0;
+        _equippedSlots[EquipmentSlot.Neck] = 0;
+        _equippedSlots[EquipmentSlot.Shoulders] = 0;
+        _equippedSlots[EquipmentSlot.Body] = 0;
+        _equippedSlots[EquipmentSlot.Torso] = 0;
+        _equippedSlots[EquipmentSlot.Waist] = 0;
+        _equippedSlots[EquipmentSlot.Wrists] = 0;
+        _equippedSlots[EquipmentSlot.Hands] = 0;
+        _equippedSlots[EquipmentSlot.RingLeft] = 0;
+        _equippedSlots[EquipmentSlot.RingRight] = 0;
+        _equippedSlots[EquipmentSlot.Feet] = 0;
+    }
+
+    #endregion
+
+    #region Load Character Data
+
+    private async Task GetCampaignCharacters()
+    {
+        if (SelectedCampaignId > NoSelectedId)
+        {
+            await using var db = CreateDbContext();
+            _characters = await db.Characters
+                .Where(c => c.CampaignId == SelectedCampaignId)
+                .ToListAsync();
+        }
+        else
+        {
+            _characters.Clear();
+        }
+
+        SelectedCharacterId = NoSelectedId;
+    }
+
+    private async Task LoadCharacterData()
+    {
+        if (SelectedCharacterId > NoSelectedId)
+        {
+            await using var db = CreateDbContext();
+
+            var character = await db.Characters
+                .FirstOrDefaultAsync(c => c.Id == SelectedCharacterId);
+
+            if (character == null) return;
+
+            var race = await db.Races.FindAsync(character.Race);
+            if (race == null) return;
+
+            _selectedCharacterName = character.Name;
+
+            _inventory = await db.CharacterInventoryItems
+                .Include(i => i.Item)
+                .Where(c => c.CharacterId == SelectedCharacterId)
+                .OrderBy(i => i.Item.Name)
+                .ToListAsync();
+
+            LoadEquippedItems();
+
+            await CalculateEncumbrance(character, race);
+        }
+        else
+        {
+            _selectedCharacterName = "";
+            _inventory.Clear();
+            InitializeEquipmentSlots();
+        }
+    }
+
+    private void LoadEquippedItems()
+    {
+        InitializeEquipmentSlots();
+
+        foreach (var item in _inventory.Where(i => !string.IsNullOrEmpty(i.EquippedSlot)))
+        {
+            if (_equippedSlots.ContainsKey(item.EquippedSlot!))
+            {
+                _equippedSlots[item.EquippedSlot!] = item.Id;
+            }
+        }
+    }
+
+    #endregion
+
+    #region Equipment Management
+
+    private List<CharacterInventoryItem> GetAvailableItemsForSlot(string slot)
+    {
+        return slot switch
+        {
+            "Head" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Head).ToList(),
+            "Face" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Face).ToList(),
+            "Neck" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Neck).ToList(),
+            "Shoulders" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Shoulders).ToList(),
+            "Body" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Body).ToList(),
+            "Torso" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Torso).ToList(),
+            "Waist" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Waist).ToList(),
+            "Wrists" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Wrists).ToList(),
+            "Hands" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Hands).ToList(),
+            "RingLeft" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Ring).ToList(),
+            "RingRight" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Ring).ToList(),
+            "Feet" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Feet).ToList(),
+            "MainHand" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Weapon).ToList(),
+            "OffHand" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Weapon || i.Item.BodySlot == ItemSlot.Shield).ToList(),
+            _ => _inventory.ToList()
+        };
+    }
+
+    private async Task UpdateSlot(string slot)
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var selectedItemId = _equippedSlots[slot];
+
+            var currentlyEquipped = _inventory.FirstOrDefault(i => i.EquippedSlot == slot);
+            if (currentlyEquipped != null)
+            {
+                var dbItem = await db.CharacterInventoryItems.FindAsync(currentlyEquipped.Id);
+                if (dbItem != null)
+                {
+                    dbItem.EquippedSlot = null;
+                    dbItem.Location = "Inventory";
+                    db.CharacterInventoryItems.Update(dbItem);
+
+                    currentlyEquipped.EquippedSlot = null;
+                    currentlyEquipped.Location = "Inventory";
+                }
+            }
+
+            if (selectedItemId > 0)
+            {
+                var itemToEquip = _inventory.FirstOrDefault(i => i.Id == selectedItemId);
+                if (itemToEquip != null)
+                {
+                    if (!string.IsNullOrEmpty(itemToEquip.EquippedSlot))
+                    {
+                        _equippedSlots[itemToEquip.EquippedSlot] = 0;
+                    }
+
+                    var dbItem = await db.CharacterInventoryItems.FindAsync(selectedItemId);
+                    if (dbItem != null)
+                    {
+                        dbItem.EquippedSlot = slot;
+                        dbItem.Location = "Equipped";
+                        db.CharacterInventoryItems.Update(dbItem);
+
+                        itemToEquip.EquippedSlot = slot;
+                        itemToEquip.Location = "Equipped";
+                    }
+                }
+            }
+
+            await db.SaveChangesAsync();
+
+            await NotificationService.AddNotification(NotificationType.Success, "Equipment updated");
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to update equipment: {ex.Message}");
+        }
+    }
+
+    #endregion
+
+    #region Encumbrance Calculations
+
+    private async Task CalculateEncumbrance(CharacterData character, RaceData race)
+    {
+        _totalWeight = _inventory
+            .Where(i => i.Location == "Inventory" || i.Location == "Equipped")
+            .Sum(i => i.Item.Weight * i.Quantity);
+
+        var finalStrength = character.Strength + race.StrengthBonus;
+        await using var db = CreateDbContext();
+        var carryingCapacity = await db.CarryingCapacity
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == finalStrength);
+
+        try
+        {
+            _lightLoad = WeightHelper.GetWeight(carryingCapacity!.LightLoad, race.Size);
+            _mediumLoad = WeightHelper.GetWeight(carryingCapacity.MediumLoad, race.Size);
+            _heavyLoad = WeightHelper.GetWeight(carryingCapacity.HeavyLoad, race.Size);
+
+            if (_totalWeight <= _lightLoad)
+                _encumbranceLevel = "Light";
+            else if (_totalWeight <= _mediumLoad)
+                _encumbranceLevel = "Medium";
+            else if (_totalWeight <= _heavyLoad)
+                _encumbranceLevel = "Heavy";
+            else
+                _encumbranceLevel = "Overloaded";
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Unable to calculate carrying capacity : {ex}.");
+        }
+
+    }
+
+    #endregion
+
+}
