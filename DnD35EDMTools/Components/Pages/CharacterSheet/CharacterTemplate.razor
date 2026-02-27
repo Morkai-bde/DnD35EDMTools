@@ -2,6 +2,7 @@
 
 @using DnD35EDMTools.Data
 @using DnD35EDMTools.Data.Classes
+@using DnD35EDMTools.Data.Enums
 @using DnD35EDMTools.Helpers
 @using Microsoft.EntityFrameworkCore
 @inherits DnD35EDMTools.Components.Pages.Common.BaseComponent
@@ -238,18 +239,18 @@
         <div class="worn-armour-row-header">Max Dex</div>
     </div>
     <div class="worn-armour-list">
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content">@_wornArmour</div>
+        <div class="worn-armour-list-row-content">@_bodyArmourClass</div>
+        <div class="worn-armour-list-row-content">@_bodyCheckPenalty</div>
+        <div class="worn-armour-list-row-content">@_bodyArmourType</div>
+        <div class="worn-armour-list-row-content">@_bodyMaxDexBonus</div>
     </div>
     <div class="worn-armour-list">
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
-        <div class="worn-armour-list-row-content"></div>
+        <div class="worn-armour-list-row-content">@_wornShield</div>
+        <div class="worn-armour-list-row-content">@_shieldArmourClass</div>
+        <div class="worn-armour-list-row-content">@_shieldCheckPenalty</div>
+        <div class="worn-armour-list-row-content">@_shieldArmourType</div>
+        <div class="worn-armour-list-row-content">@_shieldMaxDexBonus</div>
     </div>
 </div>
 <div class="armour-row">
@@ -265,33 +266,33 @@
     </div>
     <div class="armour-list">
         <div class="armour-row-header">Armour Class</div>
-        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content">@_totalArmourClass</div>
         <div class="armour-row-header">=</div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content">@_baseArmourClass</div>
+        <div class="armour-list-row-content">@_equippedArmourClass</div>
+        <div class="armour-list-row-content">@_abilityArmourClassBonus</div>
+        <div class="armour-list-row-content">@_naturalArmourClassBonus</div>
+        <div class="armour-list-row-content">@_otherArmourClassBonus</div>
     </div>
     <div class="armour-list">
         <div class="armour-row-header">Flat Footed</div>
-        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content">@_flatFootedTotalArmourClass</div>
         <div class="armour-row-header">=</div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content">@_baseArmourClass</div>
+        <div class="armour-list-row-content">@_flatFootedBodyArmourClass</div>
+        <div class="armour-list-row-content">@_flatFootedAbilityArmourClassBonus</div>
+        <div class="armour-list-row-content">@_flatFootedNaturalArmourClassBonus</div>
+        <div class="armour-list-row-content">@_flatFootedOtherArmourClassBonus</div>
     </div>
     <div class="armour-list">
         <div class="armour-row-header">Touch</div>
-        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content">@_touchTotalArmourClass</div>
         <div class="armour-row-header">=</div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
-        <div class="armour-list-row-content"></div>
+        <div class="armour-list-row-content">@_baseArmourClass</div>
+        <div class="armour-list-row-content">@_touchBodyArmourClass</div>
+        <div class="armour-list-row-content">@_touchAbilityArmourClassBonus</div>
+        <div class="armour-list-row-content">@_touchNaturalArmourClassBonus</div>
+        <div class="armour-list-row-content">@_touchOtherArmourClassBonus</div>
     </div>
 </div>
 <div class="weapon-row">
@@ -512,6 +513,37 @@
     private double? _characterRefSave;
     private double? _characterWillSave;
 
+    private string? _wornArmour;
+    private int? _bodyArmourClass;
+    private string? _bodyCheckPenalty;
+    private string? _bodyArmourType;
+    private int? _bodyMaxDexBonus;
+
+    private string? _wornShield;
+    private int? _shieldArmourClass;
+    private string? _shieldCheckPenalty;
+    private string? _shieldArmourType;
+    private int? _shieldMaxDexBonus;
+    
+    private int? _totalArmourClass;
+    private int? _baseArmourClass;
+    private int? _equippedArmourClass;
+    private int? _abilityArmourClassBonus;
+    private int? _naturalArmourClassBonus;
+    private int? _otherArmourClassBonus;
+    
+    private int? _flatFootedTotalArmourClass;
+    private int? _flatFootedBodyArmourClass;
+    private int? _flatFootedAbilityArmourClassBonus;
+    private int? _flatFootedNaturalArmourClassBonus;
+    private int? _flatFootedOtherArmourClassBonus;
+    
+    private int? _touchTotalArmourClass;
+    private int? _touchBodyArmourClass;
+    private int? _touchAbilityArmourClassBonus;
+    private int? _touchNaturalArmourClassBonus;
+    private int? _touchOtherArmourClassBonus;
+    
     #endregion
 
     #region Calculated Properties
@@ -535,6 +567,7 @@
         => row % 2 == 1
             ? "inventory-list-row-center-alt"
             : "inventory-list-row-center";
+    
     #endregion
 
     #region Lifecycle Methods
@@ -688,6 +721,10 @@
             Inventory = await inventoryTask;
 
             _characterWeightCarried = GetCarriedWeight();
+            
+            await CalculateEquippedArmor(characterId);
+
+            await GetTotalArmour(race.Size);
 
             var totalSkillRanks = levels
                 .SelectMany(l => l.SkillRanks)
@@ -810,11 +847,134 @@
             double? sum = 0;
             foreach (var item in Inventory)
             {
-                var totalItemWeight = item?.Item.Weight * item?.Quantity;
+                var totalItemWeight = item.Item.Weight * item.Quantity;
                 sum += totalItemWeight;
-
-            };
+            }
             return sum;
+    }
+    private async Task CalculateEquippedArmor(int characterId)
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+
+            var equippedItems = await db.CharacterInventoryItems
+                .AsNoTracking()
+                .Include(i => i.Item)
+                    .ThenInclude(item => item.Properties)
+                        .ThenInclude(p => p.PropertyDefinition)
+                .Where(i => i.CharacterId == characterId && i.Location == "Equipped")
+                .ToListAsync();
+
+            var bodyArmor = equippedItems.FirstOrDefault(i => i.EquippedSlot == "Body");
+            if (bodyArmor != null)
+            {
+                _wornArmour = bodyArmor.Item.Name;
+                _bodyArmourClass = GetPropertyIntValue(bodyArmor, PropertyApplication.ArmourClass);
+                _bodyCheckPenalty = GetPropertyStringValue(bodyArmor, PropertyApplication.ArmourCheckPenalty);
+                _bodyArmourType = GetArmorType(bodyArmor);
+                _bodyMaxDexBonus = GetPropertyIntValue(bodyArmor, PropertyApplication.MaxDexBonus);
+            }
+            else
+            {
+                _wornArmour = null;
+                _bodyArmourClass = null;
+                _bodyCheckPenalty = null;
+                _bodyArmourType = null;
+                _bodyMaxDexBonus = null;
+            }
+
+            var shield = equippedItems.FirstOrDefault(i => i.EquippedSlot == "OffHand" && i.Item.ItemType == ItemType.Shield);
+            if (shield != null)
+            {
+                _wornShield = shield.Item.Name;
+                _shieldArmourClass = GetPropertyIntValue(shield, PropertyApplication.ArmourClass);
+                _shieldCheckPenalty = GetPropertyStringValue(shield, PropertyApplication.ArmourCheckPenalty);
+                _shieldArmourType = GetArmorType(shield);
+                _shieldMaxDexBonus = GetPropertyIntValue(shield, PropertyApplication.MaxDexBonus);
+            }
+            else
+            {
+                _wornShield = null;
+                _shieldArmourClass = null;
+                _shieldCheckPenalty = null;
+                _shieldArmourType = null;
+                _shieldMaxDexBonus = null;
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to calculate armor: {ex.Message}");
+        }
+    }
+
+    private int? GetPropertyIntValue(CharacterInventoryItem item, PropertyApplication application)
+    {
+        var property = item.Item.Properties
+            .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == application);
+        
+        if (property != null && int.TryParse(property.Value, out int value))
+        {
+            return value;
+        }
+        
+        return null;
+    }
+
+    private string? GetPropertyStringValue(CharacterInventoryItem item, PropertyApplication application)
+    {
+        var property = item.Item.Properties
+            .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == application);
+        
+        return property?.Value;
+    }
+
+    private string? GetArmorType(CharacterInventoryItem item)
+    {
+        if (item.Item.ItemSubtype.HasValue)
+        {
+            return item.Item.ItemSubtype.Value switch
+            {
+                ItemSubtype.LightArmour => "Light",
+                ItemSubtype.MediumArmour => "Medium",
+                ItemSubtype.HeavyArmour => "Heavy",
+                ItemSubtype.Buckler => "Shield",
+                ItemSubtype.LightShield => "Shield",
+                ItemSubtype.HeavyShield => "Shield",
+                ItemSubtype.TowerShield => "Shield",
+                _ => null
+            };
+        }
+        
+        var typeProperty = item.Item.Properties
+            .FirstOrDefault(p => p.PropertyDefinition.Name == "Armor Type");
+        
+        return typeProperty?.Value;
+    }
+
+    private Task GetTotalArmour(string size)
+    {
+        _baseArmourClass = 10 + SizeHelper.GetSizeAcBonus(size);
+
+        _equippedArmourClass = _bodyArmourClass + _shieldArmourClass;
+        _abilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, _bodyMaxDexBonus ?? 0);
+        _naturalArmourClassBonus = 0;
+        _otherArmourClassBonus = 0;
+        _totalArmourClass = _baseArmourClass + _bodyArmourClass + _shieldArmourClass + _abilityArmourClassBonus + _naturalArmourClassBonus + _otherArmourClassBonus;
+        
+        _flatFootedBodyArmourClass = _bodyArmourClass + _shieldArmourClass;
+        _flatFootedAbilityArmourClassBonus = 0;
+        _flatFootedNaturalArmourClassBonus = 0;
+        _flatFootedOtherArmourClassBonus = 0;
+        _flatFootedTotalArmourClass = _baseArmourClass + _flatFootedBodyArmourClass + _flatFootedAbilityArmourClassBonus + _flatFootedNaturalArmourClassBonus + _flatFootedOtherArmourClassBonus;
+        
+        _touchBodyArmourClass = 0;
+        _touchAbilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, _bodyMaxDexBonus ?? 0);
+        _touchNaturalArmourClassBonus = 0;
+        _touchOtherArmourClassBonus = 0;
+        _touchTotalArmourClass = _baseArmourClass + _touchBodyArmourClass + _touchAbilityArmourClassBonus + _touchNaturalArmourClassBonus + _touchOtherArmourClassBonus;
+        
+        return Task.CompletedTask;
     }
 
     #endregion
