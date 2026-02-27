@@ -169,6 +169,28 @@
                         }
                     </select>
                 </div>
+
+                <div class="equipment-slot">
+                    <label>Main Hand:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.MainHand]" @bind:after="() => UpdateSlot(EquipmentSlot.MainHand)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.MainHand))
+                        {
+                            <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="equipment-slot">
+                    <label>Off Hand:</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHand]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHand)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHand))
+                        {
+                        <option value="@item.Id">@item.Item.Name</option>
+                        }
+                    </select>
+                </div>
             </div>
         </div>
         <div class="dnd-character-management-stat-content">
@@ -254,6 +276,8 @@
         public const string RingLeft = "RingLeft";
         public const string RingRight = "RingRight";
         public const string Feet = "Feet";
+        public const string MainHand = "MainHand";
+        public const string OffHand = "OffHand";
     }
 
     #endregion
@@ -324,6 +348,8 @@
         _equippedSlots[EquipmentSlot.RingLeft] = 0;
         _equippedSlots[EquipmentSlot.RingRight] = 0;
         _equippedSlots[EquipmentSlot.Feet] = 0;
+        _equippedSlots[EquipmentSlot.MainHand] = 0;
+        _equippedSlots[EquipmentSlot.OffHand] = 0;
     }
 
     #endregion
