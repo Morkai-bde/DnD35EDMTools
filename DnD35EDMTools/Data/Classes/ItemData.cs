@@ -9,6 +9,7 @@ public class ItemData
     [MaxLength(100)]
     public string Name { get; set; }
     public string? Description { get; set; }
+    public ItemSlot BodySlot { get; set; }
     public double Weight { get; set; }
     public int Enchantment { get; set; }
     public List<LootCategory> LootCategories { get; set; } = [LootCategory.Mundane];
