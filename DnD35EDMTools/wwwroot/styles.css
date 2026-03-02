@@ -616,6 +616,7 @@
     display: grid;
     grid-template-columns: 80px 100px;
     gap: 1px;
+    padding-top: 10px;
     padding-left: 10px;
     background-color: #808080;
 }
