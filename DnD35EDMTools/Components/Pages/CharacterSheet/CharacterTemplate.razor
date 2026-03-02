@@ -722,7 +722,7 @@
 
             _characterWeightCarried = GetCarriedWeight();
             
-            await CalculateEquippedArmor(characterId);
+            await CalculateEquippedArmour(characterId);
 
             await GetTotalArmour(race.Size);
 
@@ -852,7 +852,7 @@
             }
             return sum;
     }
-    private async Task CalculateEquippedArmor(int characterId)
+    private async Task CalculateEquippedArmour(int characterId)
     {
         try
         {
@@ -866,14 +866,14 @@
                 .Where(i => i.CharacterId == characterId && i.Location == "Equipped")
                 .ToListAsync();
 
-            var bodyArmor = equippedItems.FirstOrDefault(i => i.EquippedSlot == "Body");
-            if (bodyArmor != null)
+            var bodyArmour = equippedItems.FirstOrDefault(i => i.EquippedSlot == "Body");
+            if (bodyArmour != null)
             {
-                _wornArmour = bodyArmor.Item.Name;
-                _bodyArmourClass = GetPropertyIntValue(bodyArmor, PropertyApplication.ArmourClass);
-                _bodyCheckPenalty = GetPropertyStringValue(bodyArmor, PropertyApplication.ArmourCheckPenalty);
-                _bodyArmourType = GetArmorType(bodyArmor);
-                _bodyMaxDexBonus = GetPropertyIntValue(bodyArmor, PropertyApplication.MaxDexBonus);
+                _wornArmour = bodyArmour.Item.Name;
+                _bodyArmourClass = GetPropertyIntValue(bodyArmour, PropertyApplication.ArmourClass);
+                _bodyCheckPenalty = GetPropertyStringValue(bodyArmour, PropertyApplication.ArmourCheckPenalty);
+                _bodyArmourType = GetArmourType(bodyArmour);
+                _bodyMaxDexBonus = GetPropertyIntValue(bodyArmour, PropertyApplication.MaxDexBonus);
             }
             else
             {
@@ -890,7 +890,7 @@
                 _wornShield = shield.Item.Name;
                 _shieldArmourClass = GetPropertyIntValue(shield, PropertyApplication.ArmourClass);
                 _shieldCheckPenalty = GetPropertyStringValue(shield, PropertyApplication.ArmourCheckPenalty);
-                _shieldArmourType = GetArmorType(shield);
+                _shieldArmourType = GetArmourType(shield);
                 _shieldMaxDexBonus = GetPropertyIntValue(shield, PropertyApplication.MaxDexBonus);
             }
             else
@@ -904,7 +904,7 @@
         }
         catch (Exception ex)
         {
-            await NotificationService.AddNotification(NotificationType.Error, $"Failed to calculate armor: {ex.Message}");
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to calculate armour: {ex.Message}");
         }
     }
 
@@ -929,7 +929,7 @@
         return property?.Value;
     }
 
-    private string? GetArmorType(CharacterInventoryItem item)
+    private string? GetArmourType(CharacterInventoryItem item)
     {
         if (item.Item.ItemSubtype.HasValue)
         {
@@ -947,7 +947,7 @@
         }
         
         var typeProperty = item.Item.Properties
-            .FirstOrDefault(p => p.PropertyDefinition.Name == "Armor Type");
+            .FirstOrDefault(p => p.PropertyDefinition.Name == "Armour Type");
         
         return typeProperty?.Value;
     }
