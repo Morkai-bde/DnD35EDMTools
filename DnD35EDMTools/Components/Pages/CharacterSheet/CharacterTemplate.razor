@@ -869,7 +869,21 @@
 
         return 0;
     }
-    
+
+    private int GetEncumbranceMaxDex()
+    {
+        if (_characterWeightCarried > _characterHeavyLoad)
+            return 1;
+
+        if (_characterWeightCarried > _characterMediumLoad)
+            return 1;
+
+        if (_characterWeightCarried > _characterLightLoad)
+            return 3;
+
+        return 99;
+    }
+
     private async Task CalculateEquippedArmour(int characterId)
     {
         try
@@ -974,8 +988,14 @@
     {
         _baseArmourClass = 10 + SizeHelper.GetSizeAcBonus(size);
 
+        var armourMaxDex = _bodyMaxDexBonus ?? 99;
+        var shieldMaxDex = _shieldMaxDexBonus ?? 99;
+        var equipmentMaxDex = Math.Min(armourMaxDex, shieldMaxDex);
+
+        var finalMaxDex = Math.Min(equipmentMaxDex, GetEncumbranceMaxDex());
+        
         _equippedArmourClass = _bodyArmourClass + _shieldArmourClass;
-        _abilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, _bodyMaxDexBonus ?? 0);
+        _abilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, finalMaxDex);
         _naturalArmourClassBonus = 0;
         _otherArmourClassBonus = 0;
         _totalArmourClass = _baseArmourClass + _bodyArmourClass + _shieldArmourClass + _abilityArmourClassBonus + _naturalArmourClassBonus + _otherArmourClassBonus;
@@ -987,7 +1007,7 @@
         _flatFootedTotalArmourClass = _baseArmourClass + _flatFootedBodyArmourClass + _flatFootedAbilityArmourClassBonus + _flatFootedNaturalArmourClassBonus + _flatFootedOtherArmourClassBonus;
         
         _touchBodyArmourClass = 0;
-        _touchAbilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, _bodyMaxDexBonus ?? 0);
+        _touchAbilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, finalMaxDex);
         _touchNaturalArmourClassBonus = 0;
         _touchOtherArmourClassBonus = 0;
         _touchTotalArmourClass = _baseArmourClass + _touchBodyArmourClass + _touchAbilityArmourClassBonus + _touchNaturalArmourClassBonus + _touchOtherArmourClassBonus;
