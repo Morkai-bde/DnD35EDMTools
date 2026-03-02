@@ -726,6 +726,22 @@
 
             await GetTotalArmour(race.Size);
 
+            var carryingCapacity = await db.CarryingCapacity
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == _characterStrength);
+
+            if (carryingCapacity != null)
+            {
+                _characterLightLoad = WeightHelper.GetWeight(carryingCapacity.LightLoad, race.Size);
+                _characterMediumLoad = WeightHelper.GetWeight(carryingCapacity.MediumLoad, race.Size);
+                _characterHeavyLoad = WeightHelper.GetWeight(carryingCapacity.HeavyLoad, race.Size);
+                _characterLiftOverHead = WeightHelper.GetWeight(carryingCapacity.LiftOverHead, race.Size);
+                _characterLiftOffGround = WeightHelper.GetWeight(carryingCapacity.LiftOffGround, race.Size);
+                _characterPushOrDrag = WeightHelper.GetWeight(carryingCapacity.PushOrDrag, race.Size);
+            }
+
+            var skillEncumbrancePenalty = GetSkillEncumbrancePenalty();
+
             var totalSkillRanks = levels
                 .SelectMany(l => l.SkillRanks)
                 .GroupBy(sr => sr.SkillId)
@@ -742,7 +758,7 @@
 
                     var attributeModifier = GetAttributeModifier(skill.Attribute);
                     var racialBonus = race.SkillBonuses.GetValueOrDefault(skill.Name, 0);
-                    var modifier = attributeModifier + (int)Math.Floor(totalRanks) + racialBonus;
+                    var modifier = attributeModifier + (int)Math.Floor(totalRanks) + racialBonus + (skill.ArmourCheckPenaltyMultiplier * skillEncumbrancePenalty);
 
                     return new CharacterSkillDisplay
                     {
@@ -779,20 +795,6 @@
 
             _characterSpeed = $"{race.BaseSpeed} ft.";
 
-            var carryingCapacity = await db.CarryingCapacity
-                .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == _characterStrength);
-
-            if (carryingCapacity != null)
-            {
-                _characterLightLoad = WeightHelper.GetWeight(carryingCapacity.LightLoad, race.Size);
-                _characterMediumLoad = WeightHelper.GetWeight(carryingCapacity.MediumLoad, race.Size);
-                _characterHeavyLoad = WeightHelper.GetWeight(carryingCapacity.HeavyLoad, race.Size);
-                _characterLiftOverHead = WeightHelper.GetWeight(carryingCapacity.LiftOverHead, race.Size);
-                _characterLiftOffGround = WeightHelper.GetWeight(carryingCapacity.LiftOffGround, race.Size);
-                _characterPushOrDrag = WeightHelper.GetWeight(carryingCapacity.PushOrDrag, race.Size);
-            }
-            
             var totalBab = AttackBonusHelper.GetTotalBaseAttackBonus(levels);
             _characterBaseAttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalBab);
 
@@ -852,6 +854,22 @@
             }
             return sum;
     }
+
+    private int GetSkillEncumbrancePenalty()
+    {
+
+        if (_characterWeightCarried > _characterHeavyLoad)
+            return -6;
+
+        if (_characterWeightCarried > _characterMediumLoad)
+            return -6;
+
+        if (_characterWeightCarried > _characterLightLoad)
+            return -3;
+
+        return 0;
+    }
+    
     private async Task CalculateEquippedArmour(int characterId)
     {
         try
