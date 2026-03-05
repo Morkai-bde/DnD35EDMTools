@@ -457,6 +457,7 @@
     private List<CharacterData> _characters = [];
     private List<CharacterSkillDisplay> Skills { get; set; } = [];
     private List<CharacterInventoryItem> Inventory { get; set; } = [];
+    private List<CharacterInventoryItem> EquippedItems { get; set; } = [];
 
     private string _characterName = string.Empty;
     private string _characterClass = string.Empty;
@@ -656,6 +657,14 @@
                 .OrderBy(i => i.Item.Name)
                 .ToListAsync();
 
+            var equippedItemsTask =  db.CharacterInventoryItems
+                .AsNoTracking()
+                .Include(i => i.Item)
+                .ThenInclude(item => item.Properties)
+                .ThenInclude(p => p.PropertyDefinition)
+                .Where(i => i.CharacterId == characterId && i.Location == "Equipped")
+                .ToListAsync();
+            
             var levelsTask = db.CharacterLevels
                 .AsNoTracking()
                 .Include(cl => cl.Class)
@@ -666,6 +675,7 @@
                 .ToListAsync();
 
             await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, inventoryTask, levelsTask);
+            await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, inventoryTask, equippedItemsTask, levelsTask);
 
             var campaign = await campaignTask;
             var hideTrainedOnly = campaign?.HideTrainedOnlySkills ?? false;
@@ -720,6 +730,8 @@
             
             Inventory = await inventoryTask;
 
+            EquippedItems = await equippedItemsTask;
+            
             _characterWeightCarried = GetCarriedWeight();
             
             await CalculateEquippedArmour(characterId);
@@ -890,15 +902,7 @@
         {
             await using var db = CreateDbContext();
 
-            var equippedItems = await db.CharacterInventoryItems
-                .AsNoTracking()
-                .Include(i => i.Item)
-                    .ThenInclude(item => item.Properties)
-                        .ThenInclude(p => p.PropertyDefinition)
-                .Where(i => i.CharacterId == characterId && i.Location == "Equipped")
-                .ToListAsync();
-
-            var bodyArmour = equippedItems.FirstOrDefault(i => i.EquippedSlot == "Body");
+            var bodyArmour = EquippedItems.FirstOrDefault(i => i.EquippedSlot == "Body");
             if (bodyArmour != null)
             {
                 _wornArmour = bodyArmour.Item.Name;
@@ -916,7 +920,7 @@
                 _bodyMaxDexBonus = null;
             }
 
-            var shield = equippedItems.FirstOrDefault(i => i.EquippedSlot == "OffHand" && i.Item.ItemType == ItemType.Shield);
+            var shield = EquippedItems.FirstOrDefault(i => i.EquippedSlot == "OffHand" && i.Item.ItemType == ItemType.Shield);
             if (shield != null)
             {
                 _wornShield = shield.Item.Name;
