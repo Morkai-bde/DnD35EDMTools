@@ -674,7 +674,6 @@
                 .OrderBy(cl => cl.Level)
                 .ToListAsync();
 
-            await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, inventoryTask, levelsTask);
             await Task.WhenAll(campaignTask, raceTask, deityTask, genderTask, colorsTask, languagesTask, skillsTask, inventoryTask, equippedItemsTask, levelsTask);
 
             var campaign = await campaignTask;
@@ -729,7 +728,6 @@
             }
             
             Inventory = await inventoryTask;
-
             EquippedItems = await equippedItemsTask;
             
             _characterWeightCarried = GetCarriedWeight();
