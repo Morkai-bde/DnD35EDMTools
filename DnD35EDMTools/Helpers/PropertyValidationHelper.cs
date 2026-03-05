@@ -38,7 +38,8 @@ public static class PropertyValidationHelper
         { PropertyApplication.Enhancement, "Integer" },
         { PropertyApplication.Charges, "Integer" },
         { PropertyApplication.SpellLevel, "Integer" },
-        { PropertyApplication.SpeedAdjustment, "Integer" }
+        { PropertyApplication.SpeedAdjustment, "Integer" },
+        { PropertyApplication.SpeedMultiplier, "Double" }
     };
 
     private static readonly Dictionary<PropertyApplication, List<ItemType>> ValidItemTypes = new()
@@ -75,7 +76,8 @@ public static class PropertyValidationHelper
         { PropertyApplication.Enhancement, [ItemType.Weapon, ItemType.Armour, ItemType.Shield] },
         { PropertyApplication.Charges, [ItemType.Wand, ItemType.Staff, ItemType.Rod] },
         { PropertyApplication.SpellLevel, [ItemType.Scroll, ItemType.Potion, ItemType.Wand] },
-        { PropertyApplication.SpeedAdjustment, [ItemType.Armour, ItemType.WondrousItem] }
+        { PropertyApplication.SpeedAdjustment, [ItemType.Armour, ItemType.WondrousItem] },
+        { PropertyApplication.SpeedMultiplier, [ItemType.Armour, ItemType.WondrousItem] }
     };
 
     public static string GetValueTypeForApplication(PropertyApplication application)

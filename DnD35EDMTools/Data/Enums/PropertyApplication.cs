@@ -41,5 +41,6 @@ public enum PropertyApplication
     Enhancement = 61,
     Charges = 62,
     SpellLevel = 63,
-    SpeedAdjustment = 64
+    SpeedAdjustment = 64,
+    SpeedMultiplier = 65
 }
