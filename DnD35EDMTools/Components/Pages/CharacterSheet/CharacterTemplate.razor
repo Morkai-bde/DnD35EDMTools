@@ -127,12 +127,12 @@
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-header">Weight Carried</div>
-        <div class="load-speed-list-row-header">Speed</div>
+        <div class="load-speed-list-row-header">Speed (Run)</div>
         <div class="load-speed-list-row-header">Initiative</div>
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-content">@_characterWeightCarried</div>
-        <div class="load-speed-list-row-content">@_characterSpeed</div>
+        <div class="load-speed-list-row-content">@_characterSpeed (@_characterRunSpeed)</div>
         <div class="load-speed-list-row-content"></div>
     </div>
     <div class="load-speed-list">
@@ -414,14 +414,14 @@
     </div>
 </div>
 <div class="dnd-cc-inventory">
-        <div class="inventory-row">
-            <div class="inventory-row-header">Items</div>
-            <div class="inventory-row-header">Qty</div>
-            <div class="inventory-row-header">Wt (.lbs)</div>
-            <div class="inventory-row-header">Description</div>
+    <div class="inventory-row">
+        <div class="inventory-row-header">Items</div>
+        <div class="inventory-row-header">Qty</div>
+        <div class="inventory-row-header">Wt (.lbs)</div>
+        <div class="inventory-row-header">Description</div>
 
-            @for (int i = 0; i < Inventory.Count; i++)
-            {
+        @for (int i = 0; i < Inventory.Count; i++)
+        {
             var item = i < Inventory.Count ? Inventory[i] : null;
 
             <div class="@InventoryRowLeftClass(i)">
@@ -438,8 +438,8 @@
             <div class="@InventoryRowLeftClass(i)">
                 @(item?.Item.Description ?? "")
             </div>
-            }
-        </div>
+        }
+    </div>
 </div>
 </div>
 </div>
@@ -484,6 +484,10 @@
     private int? _characterCopper;
 
     private string _characterSpeed = string.Empty;
+    private string _characterRunSpeed = string.Empty;
+    private int _baseSpeed;
+    private int _currentSpeed;
+    private int _runSpeed;
 
     private double? _characterWeightCarried;
     private double? _characterLightLoad;
@@ -494,7 +498,7 @@
     private double? _characterPushOrDrag;
 
     private string _characterBaseAttackBonus = "";
-    
+
     private int? _characterStrength;
     private int? _characterStrengthMod;
     private int? _characterDexterity;
@@ -525,26 +529,26 @@
     private string? _shieldCheckPenalty;
     private string? _shieldArmourType;
     private int? _shieldMaxDexBonus;
-    
+
     private int? _totalArmourClass;
     private int? _baseArmourClass;
     private int? _equippedArmourClass;
     private int? _abilityArmourClassBonus;
     private int? _naturalArmourClassBonus;
     private int? _otherArmourClassBonus;
-    
+
     private int? _flatFootedTotalArmourClass;
     private int? _flatFootedBodyArmourClass;
     private int? _flatFootedAbilityArmourClassBonus;
     private int? _flatFootedNaturalArmourClassBonus;
     private int? _flatFootedOtherArmourClassBonus;
-    
+
     private int? _touchTotalArmourClass;
     private int? _touchBodyArmourClass;
     private int? _touchAbilityArmourClassBonus;
     private int? _touchNaturalArmourClassBonus;
     private int? _touchOtherArmourClassBonus;
-    
+
     #endregion
 
     #region Calculated Properties
@@ -568,7 +572,7 @@
         => row % 2 == 1
             ? "inventory-list-row-center-alt"
             : "inventory-list-row-center";
-    
+
     #endregion
 
     #region Lifecycle Methods
@@ -657,14 +661,14 @@
                 .OrderBy(i => i.Item.Name)
                 .ToListAsync();
 
-            var equippedItemsTask =  db.CharacterInventoryItems
+            var equippedItemsTask = db.CharacterInventoryItems
                 .AsNoTracking()
                 .Include(i => i.Item)
                 .ThenInclude(item => item.Properties)
                 .ThenInclude(p => p.PropertyDefinition)
                 .Where(i => i.CharacterId == characterId && i.Location == "Equipped")
                 .ToListAsync();
-            
+
             var levelsTask = db.CharacterLevels
                 .AsNoTracking()
                 .Include(cl => cl.Class)
@@ -726,14 +730,14 @@
                 _characterRefSave = SaveHelper.GetBaseSave(primaryClass.ReflexSavePerLevel, _characterDexterity.Value) + race.ReflexBonus;
                 _characterWillSave = SaveHelper.GetBaseSave(primaryClass.WillSavePerLevel, _characterWisdom.Value) + race.WillBonus;
             }
-            
+
             Inventory = await inventoryTask;
             EquippedItems = await equippedItemsTask;
-            
-            _characterWeightCarried = GetCarriedWeight();
-            
-            await CalculateEquippedArmour(characterId);
 
+            _characterWeightCarried = GetCarriedWeight();
+
+            await CalculateEquippedArmour();
+            CalculateMovementSpeed(race);
             await GetTotalArmour(race.Size);
 
             var carryingCapacity = await db.CarryingCapacity
@@ -756,7 +760,7 @@
                 .SelectMany(l => l.SkillRanks)
                 .GroupBy(sr => sr.SkillId)
                 .ToDictionary(
-                    g => g.Key, 
+                    g => g.Key,
                     g => g.Sum(sr => sr.IsClassSkill ? sr.RanksPurchased : sr.RanksPurchased * 0.5)
                 );
 
@@ -802,8 +806,6 @@
             _characterGold = character.GoldPieces;
             _characterSilver = character.SilverPieces;
             _characterCopper = character.CopperPieces;
-
-            _characterSpeed = $"{race.BaseSpeed} ft.";
 
             var totalBab = AttackBonusHelper.GetTotalBaseAttackBonus(levels);
             _characterBaseAttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalBab);
@@ -856,18 +858,18 @@
 
     private double? GetCarriedWeight()
     {
-            double? sum = 0;
-            foreach (var item in Inventory)
-            {
-                var totalItemWeight = item.Item.Weight * item.Quantity;
-                sum += totalItemWeight;
-            }
-            return sum;
+        double? sum = 0;
+        foreach (var item in Inventory)
+        {
+            var totalItemWeight = item.Item.Weight * item.Quantity;
+            sum += totalItemWeight;
+        }
+
+        return sum;
     }
 
     private int GetSkillEncumbrancePenalty()
     {
-
         if (_characterWeightCarried > _characterHeavyLoad)
             return -6;
 
@@ -894,7 +896,7 @@
         return 99;
     }
 
-    private async Task CalculateEquippedArmour(int characterId)
+    private async Task CalculateEquippedArmour()
     {
         try
         {
@@ -946,12 +948,12 @@
     {
         var property = item.Item.Properties
             .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == application);
-        
+
         if (property != null && int.TryParse(property.Value, out int value))
         {
             return value;
         }
-        
+
         return null;
     }
 
@@ -959,7 +961,7 @@
     {
         var property = item.Item.Properties
             .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == application);
-        
+
         return property?.Value;
     }
 
@@ -979,10 +981,10 @@
                 _ => null
             };
         }
-        
+
         var typeProperty = item.Item.Properties
             .FirstOrDefault(p => p.PropertyDefinition.Name == "Armour Type");
-        
+
         return typeProperty?.Value;
     }
 
@@ -995,26 +997,129 @@
         var equipmentMaxDex = Math.Min(armourMaxDex, shieldMaxDex);
 
         var finalMaxDex = Math.Min(equipmentMaxDex, GetEncumbranceMaxDex());
-        
+
         _equippedArmourClass = _bodyArmourClass + _shieldArmourClass;
         _abilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, finalMaxDex);
         _naturalArmourClassBonus = 0;
         _otherArmourClassBonus = 0;
         _totalArmourClass = _baseArmourClass + _bodyArmourClass + _shieldArmourClass + _abilityArmourClassBonus + _naturalArmourClassBonus + _otherArmourClassBonus;
-        
+
         _flatFootedBodyArmourClass = _bodyArmourClass + _shieldArmourClass;
         _flatFootedAbilityArmourClassBonus = 0;
         _flatFootedNaturalArmourClassBonus = 0;
         _flatFootedOtherArmourClassBonus = 0;
         _flatFootedTotalArmourClass = _baseArmourClass + _flatFootedBodyArmourClass + _flatFootedAbilityArmourClassBonus + _flatFootedNaturalArmourClassBonus + _flatFootedOtherArmourClassBonus;
-        
+
         _touchBodyArmourClass = 0;
         _touchAbilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, finalMaxDex);
         _touchNaturalArmourClassBonus = 0;
         _touchOtherArmourClassBonus = 0;
         _touchTotalArmourClass = _baseArmourClass + _touchBodyArmourClass + _touchAbilityArmourClassBonus + _touchNaturalArmourClassBonus + _touchOtherArmourClassBonus;
-        
+
         return Task.CompletedTask;
+    }
+
+    private void CalculateMovementSpeed(RaceData race)
+    {
+        _baseSpeed = race.BaseSpeed;
+        _currentSpeed = _baseSpeed;
+
+        var encumbranceReduction = GetEncumbranceSpeedReduction();
+        if (encumbranceReduction > 0)
+        {
+            _currentSpeed -= encumbranceReduction;
+        }
+
+        var armorReduction = GetArmorSpeedReduction(race.Size, race.Race);
+        if (armorReduction > 0)
+        {
+            if (armorReduction > encumbranceReduction)
+            {
+                _currentSpeed = _baseSpeed - armorReduction;
+            }
+        }
+
+        var speedBonus = GetMagicalSpeedBonus();
+        _currentSpeed += speedBonus;
+
+        _currentSpeed = Math.Max(0, _currentSpeed);
+
+        bool heavyRestriction = IsWearingHeavyArmor() || (_characterWeightCarried > _characterMediumLoad);
+        _runSpeed = heavyRestriction ? _currentSpeed * 3 : _currentSpeed * 4;
+
+        _characterSpeed = $"{_currentSpeed} ft.";
+        _characterRunSpeed = $"{_runSpeed} ft.";
+    }
+
+    private int GetEncumbranceSpeedReduction()
+    {
+        if (_characterWeightCarried <= _characterLightLoad)
+            return 0;
+
+        return _baseSpeed switch
+        {
+            30 => 10,
+            20 => 5,
+            40 => 10,
+            _ => (int)(_baseSpeed * 1.0 / 3.0)
+        };
+    }
+
+    private int GetArmorSpeedReduction(string size, string race)
+    {
+        if (race.Contains("Dwarf", StringComparison.OrdinalIgnoreCase))
+            return 0;
+
+        if (size != "Small" && size != "Medium")
+            return 0;
+
+        var armorType = _bodyArmourType;
+
+        if (armorType == "Medium" || armorType == "Heavy")
+        {
+            return _baseSpeed switch
+            {
+                30 => 10,
+                20 => 5,
+                40 => 10,
+                _ => (int)(_baseSpeed * 1.0 / 3.0)
+            };
+        }
+
+        return 0;
+    }
+
+    private bool IsWearingHeavyArmor()
+    {
+        return _bodyArmourType == "Heavy";
+    }
+
+    private int GetMagicalSpeedBonus()
+    {
+        var flatAdjustment = 0;
+        var multiplier = 1.0;
+
+        foreach (var item in EquippedItems)
+        {
+            foreach (var prop in item.Item.Properties)
+            {
+                switch (prop.PropertyDefinition.AppliesTo)
+                {
+                    case PropertyApplication.SpeedAdjustment:
+                        if (int.TryParse(prop.Value, out int speedAdjustment))
+                            flatAdjustment += speedAdjustment;
+                        break;
+
+                    case PropertyApplication.SpeedMultiplier:
+                        if (double.TryParse(prop.Value, out double speedMultiplier))
+                            multiplier *= speedMultiplier;
+                        break;
+                }
+            }
+        }
+
+        int speedAfterMultiplier = (int)(_currentSpeed * multiplier);
+        return ((speedAfterMultiplier - _currentSpeed) + flatAdjustment);
     }
 
     #endregion
