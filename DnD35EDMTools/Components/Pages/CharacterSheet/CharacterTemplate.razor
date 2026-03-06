@@ -48,7 +48,7 @@
                 <div class="attribute-list__content"> @_characterExperience</div>
             </div>
             <div class="attribute-list">
-                <div class="attribute-list-row-header">Hitpoints</div>
+                <div class="attribute-list-row-header">Hit Points</div>
                 <div class="attribute-list__content"> @_characterHitPoints</div>
             </div>
             <div class="attribute-list">
@@ -132,7 +132,7 @@
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-content">@_characterWeightCarried</div>
-        <div class="load-speed-list-row-content">@_characterSpeed (@_characterRunSpeed)</div>
+        <div class="load-speed-list-row-content">@_characterSpeed</div>
         <div class="load-speed-list-row-content"></div>
     </div>
     <div class="load-speed-list">
@@ -143,7 +143,7 @@
     <div class="load-speed-list">
         <div class="load-speed-list-row-content">@_characterLightLoad</div>
         <div class="load-speed-list-row-content">@_characterLiftOverHead</div>
-        <div class="load-speed-list-row-content"></div>
+        <div class="load-speed-list-row-content">@_characterArcaneSpellFailure</div>
     </div>
     <div class="load-speed-list">
         <div class="load-speed-list-row-header">Medium Load</div>
@@ -476,7 +476,7 @@
     private string _characterHeight = string.Empty;
     private string _characterPlayerName = string.Empty;
 
-    private string[] _characterLanguages = new string[21];
+    private readonly string[] _characterLanguages = new string[21];
 
     private int? _characterPlatinum;
     private int? _characterGold;
@@ -484,7 +484,6 @@
     private int? _characterCopper;
 
     private string _characterSpeed = string.Empty;
-    private string _characterRunSpeed = string.Empty;
     private int _baseSpeed;
     private int _currentSpeed;
     private int _runSpeed;
@@ -497,7 +496,8 @@
     private double? _characterLiftOffGround;
     private double? _characterPushOrDrag;
 
-    private string _characterBaseAttackBonus = "";
+    private string _characterArcaneSpellFailure = string.Empty;
+    private string _characterBaseAttackBonus = string.Empty;
 
     private int? _characterStrength;
     private int? _characterStrengthMod;
@@ -784,7 +784,7 @@
                 })
                 .Where(skill =>
                 {
-                    if (hideTrainedOnly && skill.IsTrainedOnly && skill.Ranks == 0)
+                    if (hideTrainedOnly && skill is { IsTrainedOnly: true, Ranks: 0 })
                     {
                         return false;
                     }
@@ -870,9 +870,6 @@
 
     private int GetSkillEncumbrancePenalty()
     {
-        if (_characterWeightCarried > _characterHeavyLoad)
-            return -6;
-
         if (_characterWeightCarried > _characterMediumLoad)
             return -6;
 
@@ -884,9 +881,6 @@
 
     private int GetEncumbranceMaxDex()
     {
-        if (_characterWeightCarried > _characterHeavyLoad)
-            return 1;
-
         if (_characterWeightCarried > _characterMediumLoad)
             return 1;
 
@@ -900,15 +894,13 @@
     {
         try
         {
-            await using var db = CreateDbContext();
-
             var bodyArmour = EquippedItems.FirstOrDefault(i => i.EquippedSlot == "Body");
             if (bodyArmour != null)
             {
                 _wornArmour = bodyArmour.Item.Name;
                 _bodyArmourClass = GetPropertyIntValue(bodyArmour, PropertyApplication.ArmourClass);
                 _bodyCheckPenalty = GetPropertyStringValue(bodyArmour, PropertyApplication.ArmourCheckPenalty);
-                _bodyArmourType = GetArmourType(bodyArmour);
+                _bodyArmourType = ItemTypeHelper.GetArmourType(bodyArmour.Item.ItemSubtype!.Value);
                 _bodyMaxDexBonus = GetPropertyIntValue(bodyArmour, PropertyApplication.MaxDexBonus);
             }
             else
@@ -920,13 +912,13 @@
                 _bodyMaxDexBonus = null;
             }
 
-            var shield = EquippedItems.FirstOrDefault(i => i.EquippedSlot == "OffHand" && i.Item.ItemType == ItemType.Shield);
+            var shield = EquippedItems.FirstOrDefault(i => i is { EquippedSlot: "OffHand", Item.ItemType: ItemType.Shield });
             if (shield != null)
             {
                 _wornShield = shield.Item.Name;
                 _shieldArmourClass = GetPropertyIntValue(shield, PropertyApplication.ArmourClass);
                 _shieldCheckPenalty = GetPropertyStringValue(shield, PropertyApplication.ArmourCheckPenalty);
-                _shieldArmourType = GetArmourType(shield);
+                _shieldArmourType = ItemTypeHelper.GetArmourType(shield.Item.ItemSubtype!.Value);
                 _shieldMaxDexBonus = GetPropertyIntValue(shield, PropertyApplication.MaxDexBonus);
             }
             else
@@ -936,6 +928,17 @@
                 _shieldCheckPenalty = null;
                 _shieldArmourType = null;
                 _shieldMaxDexBonus = null;
+            }
+
+            if (EquippedItems.Count > 0)
+            {
+                var totalArcaneSpellFailure = 0;
+                foreach (var item in EquippedItems)
+                {
+                    totalArcaneSpellFailure += (int)GetPropertyIntValue(item, PropertyApplication.ArcaneSpellFailure)!;
+                }
+
+                _characterArcaneSpellFailure = $"{totalArcaneSpellFailure}%";
             }
         }
         catch (Exception ex)
@@ -963,29 +966,6 @@
             .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == application);
 
         return property?.Value;
-    }
-
-    private string? GetArmourType(CharacterInventoryItem item)
-    {
-        if (item.Item.ItemSubtype.HasValue)
-        {
-            return item.Item.ItemSubtype.Value switch
-            {
-                ItemSubtype.LightArmour => "Light",
-                ItemSubtype.MediumArmour => "Medium",
-                ItemSubtype.HeavyArmour => "Heavy",
-                ItemSubtype.Buckler => "Shield",
-                ItemSubtype.LightShield => "Shield",
-                ItemSubtype.HeavyShield => "Shield",
-                ItemSubtype.TowerShield => "Shield",
-                _ => null
-            };
-        }
-
-        var typeProperty = item.Item.Properties
-            .FirstOrDefault(p => p.PropertyDefinition.Name == "Armour Type");
-
-        return typeProperty?.Value;
     }
 
     private Task GetTotalArmour(string size)
@@ -1039,16 +1019,15 @@
             }
         }
 
-        var speedBonus = GetMagicalSpeedBonus();
+        var speedBonus = GetSpeedModifier();
         _currentSpeed += speedBonus;
 
         _currentSpeed = Math.Max(0, _currentSpeed);
 
-        bool heavyRestriction = IsWearingHeavyArmor() || (_characterWeightCarried > _characterMediumLoad);
+        var heavyRestriction = _bodyArmourType == "Heavy" || (_characterWeightCarried > _characterMediumLoad);
         _runSpeed = heavyRestriction ? _currentSpeed * 3 : _currentSpeed * 4;
 
-        _characterSpeed = $"{_currentSpeed} ft.";
-        _characterRunSpeed = $"{_runSpeed} ft.";
+        _characterSpeed = $"{_currentSpeed} ft. ({_runSpeed} ft.)";
     }
 
     private int GetEncumbranceSpeedReduction()
@@ -1058,8 +1037,8 @@
 
         return _baseSpeed switch
         {
-            30 => 10,
             20 => 5,
+            30 => 10,
             40 => 10,
             _ => (int)(_baseSpeed * 1.0 / 3.0)
         };
@@ -1089,12 +1068,7 @@
         return 0;
     }
 
-    private bool IsWearingHeavyArmor()
-    {
-        return _bodyArmourType == "Heavy";
-    }
-
-    private int GetMagicalSpeedBonus()
+    private int GetSpeedModifier()
     {
         var flatAdjustment = 0;
         var multiplier = 1.0;
@@ -1118,8 +1092,8 @@
             }
         }
 
-        int speedAfterMultiplier = (int)(_currentSpeed * multiplier);
-        return ((speedAfterMultiplier - _currentSpeed) + flatAdjustment);
+        var speedAfterMultiplier = (int)(_currentSpeed * multiplier);
+        return speedAfterMultiplier - _currentSpeed + flatAdjustment;
     }
 
     #endregion

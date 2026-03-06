@@ -62,6 +62,19 @@ public static class ItemTypeHelper
         _ => subtype.ToString()
     };
 
+    public static string GetArmourType(ItemSubtype subtype) => subtype switch
+    {
+        ItemSubtype.LightArmour => "Light",
+        ItemSubtype.MediumArmour => "Medium",
+        ItemSubtype.HeavyArmour => "Heavy",
+        ItemSubtype.Buckler => "Shield",
+        ItemSubtype.LightShield => "Shield",
+        ItemSubtype.HeavyShield => "Shield",
+        ItemSubtype.TowerShield => "Shield",
+
+        _ => subtype.ToString()
+    };
+    
     public static List<ItemSubtype> GetSubtypesForType(ItemType type) => type switch
     {
         ItemType.Ammunition =>
