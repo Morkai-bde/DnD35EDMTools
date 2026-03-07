@@ -736,10 +736,6 @@
 
             _characterWeightCarried = GetCarriedWeight();
 
-            await CalculateEquippedArmour();
-            CalculateMovementSpeed(race);
-            await GetTotalArmour(race.Size);
-
             var carryingCapacity = await db.CarryingCapacity
                 .AsNoTracking()
                 .SingleOrDefaultAsync(x => x.Id == _characterStrength);
@@ -754,7 +750,9 @@
                 _characterPushOrDrag = WeightHelper.GetWeight(carryingCapacity.PushOrDrag, race.Size);
             }
 
-            var skillEncumbrancePenalty = GetSkillEncumbrancePenalty();
+            await CalculateEquippedArmour();
+            CalculateMovementSpeed(race);
+            await GetTotalArmour(race.Size);
 
             var totalSkillRanks = levels
                 .SelectMany(l => l.SkillRanks)
@@ -772,7 +770,8 @@
 
                     var attributeModifier = GetAttributeModifier(skill.Attribute);
                     var racialBonus = race.SkillBonuses.GetValueOrDefault(skill.Name, 0);
-                    var modifier = attributeModifier + (int)Math.Floor(totalRanks) + racialBonus + (skill.ArmourCheckPenaltyMultiplier * skillEncumbrancePenalty);
+                    var totalAcp = GetTotalAcp();
+                    var modifier = attributeModifier + (int)Math.Floor(totalRanks) + racialBonus + (skill.ArmourCheckPenaltyMultiplier * totalAcp);
 
                     return new CharacterSkillDisplay
                     {
@@ -868,26 +867,47 @@
         return sum;
     }
 
-    private int GetSkillEncumbrancePenalty()
+    private EncumbranceLevel GetEncumbranceLevel()
     {
-        if (_characterWeightCarried > _characterMediumLoad)
-            return -6;
+        var carried = _characterWeightCarried ?? 0;
 
-        if (_characterWeightCarried > _characterLightLoad)
-            return -3;
+        if (carried <= _characterLightLoad)
+            return EncumbranceLevel.Light;
 
-        return 0;
+        if (carried <= _characterMediumLoad)
+            return EncumbranceLevel.Medium;
+
+        if (carried <= _characterHeavyLoad)
+            return EncumbranceLevel.Heavy;
+
+        return EncumbranceLevel.Overloaded;
+    }
+
+    private int GetEncumbranceAcp()
+    {
+        return GetEncumbranceLevel() switch
+        {
+            EncumbranceLevel.Light => 0,
+            EncumbranceLevel.Medium => -3,
+            EncumbranceLevel.Heavy => -6,
+            _ => 0
+        };
+    }
+
+    private int GetTotalAcp()
+    {
+        return GetEncumbranceAcp() + GetTotalArmorCheckPenalty();
     }
 
     private int GetEncumbranceMaxDex()
     {
-        if (_characterWeightCarried > _characterMediumLoad)
-            return 1;
-
-        if (_characterWeightCarried > _characterLightLoad)
-            return 3;
-
-        return 99;
+        return GetEncumbranceLevel() switch
+        {
+            EncumbranceLevel.Light => 99,
+            EncumbranceLevel.Medium => 3,
+            EncumbranceLevel.Heavy => 1,
+            _ => 0
+        };
     }
 
     private async Task CalculateEquippedArmour()
@@ -968,6 +988,19 @@
         return property?.Value;
     }
 
+    private int GetTotalArmorCheckPenalty()
+    {
+        int penalty = 0;
+    
+        if (!string.IsNullOrEmpty(_bodyCheckPenalty) && int.TryParse(_bodyCheckPenalty, out int bodyPenalty))
+            penalty += bodyPenalty;
+    
+        if (!string.IsNullOrEmpty(_shieldCheckPenalty) && int.TryParse(_shieldCheckPenalty, out int shieldPenalty))
+            penalty += shieldPenalty;
+    
+        return penalty;
+    }
+
     private Task GetTotalArmour(string size)
     {
         _baseArmourClass = 10 + SizeHelper.GetSizeAcBonus(size);
@@ -978,13 +1011,13 @@
 
         var finalMaxDex = Math.Min(equipmentMaxDex, GetEncumbranceMaxDex());
 
-        _equippedArmourClass = _bodyArmourClass + _shieldArmourClass;
+        _equippedArmourClass = (_bodyArmourClass ?? 0) + (_shieldArmourClass ?? 0);
         _abilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, finalMaxDex);
         _naturalArmourClassBonus = 0;
         _otherArmourClassBonus = 0;
         _totalArmourClass = _baseArmourClass + _bodyArmourClass + _shieldArmourClass + _abilityArmourClassBonus + _naturalArmourClassBonus + _otherArmourClassBonus;
 
-        _flatFootedBodyArmourClass = _bodyArmourClass + _shieldArmourClass;
+        _flatFootedBodyArmourClass =  (_bodyArmourClass ?? 0) + (_shieldArmourClass ?? 0);
         _flatFootedAbilityArmourClassBonus = 0;
         _flatFootedNaturalArmourClassBonus = 0;
         _flatFootedOtherArmourClassBonus = 0;
