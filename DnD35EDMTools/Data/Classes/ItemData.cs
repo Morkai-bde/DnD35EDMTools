@@ -18,8 +18,7 @@ public class ItemData
     public double BaseGoldValue { get; set; }
     [MaxLength(100)]
     public string? CraftRequiredFeats { get; set; }
-    [MaxLength(50)]
-    public string? CraftSkillRequired { get; set; }
+    public SkillData? CraftSkillRequired { get; set; }
     public int CraftDC { get; set; }
     public double CraftGoldCost { get; set; }
     public int CraftCostXp { get; set; }
@@ -28,4 +27,5 @@ public class ItemData
     public int? Page { get; set; }
     
     public List<ItemProperty> Properties { get; set; } = [];
+    public int? CraftSkillRequiredId { get; set; }
 }

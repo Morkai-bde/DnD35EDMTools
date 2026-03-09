@@ -188,6 +188,12 @@ namespace DnD35EDMTools.Data
                     )
                     .HasColumnType("TEXT");
 
+                modelBuilder.Entity<ItemData>()
+                    .HasOne(i => i.CraftSkillRequired)
+                    .WithMany()
+                    .HasForeignKey(i => i.CraftSkillRequiredId)
+                    .OnDelete(DeleteBehavior.Restrict);
+
                 modelBuilder.Entity<PropertyDefinition>()
                     .Property(pd => pd.ApplicableItemTypeIds)
                     .HasConversion(

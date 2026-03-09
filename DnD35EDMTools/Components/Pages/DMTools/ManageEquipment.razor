@@ -148,7 +148,13 @@
 
                     <div class="dnd-dm-me-form-group">
                         <label>Craft Skill Required:</label>
-                        <input @bind="CurrentItem.CraftSkillRequired" maxlength="50" placeholder="e.g., Craft (Weaponsmithing)"/>
+                        <select @bind=CurrentItem.CraftSkillRequiredId>
+                            <option value="">None</option>
+                            @foreach (var skill in _requiredCraftSkills)
+                            {
+                                <option value="@skill.Id">@skill.Name</option>
+                            }
+                        </select>
                     </div>
 
                     <div class="dnd-dm-me-form-group">
@@ -245,6 +251,7 @@
     private ItemData CurrentItem { get; set; } = new();
     private List<ItemProperty> _currentItemProperties = [];
     private HashSet<LootCategory> _selectedLootCategories = [];
+    private List<SkillData> _requiredCraftSkills = [];
 
     private bool IsModalOpen { get; set; }
     private ModalMode CurrentMode { get; set; }
@@ -287,6 +294,7 @@
     {
         await LoadItems();
         await LoadPropertyDefinitions();
+        await LoadCraftSkills();
     }
 
     private async Task LoadItems()
@@ -318,6 +326,23 @@
         catch (Exception ex)
         {
             await NotificationService.AddNotification(NotificationType.Error, $"Failed to load property definitions: {ex.Message}");
+        }
+    }
+
+    private async Task LoadCraftSkills()
+    {
+        try
+        {
+            await using var db = CreateDbContext();
+            
+            _requiredCraftSkills = await db.Skills
+                .Where(s => s.Name.Contains("Craft"))
+                .OrderBy(s => s.Name)
+                .ToListAsync();
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to load craft skills: {ex.Message}");
         }
     }
 
