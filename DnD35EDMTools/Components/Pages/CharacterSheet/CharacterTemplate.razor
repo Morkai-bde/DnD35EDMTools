@@ -955,7 +955,11 @@
                 var totalArcaneSpellFailure = 0;
                 foreach (var item in EquippedItems)
                 {
-                    totalArcaneSpellFailure += (int)GetPropertyIntValue(item, PropertyApplication.ArcaneSpellFailure)!;
+                    var spellFailure = GetPropertyIntValue(item, PropertyApplication.ArcaneSpellFailure);
+                    if (spellFailure.HasValue)
+                    {
+                        totalArcaneSpellFailure += spellFailure.Value;
+                    }
                 }
 
                 _characterArcaneSpellFailure = $"{totalArcaneSpellFailure}%";
