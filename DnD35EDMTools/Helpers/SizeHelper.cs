@@ -2,7 +2,7 @@
 
 public static class SizeHelper
 {
-    public static int GetSizeAcBonus(string size)
+    public static int GetRaceSizeModifier(string size)
     {
         switch (size)
         {

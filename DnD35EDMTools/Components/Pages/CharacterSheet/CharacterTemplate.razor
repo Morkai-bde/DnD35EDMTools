@@ -301,36 +301,15 @@
         <div class="weapon-row-header">Full Attack</div>
         <div class="weapon-row-header">Damage</div>
     </div>
-    <div class="weapon-list-left">
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-    </div>
-    <div class="weapon-list-left">
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-    </div>
-    <div class="weapon-list-left">
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-    </div>
-    <div class="weapon-list-left">
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-    </div>
-    <div class="weapon-list-left">
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-    </div>
-    <div class="weapon-list-left">
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-        <div class="weapon-list-row-content"></div>
-    </div>
+    @for (int i = 0; i < 6; i++)
+    {
+        var weapon = i < _equippedWeapons.Count ? _equippedWeapons[i] : new WeaponDisplay();
+        <div class="weapon-list-left">
+            <div class="weapon-list-row-content">@weapon.Name</div>
+            <div class="weapon-list-row-content">@weapon.AttackBonus</div>
+            <div class="weapon-list-row-content">@weapon.Damage</div>
+        </div>
+    }
 </div>
 </div>
 <div class="dnd-cs-top__right">
@@ -364,42 +343,16 @@
             <div class="weapon-row-header">Range</div>
             <div class="weapon-row-header">Notes</div>
         </div>
-        <div class="weapon-list-right">
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-right">
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-right">
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-right">
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-right">
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
-        <div class="weapon-list-right">
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-            <div class="weapon-list-row-content"></div>
-        </div>
+        @for (int i = 0; i < 6; i++)
+        {
+            var weapon = i < _equippedWeapons.Count ? _equippedWeapons[i] : new WeaponDisplay();
+            <div class="weapon-list-right">
+                <div class="weapon-list-row-content">@weapon.Critical</div>
+                <div class="weapon-list-row-content">@weapon.Type</div>
+                <div class="weapon-list-row-content">@weapon.Range</div>
+                <div class="weapon-list-row-content">@weapon.Notes</div>
+            </div>
+        }
     </div>
 </div>
 </div>
@@ -425,7 +378,7 @@
             var item = i < Inventory.Count ? Inventory[i] : null;
 
             <div class="@InventoryRowLeftClass(i)">
-                @(item?.Item.Name ?? "")
+                @((item?.Item.Name ?? "") + (item != null && !string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : ""))
             </div>
 
             <div class="@InventoryRowCenterClass(i)">
@@ -548,6 +501,19 @@
     private int? _touchAbilityArmourClassBonus;
     private int? _touchNaturalArmourClassBonus;
     private int? _touchOtherArmourClassBonus;
+
+    private List<WeaponDisplay> _equippedWeapons = [];
+
+    private class WeaponDisplay
+    {
+        public string Name { get; set; } = string.Empty;
+        public string AttackBonus { get; set; } = string.Empty;
+        public string Damage { get; set; } = string.Empty;
+        public string Critical { get; set; } = string.Empty;
+        public string Type { get; set; } = string.Empty;
+        public string Range { get; set; } = string.Empty;
+        public string Notes { get; set; } = string.Empty;
+    }
 
     #endregion
 
@@ -751,6 +717,7 @@
             }
 
             await CalculateEquippedArmour();
+            await CalculateEquippedWeapons(race.Size);
             CalculateMovementSpeed(race);
             await GetTotalArmour(race.Size);
 
@@ -971,6 +938,100 @@
         }
     }
 
+    private async Task CalculateEquippedWeapons(string size)
+    {
+        try
+        {
+            _equippedWeapons.Clear();
+
+            await using var db = CreateDbContext();
+            var characterLevels = await db.CharacterLevels.Include(cl => cl.Class).Where(cl => cl.CharacterId == SelectedCharacterId).ToListAsync();
+            var bab = AttackBonusHelper.GetTotalBaseAttackBonus(characterLevels);
+            var sizeBonus = SizeHelper.GetRaceSizeModifier(size);
+
+            var unarmed = new WeaponDisplay
+            {
+                Name = "Unarmed Strike",
+                AttackBonus = AttackBonusHelper.GetAttackBonusDisplay(bab + (_characterStrengthMod ?? 0) + sizeBonus),
+                Critical = "x2",
+                Type = "Bludgeoning",
+                Range = "0",
+                Notes = "Nonlethal"
+            };
+
+            var unarmedBaseDamage = size switch
+            {
+                "Small" => "1d2",
+                "Medium" => "1d3",
+                "Large" => "1d4",
+                "Huge" => "1d6",
+                "Gargantuan" => "1d8",
+                "Colossal" => "2d6",
+                _ => "1"
+            };
+            unarmed.Damage = (_characterStrengthMod ?? 0) != 0 
+                ? $"{unarmedBaseDamage}{((_characterStrengthMod ?? 0) > 0 ? "+" : "")}{_characterStrengthMod}" 
+                : unarmedBaseDamage;
+
+            _equippedWeapons.Add(unarmed);
+
+
+            var setSlots = new[] 
+            { 
+                "MainHand", "OffHand", 
+                "MainHandSet2", "OffHandSet2", 
+                "MainHandSet3", "OffHandSet3",
+                "MainHandSet4", "OffHandSet4",
+                "MainHandSet5", "OffHandSet5"
+            };
+
+            foreach (var slot in setSlots)
+            {
+                var weapon = EquippedItems.FirstOrDefault(i => i.EquippedSlot == slot && i.Item.ItemType == ItemType.Weapon);
+                if (weapon == null) continue;
+
+                var display = new WeaponDisplay
+                {
+                    Name = weapon.Item.Name
+                };
+
+                var category = GetPropertyStringValue(weapon, PropertyApplication.WeaponCategory);
+                var isRanged = category?.Contains("Ranged") ?? false;
+                var abilityMod = isRanged ? (_characterDexterityMod ?? 0) : (_characterStrengthMod ?? 0);
+                
+                var enhancement = GetPropertyIntValue(weapon, PropertyApplication.Enhancement) ?? 0;
+                var attackBonusProp = GetPropertyIntValue(weapon, PropertyApplication.AttackBonus) ?? 0;
+
+                var totalAttackBonus = bab + abilityMod + enhancement + attackBonusProp + sizeBonus;
+                display.AttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalAttackBonus);
+
+                var baseDamage = GetPropertyStringValue(weapon, PropertyApplication.DamageDice) ?? "0";
+                var damageBonusProp = GetPropertyIntValue(weapon, PropertyApplication.DamageBonus) ?? 0;
+                var damageEnhancement = enhancement; 
+                
+                var damageAbilityMod = isRanged ? 0 : (_characterStrengthMod ?? 0);
+                
+                var totalDamageBonus = damageAbilityMod + damageEnhancement + damageBonusProp;
+                display.Damage = totalDamageBonus != 0 
+                    ? $"{baseDamage}{(totalDamageBonus > 0 ? "+" : "")}{totalDamageBonus}" 
+                    : baseDamage;
+
+                var critRange = GetPropertyStringValue(weapon, PropertyApplication.CriticalRange) ?? "20";
+                var critMult = GetPropertyStringValue(weapon, PropertyApplication.CriticalMultiplier) ?? "x2";
+                display.Critical = $"{critRange}/{critMult}";
+
+                display.Type = GetPropertyStringValue(weapon, PropertyApplication.DamageType) ?? string.Empty;
+                display.Range = GetPropertyStringValue(weapon, PropertyApplication.WeaponRange) ?? string.Empty;
+                
+                _equippedWeapons.Add(display);
+            }
+        }
+        catch (Exception ex)
+        {
+            await NotificationService.AddNotification(NotificationType.Error, $"Failed to calculate weapons: {ex.Message}");
+        }
+    }
+
     private int? GetPropertyIntValue(CharacterInventoryItem item, PropertyApplication application)
     {
         var property = item.Item.Properties
@@ -1007,7 +1068,7 @@
 
     private Task GetTotalArmour(string size)
     {
-        _baseArmourClass = 10 + SizeHelper.GetSizeAcBonus(size);
+        _baseArmourClass = 10 + SizeHelper.GetRaceSizeModifier(size);
 
         var armourMaxDex = _bodyMaxDexBonus ?? 99;
         var shieldMaxDex = _shieldMaxDexBonus ?? 99;
