@@ -44,7 +44,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Head))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -55,7 +55,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Face))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -66,7 +66,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Neck))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -77,7 +77,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Shoulders))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -88,7 +88,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Body))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -99,7 +99,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Torso))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -110,7 +110,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Waist))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -121,7 +121,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Wrists))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -132,7 +132,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Hands))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -143,7 +143,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.RingLeft))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -154,7 +154,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.RingRight))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -165,7 +165,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.Feet))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -176,7 +176,7 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.MainHand))
                         {
-                            <option value="@item.Id">@item.Item.Name</option>
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -187,7 +187,95 @@
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHand))
                         {
-                        <option value="@item.Id">@item.Item.Name</option>
+                        <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Main Hand (Set 2):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.MainHandSet2]" @bind:after="() => UpdateSlot(EquipmentSlot.MainHandSet2)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.MainHandSet2))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="equipment-slot">
+                    <label>Off Hand (Set 2):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet2]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet2)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet2))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Main Hand (Set 3):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.MainHandSet3]" @bind:after="() => UpdateSlot(EquipmentSlot.MainHandSet3)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.MainHandSet3))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="equipment-slot">
+                    <label>Off Hand (Set 3):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet3]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet3)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet3))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Main Hand (Set 4):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.MainHandSet4]" @bind:after="() => UpdateSlot(EquipmentSlot.MainHandSet4)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.MainHandSet4))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="equipment-slot">
+                    <label>Off Hand (Set 4):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet4]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet4)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet4))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="equipment-slot">
+                    <label>Main Hand (Set 5):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.MainHandSet5]" @bind:after="() => UpdateSlot(EquipmentSlot.MainHandSet5)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.MainHandSet5))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
+                        }
+                    </select>
+                </div>
+                
+                <div class="equipment-slot">
+                    <label>Off Hand (Set 5):</label>
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet5]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet5)">
+                        <option value="0">None</option>
+                        @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet5))
+                        {
+                            <option value="@item.Id">@item.Item.Name @(!string.IsNullOrEmpty(item.EquippedSlot) ? " ●" : "")</option>
                         }
                     </select>
                 </div>
@@ -223,7 +311,7 @@
                     <div class="dnd-cm-inventory-row">
                         @foreach (var invItem in _inventory)
                         {
-                            <div>@invItem.Item.Name</div>
+                            <div>@invItem.Item.Name @(!string.IsNullOrEmpty(invItem.EquippedSlot) ? " ●" : "")</div>
                             <div>@invItem.Quantity</div>
                             <div>@(invItem.Item.Weight * invItem.Quantity) lbs</div>
                             <div>@invItem.Item.Description</div>
@@ -278,6 +366,14 @@
         public const string Feet = "Feet";
         public const string MainHand = "MainHand";
         public const string OffHand = "OffHand";
+        public const string MainHandSet2 = "MainHandSet2";
+        public const string OffHandSet2 = "OffHandSet2";
+        public const string MainHandSet3 = "MainHandSet3";
+        public const string OffHandSet3 = "OffHandSet3";
+        public const string MainHandSet4 = "MainHandSet4";
+        public const string OffHandSet4 = "OffHandSet4";
+        public const string MainHandSet5 = "MainHandSet5";
+        public const string OffHandSet5 = "OffHandSet5";
     }
 
     #endregion
@@ -350,6 +446,14 @@
         _equippedSlots[EquipmentSlot.Feet] = 0;
         _equippedSlots[EquipmentSlot.MainHand] = 0;
         _equippedSlots[EquipmentSlot.OffHand] = 0;
+        _equippedSlots[EquipmentSlot.MainHandSet2] = 0;
+        _equippedSlots[EquipmentSlot.OffHandSet2] = 0;
+        _equippedSlots[EquipmentSlot.MainHandSet3] = 0;
+        _equippedSlots[EquipmentSlot.OffHandSet3] = 0;
+        _equippedSlots[EquipmentSlot.MainHandSet4] = 0;
+        _equippedSlots[EquipmentSlot.OffHandSet4] = 0;
+        _equippedSlots[EquipmentSlot.MainHandSet5] = 0;
+        _equippedSlots[EquipmentSlot.OffHandSet5] = 0;
     }
 
     #endregion
@@ -440,8 +544,8 @@
             "RingLeft" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Ring).ToList(),
             "RingRight" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Ring).ToList(),
             "Feet" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Feet).ToList(),
-            "MainHand" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Weapon).ToList(),
-            "OffHand" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Weapon || i.Item.BodySlot == ItemSlot.Shield).ToList(),
+            "MainHand" or "MainHandSet2" or "MainHandSet3" or "MainHandSet4" or "MainHandSet5" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Weapon).ToList(),
+            "OffHand" or "OffHandSet2" or "OffHandSet3" or "OffHandSet4" or "OffHandSet5" => _inventory.Where(i => i.Item.BodySlot == ItemSlot.Weapon || i.Item.BodySlot == ItemSlot.Shield).ToList(),
             _ => _inventory.ToList()
         };
     }
@@ -454,46 +558,76 @@
 
             var selectedItemId = _equippedSlots[slot];
 
-            var currentlyEquipped = _inventory.FirstOrDefault(i => i.EquippedSlot == slot);
-            if (currentlyEquipped != null)
+            var currentlyInSlot = _inventory.FirstOrDefault(i => i.EquippedSlot == slot);
+            if (currentlyInSlot != null && currentlyInSlot.Id != selectedItemId)
             {
-                var dbItem = await db.CharacterInventoryItems.FindAsync(currentlyEquipped.Id);
+                var dbItem = await db.CharacterInventoryItems.FindAsync(currentlyInSlot.Id);
                 if (dbItem != null)
                 {
                     dbItem.EquippedSlot = null;
                     dbItem.Location = "Inventory";
-                    db.CharacterInventoryItems.Update(dbItem);
 
-                    currentlyEquipped.EquippedSlot = null;
-                    currentlyEquipped.Location = "Inventory";
+                    var mergeTarget = await db.CharacterInventoryItems
+                        .FirstOrDefaultAsync(i => i.CharacterId == SelectedCharacterId 
+                            && i.ItemId == dbItem.ItemId 
+                            && i.Id != dbItem.Id
+                            && (i.Location == "Inventory" || string.IsNullOrEmpty(i.Location)) 
+                            && string.IsNullOrEmpty(i.EquippedSlot));
+
+                    if (mergeTarget != null)
+                    {
+                        mergeTarget.Quantity += dbItem.Quantity;
+                        db.CharacterInventoryItems.Remove(dbItem);
+                    }
+                    else
+                    {
+                        db.CharacterInventoryItems.Update(dbItem);
+                    }
+                    
+                    await db.SaveChangesAsync();
                 }
             }
 
             if (selectedItemId > 0)
             {
-                var itemToEquip = _inventory.FirstOrDefault(i => i.Id == selectedItemId);
-                if (itemToEquip != null)
+                var dbItem = await db.CharacterInventoryItems.FindAsync(selectedItemId);
+                if (dbItem != null)
                 {
-                    if (!string.IsNullOrEmpty(itemToEquip.EquippedSlot))
-                    {
-                        _equippedSlots[itemToEquip.EquippedSlot] = 0;
-                    }
-
-                    var dbItem = await db.CharacterInventoryItems.FindAsync(selectedItemId);
-                    if (dbItem != null)
+                    if (!string.IsNullOrEmpty(dbItem.EquippedSlot) && dbItem.EquippedSlot != slot)
                     {
                         dbItem.EquippedSlot = slot;
                         dbItem.Location = "Equipped";
                         db.CharacterInventoryItems.Update(dbItem);
-
-                        itemToEquip.EquippedSlot = slot;
-                        itemToEquip.Location = "Equipped";
                     }
+                    else if (string.IsNullOrEmpty(dbItem.EquippedSlot))
+                    {
+                        if (dbItem.Quantity > 1)
+                        {
+                            dbItem.Quantity -= 1;
+                            db.CharacterInventoryItems.Update(dbItem);
+
+                            db.CharacterInventoryItems.Add(new CharacterInventoryItem
+                            {
+                                CharacterId = dbItem.CharacterId,
+                                ItemId = dbItem.ItemId,
+                                Quantity = 1,
+                                EquippedSlot = slot,
+                                Location = "Equipped"
+                            });
+                        }
+                        else
+                        {
+                            dbItem.EquippedSlot = slot;
+                            dbItem.Location = "Equipped";
+                            db.CharacterInventoryItems.Update(dbItem);
+                        }
+                    }
+
+                    await db.SaveChangesAsync();
                 }
             }
 
-            await db.SaveChangesAsync();
-
+            await LoadCharacterData();
             await NotificationService.AddNotification(NotificationType.Success, "Equipment updated");
         }
         catch (Exception ex)
