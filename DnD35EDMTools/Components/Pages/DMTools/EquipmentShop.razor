@@ -83,7 +83,7 @@
             <div class="dnd-dm-es-inventory-content">
                 @foreach (var invItem in _inventory)
                 {
-                    <div>@invItem.Item.Name</div>
+                    <div>@invItem.Item.Name @(!string.IsNullOrEmpty(invItem.EquippedSlot) ? " ●" : "")</div>
                     <div>@invItem.Quantity</div>
                     <div>@(invItem.Quantity * invItem.Item.Weight)</div>
                     <div>@invItem.Item.BaseGoldValue</div>
