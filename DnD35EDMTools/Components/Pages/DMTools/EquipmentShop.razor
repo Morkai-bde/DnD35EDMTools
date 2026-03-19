@@ -351,11 +351,12 @@
             }
 
             var existingItem = await db.CharacterInventoryItems
-                .FirstOrDefaultAsync(i => i.CharacterId == characterId && i.ItemId == itemId && i.Location == "Inventory");
+                .FirstOrDefaultAsync(i => i.CharacterId == characterId && i.ItemId == itemId && (i.Location == "Inventory" || string.IsNullOrEmpty(i.Location)) && string.IsNullOrEmpty(i.EquippedSlot));
 
             if (existingItem != null)
             {
                 existingItem.Quantity += quantity;
+                existingItem.Location = "Inventory";
                 db.CharacterInventoryItems.Update(existingItem);
             }
             else
@@ -389,6 +390,8 @@
 
             var inventoryItem = await db.CharacterInventoryItems
                 .Include(i => i.Item)
+                .OrderByDescending(i => i.Location == "Inventory")
+                .ThenBy(i => string.IsNullOrEmpty(i.EquippedSlot))
                 .FirstOrDefaultAsync(i => i.CharacterId == characterId && i.ItemId == itemId);
 
             if (inventoryItem == null || inventoryItem.Quantity < quantity)
