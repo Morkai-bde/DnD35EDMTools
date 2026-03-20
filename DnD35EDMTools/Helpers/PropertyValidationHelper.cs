@@ -34,6 +34,7 @@ public static class PropertyValidationHelper
         { PropertyApplication.WeaponType, "String" },
         { PropertyApplication.DamageType, "String" },
         { PropertyApplication.WeaponRange, "Integer" },
+        { PropertyApplication.WeaponHandedness, "String" },
         
         { PropertyApplication.Enhancement, "Integer" },
         { PropertyApplication.Charges, "Integer" },
@@ -72,6 +73,7 @@ public static class PropertyValidationHelper
         { PropertyApplication.WeaponType, [ItemType.Weapon] },
         { PropertyApplication.DamageType, [ItemType.Weapon] },
         { PropertyApplication.WeaponRange, [ItemType.Weapon] },
+        { PropertyApplication.WeaponHandedness, [ItemType.Weapon] },
         
         { PropertyApplication.Enhancement, [ItemType.Weapon, ItemType.Armour, ItemType.Shield] },
         { PropertyApplication.Charges, [ItemType.Wand, ItemType.Staff, ItemType.Rod] },

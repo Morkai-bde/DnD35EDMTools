@@ -36,6 +36,7 @@ public enum PropertyApplication
     WeaponType = 52,
     DamageType = 53,
     WeaponRange = 54,
+    WeaponHandedness = 55,
     
     // Special
     Enhancement = 61,
