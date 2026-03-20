@@ -1014,7 +1014,7 @@
                 
                 var damageAbilityMod = isRanged ? 0 : (_characterStrengthMod ?? 0);
 
-                if (isTwoHanded && !isRanged)
+                if (isTwoHanded && !isRanged && damageAbilityMod > 0)
                 {
                     damageAbilityMod = (int)Math.Floor(damageAbilityMod * 1.5);
                 }
