@@ -1008,9 +1008,17 @@
                 var baseDamage = GetPropertyStringValue(weapon, PropertyApplication.DamageDice) ?? "0";
                 var damageBonusProp = GetPropertyIntValue(weapon, PropertyApplication.DamageBonus) ?? 0;
                 var damageEnhancement = enhancement; 
+
+                var hasHandedness = GetPropertyStringValue(weapon, PropertyApplication.WeaponHandedness);
+                var isTwoHanded = !string.IsNullOrEmpty(hasHandedness) && hasHandedness.Equals("Two-Handed", StringComparison.OrdinalIgnoreCase);
                 
                 var damageAbilityMod = isRanged ? 0 : (_characterStrengthMod ?? 0);
-                
+
+                if (isTwoHanded && !isRanged)
+                {
+                    damageAbilityMod = (int)Math.Floor(damageAbilityMod * 1.5);
+                }
+
                 var totalDamageBonus = damageAbilityMod + damageEnhancement + damageBonusProp;
                 display.Damage = totalDamageBonus != 0 
                     ? $"{baseDamage}{(totalDamageBonus > 0 ? "+" : "")}{totalDamageBonus}" 
