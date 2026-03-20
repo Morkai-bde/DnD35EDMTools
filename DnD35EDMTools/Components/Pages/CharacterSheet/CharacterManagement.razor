@@ -183,7 +183,7 @@
                 
                 <div class="equipment-slot">
                     <label>Off Hand:</label>
-                    <select @bind="_equippedSlots[EquipmentSlot.OffHand]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHand)">
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHand]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHand)" disabled="@IsSlotDisabled(EquipmentSlot.OffHand)">
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHand))
                         {
@@ -205,7 +205,7 @@
                 
                 <div class="equipment-slot">
                     <label>Off Hand (Set 2):</label>
-                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet2]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet2)">
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet2]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet2)" disabled="@IsSlotDisabled(EquipmentSlot.OffHandSet2)">
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet2))
                         {
@@ -227,7 +227,7 @@
                 
                 <div class="equipment-slot">
                     <label>Off Hand (Set 3):</label>
-                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet3]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet3)">
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet3]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet3)" disabled="@IsSlotDisabled(EquipmentSlot.OffHandSet3)">
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet3))
                         {
@@ -249,7 +249,7 @@
                 
                 <div class="equipment-slot">
                     <label>Off Hand (Set 4):</label>
-                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet4]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet4)">
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet4]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet4)" disabled="@IsSlotDisabled(EquipmentSlot.OffHandSet4)">
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet4))
                         {
@@ -271,7 +271,7 @@
                 
                 <div class="equipment-slot">
                     <label>Off Hand (Set 5):</label>
-                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet5]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet5)">
+                    <select @bind="_equippedSlots[EquipmentSlot.OffHandSet5]" @bind:after="() => UpdateSlot(EquipmentSlot.OffHandSet5)" disabled="@IsSlotDisabled(EquipmentSlot.OffHandSet5)">
                         <option value="0">None</option>
                         @foreach (var item in GetAvailableItemsForSlot(EquipmentSlot.OffHandSet5))
                         {
@@ -495,6 +495,8 @@
 
             _inventory = await db.CharacterInventoryItems
                 .Include(i => i.Item)
+                .ThenInclude(item => item.Properties)
+                .ThenInclude(p => p.PropertyDefinition)
                 .Where(c => c.CharacterId == SelectedCharacterId)
                 .OrderBy(i => i.Item.Name)
                 .ToListAsync();
@@ -550,6 +552,32 @@
         };
     }
 
+    private bool IsTwoHanded(int inventoryItemId)
+    {
+        if (inventoryItemId <= 0) return false;
+
+        var item = _inventory.FirstOrDefault(i => i.Id == inventoryItemId);
+        if (item == null) return false;
+
+        var handedness = item.Item.Properties
+            .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == PropertyApplication.WeaponHandedness)?.Value;
+
+        return !string.IsNullOrEmpty(handedness) && handedness.Contains("Two-Handed", StringComparison.OrdinalIgnoreCase);
+    }
+
+    private bool IsSlotDisabled(string slot)
+    {
+        return slot switch
+        {
+            EquipmentSlot.OffHand => IsTwoHanded(_equippedSlots[EquipmentSlot.MainHand]),
+            EquipmentSlot.OffHandSet2 => IsTwoHanded(_equippedSlots[EquipmentSlot.MainHandSet2]),
+            EquipmentSlot.OffHandSet3 => IsTwoHanded(_equippedSlots[EquipmentSlot.MainHandSet3]),
+            EquipmentSlot.OffHandSet4 => IsTwoHanded(_equippedSlots[EquipmentSlot.MainHandSet4]),
+            EquipmentSlot.OffHandSet5 => IsTwoHanded(_equippedSlots[EquipmentSlot.MainHandSet5]),
+            _ => false
+        };
+    }
+
     private async Task UpdateSlot(string slot)
     {
         try
@@ -593,6 +621,36 @@
                 var dbItem = await db.CharacterInventoryItems.FindAsync(selectedItemId);
                 if (dbItem != null)
                 {
+                    if (slot.StartsWith("MainHand") && IsTwoHanded(selectedItemId))
+                    {
+                        var offHandSlot = slot == "MainHand" ? "OffHand" : slot.Replace("MainHand", "OffHand");
+                        var offHandItem = await db.CharacterInventoryItems
+                            .FirstOrDefaultAsync(i => i.CharacterId == SelectedCharacterId && i.EquippedSlot == offHandSlot);
+                        
+                        if (offHandItem != null)
+                        {
+                            offHandItem.EquippedSlot = null;
+                            offHandItem.Location = "Inventory";
+                            
+                            var mergeTarget = await db.CharacterInventoryItems
+                                .FirstOrDefaultAsync(i => i.CharacterId == SelectedCharacterId 
+                                    && i.ItemId == offHandItem.ItemId 
+                                    && i.Id != offHandItem.Id
+                                    && (i.Location == "Inventory" || string.IsNullOrEmpty(i.Location)) 
+                                    && string.IsNullOrEmpty(i.EquippedSlot));
+
+                            if (mergeTarget != null)
+                            {
+                                mergeTarget.Quantity += offHandItem.Quantity;
+                                db.CharacterInventoryItems.Remove(offHandItem);
+                            }
+                            else
+                            {
+                                db.CharacterInventoryItems.Update(offHandItem);
+                            }
+                        }
+                    }
+
                     if (!string.IsNullOrEmpty(dbItem.EquippedSlot) && dbItem.EquippedSlot != slot)
                     {
                         dbItem.EquippedSlot = slot;
