@@ -1000,11 +1000,11 @@
                 var offHandFree = offHandItem == null;
                 var isDoubleWeapon = GetPropertyBoolValue(weapon, PropertyApplication.DoubleWeapon);
                 var weaponType = GetPropertyStringValue(weapon, PropertyApplication.WeaponType);
-                var weaponCategory = GetPropertyStringValue(weapon, PropertyApplication.WeaponCategory);
+                var weaponSubtype = weapon.Item.ItemSubtype.ToString();
                 
                 var isOneHanded = !string.IsNullOrEmpty(weaponType) && weaponType.Contains("One-Handed", StringComparison.OrdinalIgnoreCase);
                 var isTwoHanded = !string.IsNullOrEmpty(weaponType) && weaponType.Contains("Two-Handed", StringComparison.OrdinalIgnoreCase);
-                var isSimple = !string.IsNullOrEmpty(weaponCategory) && weaponCategory.Contains("Simple", StringComparison.OrdinalIgnoreCase);
+                var isSimple = !string.IsNullOrEmpty(weaponSubtype) && weaponSubtype.Contains("Simple", StringComparison.OrdinalIgnoreCase);
 
                 var versions = 1;
                 var hasAutoTwoHanded = false;
@@ -1036,8 +1036,8 @@
                         .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.Enhancement)
                         .Sum(p => int.TryParse(p.Value, out var val) ? val : 0);
 
-                    var category = GetPropertyStringValue(weapon, PropertyApplication.WeaponCategory);
-                    var isRanged = category?.Contains("Ranged") ?? false;
+                    var subtype = weapon.Item.ItemSubtype.ToString();
+                    var isRanged = subtype != null && subtype.Contains("Ranged");
                     var abilityMod = isRanged ? (_characterDexterityMod ?? 0) : (_characterStrengthMod ?? 0);
 
                     var effectiveTwoHanded = false;
@@ -1076,7 +1076,7 @@
 
                     var damageAbilityMod = isRanged ? 0 : (_characterStrengthMod ?? 0);
 
-                    if (isRanged && GetPropertyBoolValue(weapon, PropertyApplication.Composite))
+                    if (isRanged && GetPropertyIntValue(weapon, PropertyApplication.Composite).HasValue)
                     {
                         var compositeRating = weapon.Item.Properties
                             .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.Composite)
