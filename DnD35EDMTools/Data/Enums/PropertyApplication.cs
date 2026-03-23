@@ -2,46 +2,53 @@
 
 public enum PropertyApplication
 {
-    // Armor/Defense
     ArmourClass = 1,
     MaxDexBonus = 2,
     ArmourCheckPenalty = 3,
     ArcaneSpellFailure = 4,
-    
-    // Weapon/Attack
-    AttackBonus = 11,
-    DamageBonus = 12,
-    DamageDice = 13,
-    CriticalRange = 14,
-    CriticalMultiplier = 15,
-    
-    // Saves
-    FortitudeSave = 21,
-    ReflexSave = 22,
-    WillSave = 23,
-    
-    // Skills
-    SkillBonus = 31,
-    
-    // Abilities
-    StrengthBonus = 41,
-    DexterityBonus = 42,
-    ConstitutionBonus = 43,
-    IntelligenceBonus = 44,
-    WisdomBonus = 45,
-    CharismaBonus = 46,
-    
-    // Weapon Properties
-    WeaponCategory = 51,
-    WeaponType = 52,
-    DamageType = 53,
-    WeaponRange = 54,
-    WeaponHandedness = 55,
-    
-    // Special
-    Enhancement = 61,
-    Charges = 62,
-    SpellLevel = 63,
-    SpeedAdjustment = 64,
-    SpeedMultiplier = 65
+
+    AttackBonus = 101,
+    DamageBonus = 102,
+    DamageDice = 103,
+    CriticalRange = 104,
+    CriticalMultiplier = 105,
+    Enhancement = 106,
+
+    FortitudeSave = 201,
+    ReflexSave = 202,
+    WillSave = 203,
+
+    SkillBonus = 301,
+
+    StrengthBonus = 401,
+    DexterityBonus = 402,
+    ConstitutionBonus = 403,
+    IntelligenceBonus = 404,
+    WisdomBonus = 405,
+    CharismaBonus = 406,
+
+    WeaponCategory = 501,
+    WeaponType = 502,
+    DamageType = 503,
+    WeaponRange = 504,
+    Composite = 505,
+    Finesse = 506,
+    Reach = 507,
+    DoubleWeapon = 508,
+    MonkWeapon = 509,
+    Nonlethal = 510,
+    Thrown = 511,
+
+    Trip = 601,
+    Disarm = 602,
+    Sunder = 603,
+    Brace = 604,
+
+    Material = 701,
+    Masterwork = 702,
+
+    Charges = 901,
+    SpellLevel = 902,
+    SpeedAdjustment = 903,
+    SpeedMultiplier = 904
 }
