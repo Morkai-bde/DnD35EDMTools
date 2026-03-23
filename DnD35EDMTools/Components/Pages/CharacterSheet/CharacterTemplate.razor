@@ -301,7 +301,7 @@
         <div class="weapon-row-header">Full Attack</div>
         <div class="weapon-row-header">Damage</div>
     </div>
-    @for (int i = 0; i < 6; i++)
+    @for (int i = 0; i < _equippedWeapons.Count; i++)
     {
         var weapon = i < _equippedWeapons.Count ? _equippedWeapons[i] : new WeaponDisplay();
         <div class="weapon-list-left">
@@ -318,7 +318,7 @@
         <div class="skills-row-header">Ranks</div>
         <div class="skills-row-header">Modifier</div>
 
-        @for (int i = 0; i < MaxRows; i++)
+        @for (var i = 0; i < MaxRows; i++)
         {
             var skill = i < Skills.Count ? Skills[i] : null;
 
@@ -343,7 +343,7 @@
             <div class="weapon-row-header">Range</div>
             <div class="weapon-row-header">Notes</div>
         </div>
-        @for (int i = 0; i < 6; i++)
+        @for (var i = 0; i < _equippedWeapons.Count; i++)
         {
             var weapon = i < _equippedWeapons.Count ? _equippedWeapons[i] : new WeaponDisplay();
             <div class="weapon-list-right">
@@ -951,11 +951,11 @@
 
             var unarmed = new WeaponDisplay
             {
-                Name = "Unarmed Strike",
+                Name = "Strike, Unarmed",
                 AttackBonus = AttackBonusHelper.GetAttackBonusDisplay(bab + (_characterStrengthMod ?? 0) + sizeBonus),
-                Critical = "x2",
+                Critical = "20/x2",
                 Type = "Bludgeoning",
-                Range = "0",
+                Range = "0 ft.",
                 Notes = "Nonlethal"
             };
 
@@ -975,7 +975,6 @@
 
             _equippedWeapons.Add(unarmed);
 
-
             var setSlots = new[] 
             { 
                 "MainHand", "OffHand", 
@@ -990,48 +989,145 @@
                 var weapon = EquippedItems.FirstOrDefault(i => i.EquippedSlot == slot && i.Item.ItemType == ItemType.Weapon);
                 if (weapon == null) continue;
 
-                var display = new WeaponDisplay
-                {
-                    Name = weapon.Item.Name
-                };
+                var offHandSlot = slot.StartsWith("MainHand") 
+                    ? (slot == "MainHand" ? "OffHand" : slot.Replace("MainHand", "OffHand"))
+                    : null;
 
-                var category = GetPropertyStringValue(weapon, PropertyApplication.WeaponCategory);
-                var isRanged = category?.Contains("Ranged") ?? false;
-                var abilityMod = isRanged ? (_characterDexterityMod ?? 0) : (_characterStrengthMod ?? 0);
+                var offHandItem = !string.IsNullOrEmpty(offHandSlot) 
+                    ? EquippedItems.FirstOrDefault(i => i.EquippedSlot == offHandSlot)
+                    : null;
+
+                var offHandFree = offHandItem == null;
+                var isDoubleWeapon = GetPropertyBoolValue(weapon, PropertyApplication.DoubleWeapon);
+                var weaponType = GetPropertyStringValue(weapon, PropertyApplication.WeaponType);
+                var weaponCategory = GetPropertyStringValue(weapon, PropertyApplication.WeaponCategory);
                 
-                var enhancement = GetPropertyIntValue(weapon, PropertyApplication.Enhancement) ?? 0;
-                var attackBonusProp = GetPropertyIntValue(weapon, PropertyApplication.AttackBonus) ?? 0;
+                var isOneHanded = !string.IsNullOrEmpty(weaponType) && weaponType.Contains("One-Handed", StringComparison.OrdinalIgnoreCase);
+                var isTwoHanded = !string.IsNullOrEmpty(weaponType) && weaponType.Contains("Two-Handed", StringComparison.OrdinalIgnoreCase);
+                var isSimple = !string.IsNullOrEmpty(weaponCategory) && weaponCategory.Contains("Simple", StringComparison.OrdinalIgnoreCase);
 
-                var totalAttackBonus = bab + abilityMod + enhancement + attackBonusProp + sizeBonus;
-                display.AttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalAttackBonus);
+                var versions = 1;
+                var hasAutoTwoHanded = false;
+                var hasAutoDoubleTwf = false;
 
-                var baseDamage = GetPropertyStringValue(weapon, PropertyApplication.DamageDice) ?? "0";
-                var damageBonusProp = GetPropertyIntValue(weapon, PropertyApplication.DamageBonus) ?? 0;
-                var damageEnhancement = enhancement; 
-
-                var hasHandedness = GetPropertyStringValue(weapon, PropertyApplication.WeaponHandedness);
-                var isTwoHanded = !string.IsNullOrEmpty(hasHandedness) && hasHandedness.Equals("Two-Handed", StringComparison.OrdinalIgnoreCase);
-                
-                var damageAbilityMod = isRanged ? 0 : (_characterStrengthMod ?? 0);
-
-                if (isTwoHanded && !isRanged && damageAbilityMod > 0)
+                if (slot.StartsWith("MainHand") && offHandFree)
                 {
-                    damageAbilityMod = (int)Math.Floor(damageAbilityMod * 1.5);
+                    if (isDoubleWeapon)
+                    {
+                        versions = 3;
+                        hasAutoDoubleTwf = true;
+                    }
+                    else if (isOneHanded && !isSimple)
+                    {
+                        versions = 2;
+                        hasAutoTwoHanded = true;
+                    }
                 }
 
-                var totalDamageBonus = damageAbilityMod + damageEnhancement + damageBonusProp;
-                display.Damage = totalDamageBonus != 0 
-                    ? $"{baseDamage}{(totalDamageBonus > 0 ? "+" : "")}{totalDamageBonus}" 
-                    : baseDamage;
+                for (var v = 0; v < versions; v++)
+                {
+                    var display = new WeaponDisplay();
 
-                var critRange = GetPropertyStringValue(weapon, PropertyApplication.CriticalRange) ?? "20";
-                var critMult = GetPropertyStringValue(weapon, PropertyApplication.CriticalMultiplier) ?? "x2";
-                display.Critical = $"{critRange}/{critMult}";
+                    var attackBonusProp = weapon.Item.Properties
+                        .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.AttackBonus)
+                        .Sum(p => int.TryParse(p.Value, out var val) ? val : 0);
 
-                display.Type = GetPropertyStringValue(weapon, PropertyApplication.DamageType) ?? string.Empty;
-                display.Range = GetPropertyStringValue(weapon, PropertyApplication.WeaponRange) ?? string.Empty;
-                
-                _equippedWeapons.Add(display);
+                    var enhancement = weapon.Item.Properties
+                        .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.Enhancement)
+                        .Sum(p => int.TryParse(p.Value, out var val) ? val : 0);
+
+                    var category = GetPropertyStringValue(weapon, PropertyApplication.WeaponCategory);
+                    var isRanged = category?.Contains("Ranged") ?? false;
+                    var abilityMod = isRanged ? (_characterDexterityMod ?? 0) : (_characterStrengthMod ?? 0);
+
+                    var effectiveTwoHanded = false;
+                    var isOffHandUse = false;
+                    var twfPenalty = 0;
+
+                    if (hasAutoDoubleTwf)
+                    {
+                        if (v == 0) { effectiveTwoHanded = true; }
+                        else if (v == 1) { twfPenalty = -2; }
+                        else if (v == 2) { isOffHandUse = true; twfPenalty = -2; }
+                    }
+                    else if (hasAutoTwoHanded)
+                    {
+                        if (v == 1) effectiveTwoHanded = true;
+                    }
+                    else
+                    {
+                        effectiveTwoHanded = isTwoHanded;
+                        isOffHandUse = slot.StartsWith("OffHand");
+                    }
+
+                    var totalAttackBonus = bab + abilityMod + enhancement + attackBonusProp + sizeBonus + twfPenalty;
+                    display.AttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalAttackBonus);
+
+                    var damageDiceProps = weapon.Item.Properties
+                        .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.DamageDice)
+                        .ToList();
+
+                    var baseDamage = damageDiceProps.FirstOrDefault()?.Value ?? "0";
+                    var extraDamage = string.Join(" + ", damageDiceProps.Skip(1).Select(p => p.Value));
+
+                    var damageBonusProp = weapon.Item.Properties
+                        .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.DamageBonus)
+                        .Sum(p => int.TryParse(p.Value, out var val) ? val : 0);
+
+                    var damageAbilityMod = isRanged ? 0 : (_characterStrengthMod ?? 0);
+
+                    if (isRanged && GetPropertyBoolValue(weapon, PropertyApplication.Composite))
+                    {
+                        var compositeRating = weapon.Item.Properties
+                            .Where(p => p.PropertyDefinition.AppliesTo == PropertyApplication.Composite)
+                            .Select(p => int.TryParse(p.Value, out var val) ? val : 99)
+                            .FirstOrDefault();
+                        damageAbilityMod = Math.Max(0, Math.Min(_characterStrengthMod ?? 0, compositeRating));
+                    }
+
+                    if (effectiveTwoHanded && !isRanged && damageAbilityMod > 0)
+                    {
+                        damageAbilityMod = (int)Math.Floor(damageAbilityMod * 1.5);
+                    }
+                    else if (isOffHandUse && damageAbilityMod > 0)
+                    {
+                        damageAbilityMod = (int)Math.Floor(damageAbilityMod * 0.5);
+                    }
+
+                    var totalDamageBonus = damageAbilityMod + enhancement + damageBonusProp;
+
+                    display.Damage = baseDamage;
+                    if (totalDamageBonus != 0)
+                        display.Damage += (totalDamageBonus > 0 ? "+" : "") + totalDamageBonus;
+                    if (!string.IsNullOrEmpty(extraDamage))
+                        display.Damage += " + " + extraDamage;
+
+                    display.Name = weapon.Item.Name;
+                    if (hasAutoDoubleTwf)
+                    {
+                        display.Name += v switch { 0 => " (2H)", 1 => " (Primary)", 2 => " (Off-Hand)", _ => "" };
+                    }
+                    else if (hasAutoTwoHanded && v == 1)
+                    {
+                        display.Name += " (2H)";
+                    }
+
+                    var critRange = GetPropertyStringValue(weapon, PropertyApplication.CriticalRange) ?? "20";
+                    var critMult = GetPropertyStringValue(weapon, PropertyApplication.CriticalMultiplier) ?? "x2";
+                    display.Critical = $"{critRange}/{critMult}";
+
+                    display.Type = GetPropertyStringValue(weapon, PropertyApplication.DamageType) ?? string.Empty;
+                    display.Range = (GetPropertyStringValue(weapon, PropertyApplication.WeaponRange) ?? "0") + " ft.";
+
+                    var tags = new List<string>();
+                    if (GetPropertyBoolValue(weapon, PropertyApplication.Reach)) tags.Add("Reach");
+                    if (GetPropertyBoolValue(weapon, PropertyApplication.Nonlethal)) tags.Add("Nonlethal");
+                    if (GetPropertyBoolValue(weapon, PropertyApplication.Trip)) tags.Add("Trip");
+
+                    display.Notes = string.Join(", ", tags);
+
+                    _equippedWeapons.Add(display);
+                }
             }
         }
         catch (Exception ex)
@@ -1059,6 +1155,11 @@
             .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == application);
 
         return property?.Value;
+    }
+
+    private bool GetPropertyBoolValue(CharacterInventoryItem item, PropertyApplication application)
+    {
+        return item.Item.Properties.Any(p => p.PropertyDefinition.AppliesTo == application);
     }
 
     private int GetTotalArmorCheckPenalty()
