@@ -560,7 +560,7 @@
         if (item == null) return false;
 
         var handedness = item.Item.Properties
-            .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == PropertyApplication.WeaponHandedness)?.Value;
+            .FirstOrDefault(p => p.PropertyDefinition.AppliesTo == PropertyApplication.WeaponType)?.Value;
 
         return !string.IsNullOrEmpty(handedness) && handedness.Contains("Two-Handed", StringComparison.OrdinalIgnoreCase);
     }
@@ -589,7 +589,9 @@
             var currentlyInSlot = _inventory.FirstOrDefault(i => i.EquippedSlot == slot);
             if (currentlyInSlot != null && currentlyInSlot.Id != selectedItemId)
             {
-                var dbItem = await db.CharacterInventoryItems.FindAsync(currentlyInSlot.Id);
+                var dbItem = await db.CharacterInventoryItems
+                    .FirstOrDefaultAsync(i => i.Id == currentlyInSlot.Id);
+
                 if (dbItem != null)
                 {
                     dbItem.EquippedSlot = null;
@@ -618,7 +620,12 @@
 
             if (selectedItemId > 0)
             {
-                var dbItem = await db.CharacterInventoryItems.FindAsync(selectedItemId);
+                var dbItem = await db.CharacterInventoryItems
+                    .Include(i => i.Item)
+                    .ThenInclude(item => item.Properties)
+                    .ThenInclude(p => p.PropertyDefinition)
+                    .FirstOrDefaultAsync(i => i.Id == selectedItemId);
+
                 if (dbItem != null)
                 {
                     if (slot.StartsWith("MainHand") && IsTwoHanded(selectedItemId))
@@ -680,9 +687,9 @@
                             db.CharacterInventoryItems.Update(dbItem);
                         }
                     }
-
-                    await db.SaveChangesAsync();
                 }
+
+                await db.SaveChangesAsync();
             }
 
             await LoadCharacterData();
