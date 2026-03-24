@@ -1061,6 +1061,16 @@
                     }
 
                     var totalAttackBonus = bab + abilityMod + enhancement + attackBonusProp + sizeBonus + twfPenalty;
+
+                    if (isRanged && GetPropertyIntValue(weapon, PropertyApplication.Composite).HasValue)
+                    {
+                        var compositeRating = GetPropertyIntValue(weapon, PropertyApplication.Composite) ?? 0;
+                        if ((_characterStrengthMod ?? 0) < compositeRating)
+                        {
+                            totalAttackBonus -= 2;
+                        }
+                    }
+
                     display.AttackBonus = AttackBonusHelper.GetAttackBonusDisplay(totalAttackBonus);
 
                     var damageDiceProps = weapon.Item.Properties
