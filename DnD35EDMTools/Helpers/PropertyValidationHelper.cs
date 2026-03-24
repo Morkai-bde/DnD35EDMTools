@@ -31,7 +31,7 @@ public static class PropertyValidationHelper
         { PropertyApplication.WisdomBonus, "Integer" },
         { PropertyApplication.CharismaBonus, "Integer" },
 
-        { PropertyApplication.WeaponCategory, "String" },
+        { PropertyApplication.WeaponSizeCategory, "String" },
         { PropertyApplication.WeaponType, "String" },
         { PropertyApplication.DamageType, "String" },
         { PropertyApplication.WeaponRange, "Integer" },
@@ -84,7 +84,7 @@ public static class PropertyValidationHelper
         { PropertyApplication.WisdomBonus, [ItemType.WondrousItem] },
         { PropertyApplication.CharismaBonus, [ItemType.WondrousItem] },
 
-        { PropertyApplication.WeaponCategory, [ItemType.Weapon] },
+        { PropertyApplication.WeaponSizeCategory, [ItemType.Weapon] },
         { PropertyApplication.WeaponType, [ItemType.Weapon] },
         { PropertyApplication.DamageType, [ItemType.Weapon] },
         { PropertyApplication.WeaponRange, [ItemType.Weapon] },

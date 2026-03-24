@@ -27,7 +27,7 @@ public enum PropertyApplication
     WisdomBonus = 405,
     CharismaBonus = 406,
 
-    WeaponCategory = 501,
+    WeaponSizeCategory = 501,
     WeaponType = 502,
     DamageType = 503,
     WeaponRange = 504,
