@@ -1199,7 +1199,7 @@
         _abilityArmourClassBonus = Math.Min(_characterDexterityMod ?? 0, finalMaxDex);
         _naturalArmourClassBonus = 0;
         _otherArmourClassBonus = 0;
-        _totalArmourClass = _baseArmourClass + _bodyArmourClass + _shieldArmourClass + _abilityArmourClassBonus + _naturalArmourClassBonus + _otherArmourClassBonus;
+        _totalArmourClass = _baseArmourClass + _equippedArmourClass + _abilityArmourClassBonus + _naturalArmourClassBonus + _otherArmourClassBonus;
 
         _flatFootedBodyArmourClass =  (_bodyArmourClass ?? 0) + (_shieldArmourClass ?? 0);
         _flatFootedAbilityArmourClassBonus = 0;
